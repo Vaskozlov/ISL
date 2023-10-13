@@ -103,9 +103,12 @@ namespace isl
         using suspend_always = detail::coroutine::suspend_always;
         using suspend_never = detail::coroutine::suspend_never;
 
+        static constexpr bool TrivialTypeStored = std::is_trivial_v<T>;
+        using ValueStorageType = std::conditional_t<TrivialTypeStored, std::optional<T>, T *>;
+
     private:
-        T *value;
-        std::exception_ptr exceptionPtr;
+        ValueStorageType value{};
+        std::exception_ptr exceptionPtr{nullptr};
 
     public:
         [[nodiscard]] auto get_return_object() -> Generator<T>
@@ -127,7 +130,12 @@ namespace isl
         auto yield_value(U &&new_value) -> suspend_always
             requires(std::is_same_v<T, std::remove_cvref_t<U>>)
         {
-            value = std::addressof(new_value);
+            if constexpr (TrivialTypeStored) {
+                value = new_value;
+            } else {
+                value = std::addressof(new_value);
+            }
+
             return {};
         }
 
@@ -145,6 +153,10 @@ namespace isl
                 std::rethrow_exception(exceptionPtr);
             }
 
+            if (!hasValue()) {
+                throw std::runtime_error{"No value is stored in generator"};
+            }
+
             return *value;
         }
 
@@ -154,22 +166,56 @@ namespace isl
                 std::rethrow_exception(exceptionPtr);
             }
 
+            if (!hasValue()) {
+                throw std::runtime_error{"No value is stored in generator"};
+            }
+
             return *value;
         }
 
         auto setValuePtr(T *ptr) noexcept -> void
         {
-            value = ptr;
+            if constexpr (TrivialTypeStored) {
+                value = *ptr;
+            } else {
+                value = ptr;
+            }
         }
 
         [[nodiscard]] auto getValuePtr() noexcept -> T *
         {
-            return value;
+            if constexpr (TrivialTypeStored) {
+                if (!hasValue()) {
+                    return nullptr;
+                }
+
+                return &(*value);
+            } else {
+                return value;
+            }
         }
 
         [[nodiscard]] auto getValuePtr() const noexcept -> const T *
         {
-            return value;
+            if constexpr (TrivialTypeStored) {
+                if (!hasValue()) {
+                    return nullptr;
+                }
+
+                return &(*value);
+            } else {
+                return value;
+            }
+        }
+
+    private:
+        [[nodiscard]] ISL_INLINE auto hasValue() const noexcept -> bool
+        {
+            if constexpr (TrivialTypeStored) {
+                return value.has_value();
+            } else {
+                return value != nullptr;
+            }
         }
     };
 
