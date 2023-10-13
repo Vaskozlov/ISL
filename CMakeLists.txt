@@ -9,7 +9,6 @@ include(cmake/InterproceduralOptimization.cmake)
 include(cmake/ProjectOptions.cmake)
 include(cmake/CompilerOptions.cmake)
 include(cmake/Libraries.cmake)
-include(src/CMakeLists.txt)
 
 if (ISL_INCLUDE_TESTS)
     include(catch/CMakeLists.txt)

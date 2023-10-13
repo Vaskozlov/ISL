@@ -5,7 +5,7 @@
 #include <isl/range.hpp>
 #include <unordered_set>
 
-namespace isl::inline ISL_VERSION
+namespace isl
 {
     class UtfSet
     {
@@ -17,17 +17,47 @@ namespace isl::inline ISL_VERSION
     public:
         UtfSet() = default;
 
-        [[nodiscard]] auto empty() const noexcept -> bool;
+        [[nodiscard]] auto empty() const noexcept -> bool
+        {
+            return smallStorage.none() && storage.empty();
+        }
 
-        [[nodiscard]] auto at(char32_t chr) const noexcept -> bool;
+        [[nodiscard]] auto at(char32_t chr) const noexcept -> bool
+        {
+            if (chr < smallStorageSize) [[likely]] {
+                return smallStorage.test(chr);
+            }
 
-        auto set(char32_t chr, bool value = true) -> void;
+            return storage.contains(chr);
+        }
 
-        auto set(Range<char32_t> range, bool value = true) -> void;
+        auto set(char32_t chr, bool value = true) -> void
+        {
+            if (chr < smallStorageSize) [[likely]] {
+                smallStorage.set(chr, value);
+            } else [[unlikely]] {
+                setBigChar(chr, value);
+            }
+        }
+
+        auto set(Range<char32_t> range, bool value = true) -> void
+        {
+            ISL_UNROLL_N(4)
+            for (const char32_t chr : range) {
+                set(chr, value);
+            }
+        }
 
     private:
-        auto setBigChar(char32_t chr, bool value) -> void;
+        auto setBigChar(char32_t chr, bool value) -> void
+        {
+            if (value) [[likely]] {
+                storage.insert(chr);
+            } else [[unlikely]] {
+                storage.erase(chr);
+            }
+        }
     };
-}// namespace isl::inline ISL_0_1_0
+}// namespace isl
 
 #endif /* CCL_PROJECT_UTF_SET_HPP */

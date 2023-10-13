@@ -6,7 +6,7 @@
 #include <isl/iterator.hpp>
 #include <numeric>
 
-namespace isl::inline ISL_VERSION
+namespace isl
 {
     namespace detail
     {
@@ -405,8 +405,6 @@ namespace isl::inline ISL_VERSION
         }
     };
 
-    extern template class BasicStringView<char>;
-
     namespace string_view_literals
     {
         [[nodiscard]] consteval auto operator""_sv(const char *string, size_t length)
@@ -439,12 +437,15 @@ namespace isl::inline ISL_VERSION
             return {string, length};
         }
     }// namespace string_view_literals
-}// namespace isl::inline ISL_VERSION
+}// namespace isl
 
 template<>
 struct fmt::formatter<isl::string_view> : public fmt::formatter<std::string_view>
 {
-    auto format(const isl::string_view &str, format_context &ctx) const -> decltype(ctx.out());
+    auto format(const isl::string_view &str, format_context &ctx) const -> decltype(ctx.out())
+    {
+        return formatter<std::string_view>::format(isl::as<std::string_view>(str), ctx);
+    }
 };
 
 #endif /* ISL_PROJECT_STRING_VIEW_HPP*/
