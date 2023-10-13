@@ -153,7 +153,7 @@ namespace isl
         ISL_SAFE_VERSION
         ISL_DECL auto find(CharT chr, size_t offset = 0) const noexcept -> std::optional<size_t>
         {
-            auto result = find<UNSAFE>(chr, offset);
+            auto result = find<FunctionAPI::UNSAFE>(chr, offset);
 
             if (result == npos) {
                 return std::nullopt;
@@ -176,7 +176,7 @@ namespace isl
         ISL_SAFE_VERSION
         ISL_DECL auto find(CharT chr, iterator from) const noexcept -> std::optional<size_t>
         {
-            auto result = find<UNSAFE>(chr, from);
+            auto result = find<FunctionAPI::UNSAFE>(chr, from);
 
             if (result == npos) {
                 return std::nullopt;
@@ -187,7 +187,7 @@ namespace isl
 
         ISL_DECL auto contains(CharT chr) const noexcept -> bool
         {
-            return find<SAFE>(chr).has_value();
+            return find<FunctionAPI::SAFE>(chr).has_value();
         }
 
         /**
@@ -225,7 +225,7 @@ namespace isl
         ISL_DECL auto findMatchingPair(CharT starter, CharT ender) const noexcept
             -> std::optional<size_t>
         {
-            auto result = findMatchingPair<UNSAFE>(starter, ender);
+            auto result = findMatchingPair<FunctionAPI::UNSAFE>(starter, ender);
 
             if (result == npos) {
                 return std::nullopt;
@@ -248,7 +248,7 @@ namespace isl
         ISL_SAFE_VERSION
         ISL_DECL auto rfind(CharT chr, size_t offset = 0) const noexcept -> std::optional<size_t>
         {
-            auto result = rfind<UNSAFE>(chr, offset);
+            auto result = rfind<FunctionAPI::UNSAFE>(chr, offset);
 
             if (result == npos) {
                 return std::nullopt;
@@ -262,7 +262,7 @@ namespace isl
         {
             auto stripped_string = *this;
             auto has_characters_to_strip = [&stripped_string, &characters_to_strip]() {
-                const auto first_character = stripped_string.template front<UNSAFE>();
+                const auto first_character = stripped_string.template front<FunctionAPI::UNSAFE>();
                 return characters_to_strip.contains(first_character);
             };
 
@@ -308,7 +308,7 @@ namespace isl
                 throw std::invalid_argument{"New length is greater than the old one"};
             }
 
-            return changeLength<UNSAFE>(new_length);
+            return changeLength<FunctionAPI::UNSAFE>(new_length);
         }
 
         ISL_DECL auto startsWith(const StringLike<CharT> auto &str) const noexcept -> bool

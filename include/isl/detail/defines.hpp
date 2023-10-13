@@ -99,12 +99,18 @@
 #endif
 
 #define ISL_SAFE_VERSION                                                                           \
-    template<UsageMode Mode = SAFE>                                                                \
-        requires(Mode == SAFE)
+    template<FunctionAPI Mode = FunctionAPI::SAFE>                                                 \
+        requires(Mode == FunctionAPI::SAFE)
 
 #define ISL_UNSAFE_VERSION                                                                         \
-    template<UsageMode Mode>                                                                       \
-        requires(Mode == UNSAFE)
+    template<FunctionAPI Mode>                                                                     \
+        requires(Mode == FunctionAPI::UNSAFE)
+
+#define ISL_EXCEPTION(name, base_exception, classname)                                             \
+    struct name : public base_exception                                                            \
+    {                                                                                              \
+        using base_exception::classname;                                                           \
+    }
 
 namespace isl
 {
@@ -113,7 +119,7 @@ namespace isl
         ISL_UNREACHABLE;
     }
 
-    enum UsageMode : bool
+    enum class FunctionAPI : bool
     {
         SAFE,
         UNSAFE
