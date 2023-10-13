@@ -25,7 +25,9 @@ namespace isl::inline ISL_VERSION
 
     template<typename T, typename CharT>
     concept StringLike = IsSameToAny<
-        std::remove_cvref_t<T>, BasicStringView<CharT>, std::basic_string_view<CharT>,
+        std::remove_cvref_t<T>,
+        BasicStringView<CharT>,
+        std::basic_string_view<CharT>,
         std::basic_string<CharT>>;
 
     template<CharacterLiteral CharT>
@@ -275,7 +277,7 @@ namespace isl::inline ISL_VERSION
             auto stripped_string = *this;
 
             while (!stripped_string.empty() &&
-                   characters_to_strip.contains(stripped_string.back())) {
+                   characters_to_strip.contains(*stripped_string.back())) {
                 --stripped_string.length;
             }
 
