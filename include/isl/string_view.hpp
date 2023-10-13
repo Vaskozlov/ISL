@@ -8,11 +8,14 @@
 
 namespace isl::inline ISL_VERSION
 {
-    template<typename T>
-    ISL_DECL auto strlen(T &&str) noexcept -> size_t
+    namespace detail
     {
-        return std::basic_string_view{std::forward<T>(str)}.size();
-    }
+        template<typename T>
+        ISL_DECL auto strlen(T &&str) noexcept -> size_t
+        {
+            return std::basic_string_view{std::forward<T>(str)}.size();
+        }
+    }// namespace detail
 
     template<CharacterLiteral CharT>
     class BasicStringView;
@@ -68,7 +71,7 @@ namespace isl::inline ISL_VERSION
         // NOLINTNEXTLINE
         constexpr BasicStringView(const CharacterArray auto &str) noexcept
           : string{str}
-          , length{strlen(str)}
+          , length{detail::strlen(str)}
         {}
 
         // NOLINTNEXTLINE
@@ -200,8 +203,8 @@ namespace isl::inline ISL_VERSION
 
             const auto matched_pair_iterator =
                 std::find_if(begin(), end(), [&pairs_count, starter, ender](CharT chr) {
-                    pairs_count += (chr == starter);
-                    pairs_count -= (chr == ender);
+                    pairs_count += as<size_t>(chr == starter);
+                    pairs_count -= as<size_t>(chr == ender);
                     return pairs_count == 0;
                 });
 
