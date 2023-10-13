@@ -1,0 +1,20 @@
+name: Code style check
+
+on: [ push, workflow_dispatch ]
+
+jobs:
+  check:
+    name: Code style check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
+
+      - name: Install clang-format
+        run: |
+          sudo apt install clang-format
+
+      - name: Run clang-format-diff
+        run: bash ./scripts/tools/check_code_format.sh
