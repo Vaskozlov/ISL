@@ -7,9 +7,11 @@
 #include <range/v3/view.hpp>
 #include <utility>
 
-namespace isl {
+namespace isl
+{
     template<typename Key, typename Value, size_t Size, typename Pred = std::equal_to<>>
-    class StaticFlatmap : public AutoIteratorMethods<StaticFlatmap<Key, Value, Size, Pred>> {
+    class StaticFlatmap : public AutoIteratorMethods<StaticFlatmap<Key, Value, Size, Pred>>
+    {
     public:
         using key_type = Key;
         using mapped_type = Value;
@@ -23,33 +25,40 @@ namespace isl {
         size_t occupied{};
 
     public:
-        ISL_DECL auto size() const noexcept -> size_t {
+        ISL_DECL auto size() const noexcept -> size_t
+        {
             return occupied;
         }
 
-        ISL_DECL static auto capacity() noexcept -> size_t {
+        ISL_DECL static auto capacity() noexcept -> size_t
+        {
             return Size;
         }
 
-        ISL_DECL auto begin() noexcept -> iterator {
+        ISL_DECL auto begin() noexcept -> iterator
+        {
             return storage.begin();
         }
 
-        ISL_DECL auto end() noexcept -> iterator {
+        ISL_DECL auto end() noexcept -> iterator
+        {
             return storage.begin() + occupied;
         }
 
-        ISL_DECL auto begin() const noexcept -> const_iterator {
+        ISL_DECL auto begin() const noexcept -> const_iterator
+        {
             return storage.begin();
         }
 
-        ISL_DECL auto end() const noexcept -> const_iterator {
+        ISL_DECL auto end() const noexcept -> const_iterator
+        {
             return storage.begin() + occupied;
         }
 
         template<typename K, typename... Ts>
-        constexpr auto tryEmplace(K &&key,
-                                  Ts &&...args) -> Pair<iterator, bool>requires std::constructible_from<value_type, Key, Ts...> {
+        constexpr auto tryEmplace(K &&key, Ts &&...args) -> Pair<iterator, bool>
+            requires std::constructible_from<value_type, Key, Ts...>
+        {
             if (occupied == capacity()) {
                 throw std::out_of_range("StaticFlatmap is full. Unable to emplace.");
             }
@@ -64,41 +73,49 @@ namespace isl {
             return {result, true};
         }
 
-        ISL_DECL auto at(const Key &key) ISL_LIFETIMEBOUND -> Value & {
+        ISL_DECL auto at(const Key &key) ISL_LIFETIMEBOUND->Value &
+        {
             return staticAt(*this, key);
         }
 
-        ISL_DECL auto at(const Key &key) const ISL_LIFETIMEBOUND -> const Value & {
+        ISL_DECL auto at(const Key &key) const ISL_LIFETIMEBOUND->const Value &
+        {
             return staticAt(*this, key);
         }
 
-        ISL_DECL auto operator[](const Key &key) ISL_LIFETIMEBOUND -> Value & {
+        ISL_DECL auto operator[](const Key &key) ISL_LIFETIMEBOUND->Value &
+        {
             return tryEmplace(key).first->second;
         }
 
-        ISL_DECL auto operator[](const Key &key) const ISL_LIFETIMEBOUND -> const Value & {
+        ISL_DECL auto operator[](const Key &key) const ISL_LIFETIMEBOUND->const Value &
+        {
             return at(key);
         }
 
-        ISL_DECL auto contains(const Key &key) const noexcept -> bool {
+        ISL_DECL auto contains(const Key &key) const noexcept -> bool
+        {
             return find(key) != end();
         }
 
-        ISL_DECL auto find(const Key &key) noexcept -> iterator {
+        ISL_DECL auto find(const Key &key) noexcept -> iterator
+        {
             return staticFind(*this, key);
         }
 
-        ISL_DECL auto find(const Key &key) const noexcept -> const_iterator {
+        ISL_DECL auto find(const Key &key) const noexcept -> const_iterator
+        {
             return staticFind(*this, key);
         }
 
         StaticFlatmap() = default;
 
-        constexpr StaticFlatmap(const std::initializer_list<value_type> &initial_data) {
-            for (const value_type &value: initial_data) {
+        constexpr StaticFlatmap(const std::initializer_list<value_type> &initial_data)
+        {
+            for (const value_type &value : initial_data) {
                 if (occupied == capacity()) {
                     throw std::runtime_error{
-                            "StaticFlatmap capacity limit reached during initialization"};
+                        "StaticFlatmap capacity limit reached during initialization"};
                 }
 
                 storage[occupied++] = value;
@@ -107,14 +124,16 @@ namespace isl {
 
     private:
         template<typename Self>
-        ISL_DECL static auto staticFind(Self &self, const Key &key) noexcept -> auto {
+        ISL_DECL static auto staticFind(Self &self, const Key &key) noexcept -> auto
+        {
             return std::find_if(std::begin(self), std::end(self), [&key](const value_type &value) {
                 return Pred{}(key, value.first);
             });
         }
 
         template<typename Self>
-        ISL_DECL static auto staticAt(Self &self, const Key &key) -> auto & {
+        ISL_DECL static auto staticAt(Self &self, const Key &key) -> auto &
+        {
             auto elem = self.find(key);
 
             if (elem == self.end()) {
