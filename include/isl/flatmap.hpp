@@ -3,8 +3,6 @@
 
 #include <isl/isl.hpp>
 #include <isl/iterator.hpp>
-#include <range/v3/range.hpp>
-#include <range/v3/view.hpp>
 #include <utility>
 
 namespace isl
