@@ -24,10 +24,6 @@ namespace isl
         requires std::is_reference_v<T> &&
                  std::derived_from<std::remove_const_t<U>, std::remove_cvref_t<T>>
     {
-        static_assert(
-            std::is_const_v<T> || !std::is_const_v<U>,
-            "Can't convert const reference to non-const reference.");
-
         return static_cast<T>(value);
     }
 
@@ -44,10 +40,6 @@ namespace isl
         requires std::is_pointer_v<T> &&
                  std::derived_from<std::remove_const_t<U>, std::remove_pointer_t<T>>
     {
-        static_assert(
-            std::is_const_v<T> || !std::is_const_v<U>,
-            "Can't convert const pointer to non-const pointer.");
-
         return static_cast<T>(value);
     }
 
@@ -56,10 +48,6 @@ namespace isl
         requires std::is_pointer_v<T> &&
                  (!std::derived_from<std::remove_const_t<U>, std::remove_pointer_t<T>>)
     {
-        static_assert(
-            std::is_const_v<T> || !std::is_const_v<U>,
-            "Can't convert const pointer to non-const pointer.");
-
         static_assert(
             detail::CanDoUpcastingOrDowncasting<std::remove_pointer_t<U>, std::remove_pointer_t<T>>,
             "Cast from U to T failed. Upcast is impossible and downcast is impossible too, "
