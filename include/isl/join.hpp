@@ -3,12 +3,14 @@
 
 #include <isl/string_view.hpp>
 
-namespace isl {
+namespace isl
+{
 
     template<Iterable Container, typename Function, StringLike<char> Separator>
     [[nodiscard]] auto
-    join(const Container &container, Function &&function, const Separator &separator)
-    -> std::string {
+        join(const Container &container, Function &&function, const Separator &separator)
+            -> std::string
+    {
         auto result = std::string{};
         auto begin = std::begin(container);
         const auto end = std::end(container);
@@ -30,66 +32,43 @@ namespace isl {
 
     template<Iterable Container, typename Function, size_t N>
     [[nodiscard]] ISL_INLINE auto
-    join(Container &&container, Function &&function, const CArray<char, N> &separator)
-
-    -> std::string {
-    return
-
-    join(
+        join(Container &&container, Function &&function, const CArray<char, N> &separator)
+            -> std::string
+    {
+        return join(
             std::forward<Container>(container), std::forward<Function>(function),
             std::string_view{separator}
 
-    );
-}
+        );
+    }
 
-template<Iterable Container, StringLike<char> Separator>
-[[nodiscard]] auto join(Container && container, Separator && separator)
--> std::string
-{
-if constexpr (StringLike<decltype(*container.begin()), char>) {
-return
+    template<Iterable Container, StringLike<char> Separator>
+    [[nodiscard]] auto join(Container &&container, Separator &&separator) -> std::string
+    {
+        if constexpr (StringLike<decltype(*container.begin()), char>) {
+            return join(
+                std::forward<decltype(container)>(container),
 
-join(
-        std::forward<decltype(container)>(container),
+                []<typename T>(T &&elem) -> decltype(auto) {
+                    return std::forward<T>(elem);
+                },
+                std::forward<Separator>(separator));
+        } else {
+            return join(
+                std::forward<decltype(container)>(container),
+                []<typename T>(T &&elem) -> decltype(auto) {
+                    return fmt::to_string(std::forward<T>(elem));
+                },
+                std::forward<Separator>(separator));
+        }
+    }
 
-[]
-<typename T>(T
-&&elem) -> decltype(auto) {
-return
-std::forward<T>(elem);
-},
-std::forward<Separator>(separator)
-);
-} else {
-return
-
-join(
-        std::forward<decltype(container)>(container),
-
-[]
-<typename T>(T
-&&elem) -> decltype(auto) {
-return
-fmt::to_string(std::forward<T>(elem)
-);
-},
-std::forward<Separator>(separator)
-);
-}
-}
-
-template<Iterable Container, size_t N>
-[[nodiscard]] ISL_INLINE auto join(Container && container,
-const CArray<char, N> &separator
-)
--> std::string
-{
-return
-
-join(std::forward<Container>(container), as<std::string_view>(separator)
-
-);
-}
-}// namespace ccl
+    template<Iterable Container, size_t N>
+    [[nodiscard]] ISL_INLINE auto join(Container &&container, const CArray<char, N> &separator)
+        -> std::string
+    {
+        return join(std::forward<Container>(container), as<std::string_view>(separator));
+    }
+}// namespace isl
 
 #endif /* ISL_PROJECT_JOIN_HPP */
