@@ -88,6 +88,10 @@ namespace isl::lifetime
 
     auto LifetimeMonitor::operator=(const LifetimeMonitor &other) -> LifetimeMonitor &
     {
+        if (this == &other) {
+            return *this;
+        }
+
         if (other.lifetimeObject->deleted) {
             fmt::println(
                 "Copy assign: unable to move from a deleted object ({}, {})",
