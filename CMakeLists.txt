@@ -12,7 +12,7 @@ include(cmake/Libraries.cmake)
 
 if (ISL_INCLUDE_TESTS)
     include(catch/CMakeLists.txt)
-endif()
+endif ()
 
 install(DIRECTORY include/isl
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
