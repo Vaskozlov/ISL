@@ -17,6 +17,12 @@ namespace isl::lifetime
         from.moved = true;
     }
 
+    detail::LifetimeObject::LifetimeObject()
+    {
+        const auto lock = std::scoped_lock{LockForObjectCreation};
+        CreatedObjects.emplace_back(this);
+    }
+
     LifetimeMonitor::LifetimeMonitor()
       : lifetimeObject{new detail::LifetimeObject}
     {
@@ -26,11 +32,15 @@ namespace isl::lifetime
     }
 
     LifetimeMonitor::LifetimeMonitor(const LifetimeMonitor &other)
-      : lifetimeObject(new detail::LifetimeObject)
+      : lifetimeObject{new detail::LifetimeObject}
     {
         if (other.lifetimeObject->deleted) {
             fmt::println(
                 "Copy constructor: unable to copy from a deleted object ({}, {})",
+                other.lifetimeObject->uniqueId, other.lifetimeObject->weakId);
+        } else if (other.lifetimeObject->moved) {
+            fmt::println(
+                "Copy constructor: unable to copy from a moved object ({}, {})",
                 other.lifetimeObject->uniqueId, other.lifetimeObject->weakId);
         } else {
             detail::completeCopy(*other.lifetimeObject, *lifetimeObject);
@@ -42,7 +52,7 @@ namespace isl::lifetime
     }
 
     LifetimeMonitor::LifetimeMonitor(LifetimeMonitor &&other) noexcept
-      : lifetimeObject(new detail::LifetimeObject)
+      : lifetimeObject{new detail::LifetimeObject}
     {
         if (other.lifetimeObject->deleted) {
             fmt::println(
@@ -61,8 +71,8 @@ namespace isl::lifetime
     {
         if (!lifetimeObject->deleteObject()) {
             fmt::println(
-                "Destructor: unable to delete object ({}, {}), because it is already deleted",
-                lifetimeObject->uniqueId, lifetimeObject->weakId);
+                "Destructor: doube delete on object ({}, {})", lifetimeObject->uniqueId,
+                lifetimeObject->weakId);
         } else {
             fmt::println(
                 "Destructor: object ({}, {}) deleted", lifetimeObject->uniqueId,
