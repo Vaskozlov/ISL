@@ -1,17 +1,12 @@
 #include <isl/detail/debug/debug.hpp>
 #include <isl/flatmap.hpp>
 
-using namespace isl;
-using namespace std::string_view_literals;
-
 
 TEST_CASE("FlatmapIndexing", "[Flatmap]")
 {
     // NOLINTBEGIN
 
-    auto flatmap = StaticFlatmap<int, int, 10>{{10, 20},
-                                               {20, 30},
-                                               {30, 40}};
+    auto flatmap = isl::StaticFlatmap<int, int, 10>{{10, 20}, {20, 30}, {30, 40}};
 
     REQUIRE(flatmap[10] == 20);
     REQUIRE(flatmap[20] == 30);
@@ -28,9 +23,7 @@ TEST_CASE("FlatmapIndexing", "[Flatmap]")
 
 TEST_CASE("FlatmapConstIndexing", "[Flatmap]")
 {
-    static constexpr auto flatmap = StaticFlatmap<int, int, 10>{{10, 20},
-                                                                {20, 30},
-                                                                {30, 40}};
+    static constexpr auto flatmap = isl::StaticFlatmap<int, int, 10>{{10, 20}, {20, 30}, {30, 40}};
 
     REQUIRE(flatmap[10] == 20);
     REQUIRE(flatmap[20] == 30);

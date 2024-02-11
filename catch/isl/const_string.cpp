@@ -1,10 +1,8 @@
 #include <isl/const_string.hpp>
 #include <isl/detail/debug/debug.hpp>
 
-using namespace isl;
-
-template<ConstString String>
-auto testConstString(string_view input) -> bool
+template<isl::ConstString String>
+auto testConstString(isl::string_view input) -> bool
 {
     DEBUG_VAR test_string = input;
 

@@ -1,8 +1,6 @@
 #include <isl/detail/debug/debug.hpp>
 #include <isl/isl.hpp>
 
-using namespace isl;
-
 // NOLINTBEGIN
 
 struct A
@@ -27,6 +25,8 @@ struct B : A
 
 TEST_CASE("TestAsOnInts", "[AsConversion]")
 {
+    using namespace isl;
+
     auto forty_two = as<i64>(42);
 
     static_assert(std::is_same_v<i64, decltype(forty_two)>);
@@ -35,6 +35,8 @@ TEST_CASE("TestAsOnInts", "[AsConversion]")
 
 TEST_CASE("TestAsOnFloats", "[AsConversion]")
 {
+    using namespace isl;
+
     auto forty_two = as<f32>(42);
 
     static_assert(std::is_same_v<f32, decltype(forty_two)>);
@@ -43,8 +45,9 @@ TEST_CASE("TestAsOnFloats", "[AsConversion]")
 
 TEST_CASE("TestAsOnPointer", "[AsConversion]")
 {
-    auto b = B{};
+    using namespace isl;
 
+    auto b = B{};
     auto *a = as<A *>(&b);
 
     REQUIRE(a != nullptr);
@@ -61,6 +64,8 @@ TEST_CASE("TestAsOnPointer", "[AsConversion]")
 
 TEST_CASE("TestAsOnReferences", "[AsConversion]")
 {
+    using namespace isl;
+
     auto b = B{};
 
     auto &a = as<A &>(b);

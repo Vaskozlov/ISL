@@ -1,14 +1,9 @@
 #include <isl/detail/debug/debug.hpp>
 #include <isl/string_view.hpp>
 
-using namespace isl;
-using namespace string_view_literals;
-using namespace std::string_view_literals;
-
-TEST_CASE("StringViewFind", "[StringView]")
-{
-    DEBUG_VAR std_string = "Hello, World!"sv;
-    DEBUG_VAR own_string = "Hello, World!"_sv;
+TEST_CASE("StringViewFind", "[StringView]") {
+    std::string_view std_string = "Hello, World!";
+    isl::string_view own_string = "Hello, World!";
 
     REQUIRE(own_string.find('H').value() == std_string.find('H'));
     REQUIRE(own_string.find(',').value() == std_string.find(','));

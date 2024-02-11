@@ -1,12 +1,9 @@
 #include <isl/detail/debug/debug.hpp>
 #include <isl/utf_set.hpp>
 
-using namespace isl;
-
 // NOLINTBEGIN
 
-TEST_CASE("UtfSetAsciiTest", "[UtfSet]")
-{
+TEST_CASE("UtfSetAsciiTest", "[UtfSet]") {
     auto set = isl::UtfSet{};
 
     set.set(0);
@@ -18,22 +15,21 @@ TEST_CASE("UtfSetAsciiTest", "[UtfSet]")
     set.set(127);
     REQUIRE(set.at(127));
 
-    set.set(Range<char32_t>{10, 20 + 1}, true);
+    set.set(isl::Range<char32_t>{10, 20 + 1}, true);
 
     for (char32_t i = 10; i <= 20; ++i) {
         REQUIRE(set.at(i));
     }
 
     REQUIRE(!set.at(21));
-    set.set(Range<char32_t>{10, 20 + 1}, false);
+    set.set(isl::Range<char32_t>{10, 20 + 1}, false);
 
     for (char32_t i = 10; i <= 20; ++i) {
         REQUIRE(!set.at(i));
     }
 }
 
-TEST_CASE("UtfSetUtfTest", "[UtfSet]")
-{
+TEST_CASE("UtfSetUtfTest", "[UtfSet]") {
     auto utf_set = isl::UtfSet{};
 
     utf_set.set(U'\uFFFF');
@@ -55,4 +51,5 @@ TEST_CASE("UtfSetUtfTest", "[UtfSet]")
         REQUIRE(!utf_set.at(i));
     }
 }
+
 // NOLINTEND
