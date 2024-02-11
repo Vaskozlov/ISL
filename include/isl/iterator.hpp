@@ -7,7 +7,7 @@
 namespace isl
 {
     template<typename T>
-    class AutoIteratorMethods
+    class AutoImplementedIteratorMethods
     {
         ISL_DECL auto toParent() const noexcept ISL_LIFETIMEBOUND->const T &
         {

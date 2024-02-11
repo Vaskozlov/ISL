@@ -3,7 +3,6 @@
 
 #include <fmt/format.h>
 #include <isl/isl.hpp>
-#include <type_traits>
 
 namespace isl
 {

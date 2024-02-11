@@ -17,7 +17,7 @@ namespace isl
     public:
         UtfSet() = default;
 
-        [[nodiscard]] auto empty() const noexcept -> bool
+        [[nodiscard]]  auto empty() const noexcept -> bool
         {
             return smallStorage.none() && storage.empty();
         }

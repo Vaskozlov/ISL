@@ -5,7 +5,7 @@
 
 namespace isl {
     template<size_t Size>
-    class ConstString : public AutoIteratorMethods<ConstString<Size>> {
+    class ConstString : public AutoImplementedIteratorMethods<ConstString<Size>> {
     public:
         using value_type = char;
         using storage_t = std::array<char, Size>;

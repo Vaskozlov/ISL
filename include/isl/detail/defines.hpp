@@ -98,6 +98,12 @@
 #    define ISL_UNREACHABLE assert(false)
 #endif
 
+#if defined(__clang__) || defined(__GNUC__)
+#    define ISL_PURE __attribute__((pure))
+#else
+#    define ISL_PURE
+#endif
+
 #define ISL_SAFE_VERSION                                                                           \
     template<FunctionAPI Mode = FunctionAPI::SAFE>                                                 \
         requires(Mode == FunctionAPI::SAFE)

@@ -8,7 +8,7 @@
 namespace isl
 {
     template<typename Key, typename Value, size_t Size, typename Pred = std::equal_to<>>
-    class StaticFlatmap : public AutoIteratorMethods<StaticFlatmap<Key, Value, Size, Pred>>
+    class StaticFlatmap : public AutoImplementedIteratorMethods<StaticFlatmap<Key, Value, Size, Pred>>
     {
     public:
         using key_type = Key;

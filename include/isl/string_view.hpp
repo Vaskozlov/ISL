@@ -34,7 +34,7 @@ namespace isl
         std::basic_string<CharT>>;
 
     template<CharacterLiteral CharT>
-    class BasicStringView : public AutoIteratorMethods<BasicStringView<CharT>>
+    class BasicStringView : public AutoImplementedIteratorMethods<BasicStringView<CharT>>
     {
     public:
         using pointer = const CharT *;

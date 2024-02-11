@@ -121,6 +121,8 @@ function(
                 -Wnull-dereference
                 -Wfloat-equal
                 -Wimplicit-fallthrough
+                -Wsuggest-attribute=pure
+                -Wsuggest-attribute=const
         )
     endif ()
 

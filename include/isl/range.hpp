@@ -8,7 +8,7 @@ namespace isl
 {
     template<std::unsigned_integral T = size_t>
     class Range
-      : public AutoIteratorMethods<Range<T>>
+      : public AutoImplementedIteratorMethods<Range<T>>
       , public detail::TrivialPair<T, T>
     {
     public:
@@ -26,7 +26,7 @@ namespace isl
             return this->second;
         }
 
-        ISL_DECL auto inRange(T value) const noexcept
+        ISL_DECL auto inRange(T value) const noexcept -> bool
         {
             return static_cast<bool>(value >= getFrom() & value <= getTo());
         }
