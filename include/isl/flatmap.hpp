@@ -8,7 +8,8 @@
 namespace isl
 {
     template<typename Key, typename Value, size_t Size, typename Pred = std::equal_to<>>
-    class StaticFlatmap : public AutoImplementedIteratorMethods<StaticFlatmap<Key, Value, Size, Pred>>
+    class StaticFlatmap
+      : public AutoImplementedIteratorMethods<StaticFlatmap<Key, Value, Size, Pred>>
     {
     public:
         using key_type = Key;
@@ -71,12 +72,12 @@ namespace isl
             return {result, true};
         }
 
-        ISL_DECL auto at(const Key &key) ISL_LIFETIMEBOUND->Value &
+        ISL_DECL auto at(const Key &key) ISL_LIFETIMEBOUND -> Value &
         {
             return staticAt(*this, key);
         }
 
-        ISL_DECL auto at(const Key &key) const ISL_LIFETIMEBOUND->const Value &
+        ISL_DECL auto at(const Key &key) const ISL_LIFETIMEBOUND -> const Value &
         {
             return staticAt(*this, key);
         }
