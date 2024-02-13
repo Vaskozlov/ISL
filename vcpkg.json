@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "dependencies": [
     "fmt",
-    "catch2",
-    "range-v3"
+    "catch2"
   ]
 }
