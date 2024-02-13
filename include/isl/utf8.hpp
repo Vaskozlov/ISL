@@ -40,8 +40,7 @@ namespace isl::utf8
         constexpr auto ContinuationSignature = 0b1000'0000_B;
         constexpr u8 TrailingSize = 6;
 
-        constexpr std::array<std::byte, 5> UtfMasks{
-            0_B, OneByteMask, TwoBytesMask, TreeBytesMask, FourBytesMask};
+        constexpr std::array UtfMasks{0_B, OneByteMask, TwoBytesMask, TreeBytesMask, FourBytesMask};
     }// namespace constants
 
     ISL_DECL auto isTrailingCharacter(char chr) noexcept -> bool
