@@ -26,6 +26,7 @@
           ""
           ${ISL_HARDENING}
           ${ISL_LIBCPP}
+          ${ISL_UNITY_BUILD}
   )
 
   target_link_libraries(
