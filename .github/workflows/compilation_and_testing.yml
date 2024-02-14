@@ -66,12 +66,14 @@ jobs:
       - name: Run CMake with vcpkg.json manifest clang
         if: matrix.name == 'ubuntu-latest-clang'
         uses: lukka/run-cmake@v10
+        env:
+          CC: clang
+          CXX: clang++
         with:
           cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
           configurePreset: ninja-multi-vcpkg
           buildPreset: ninja-multi-vcpkg
           testPreset: ninja-multi-vcpkg
-          configurePresetAdditionalArgs: "['-DCMAKE_C_COMPILER=clang', '-DCMAKE_CXX_COMPILER=clang++']"
 
       - name: Run CMake with vcpkg.json manifest other compilers
         if: matrix.name != 'ubuntu-latest-clang'
