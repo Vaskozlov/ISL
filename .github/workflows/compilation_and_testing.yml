@@ -21,7 +21,7 @@ jobs:
       - uses: lukka/get-cmake@latest
       - name: install zip
         run: |
-          apt-get install curl unzip tar
+          apt-get install curl zip unzip tar
       - name: Dump the content of $RUNNER_TEMP
         run: find $RUNNER_TEMP
         shell: bash
