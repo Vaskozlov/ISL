@@ -37,11 +37,6 @@ jobs:
         run: |
           apt-get update
           apt-get install -y curl zip unzip tar
-      - name: set compiler
-        if: matrix.name == 'ubuntu-latest-clang'
-        run: |
-          export CC = clang
-          export CXX = clang++
       - name: Dump the content of $RUNNER_TEMP
         run: find $RUNNER_TEMP
         shell: bash
@@ -61,6 +56,16 @@ jobs:
         run: echo "root='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT }}', triplet='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_DEFAULT_TRIPLET_OUT }}'"
 
       - name: Run CMake with vcpkg.json manifest
+        if: matrix.name == 'ubuntu-latest-clang'
+        uses: lukka/run-cmake@v10
+        with:
+          cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
+          configurePreset: ninja-multi-vcpkg
+          buildPreset: ninja-multi-vcpkg
+          testPreset: ninja-multi-vcpkg
+          configurePresetAdditionalArgs: "['-DCMAKE_CXX_COMPILER=clang++']"
+      - name: Run CMake with vcpkg.json manifest
+        if: matrix.name != 'ubuntu-latest-clang'
         uses: lukka/run-cmake@v10
         with:
           cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
