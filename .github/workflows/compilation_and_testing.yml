@@ -18,6 +18,10 @@ jobs:
             os: ubuntu-latest
             vcpkgCommitId: 'c3801cf53c614ffc54c94051d124eba097b057b1'
             docker: "gcc:13"
+          - name: ubuntu-latest-clang
+            os: ubuntu-latest
+            vcpkgCommitId: 'c3801cf53c614ffc54c94051d124eba097b057b1'
+            docker: ""clangbuiltlinux/ubuntu""
           - name: macos-latest
             os: macos-latest
             vcpkgCommitId: 'c3801cf53c614ffc54c94051d124eba097b057b1'
