@@ -36,7 +36,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           apt-get update
-          apt-get install -y curl zip unzip tar
+          apt-get install -y curl zip unzip tar git
       - name: set compiler
         if: matrix.name == 'ubuntu-latest-clang'
         run: |
