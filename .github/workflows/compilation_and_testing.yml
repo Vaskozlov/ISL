@@ -63,9 +63,19 @@ jobs:
       - name: Prints output of run-vcpkg's action
         run: echo "root='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT }}', triplet='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_DEFAULT_TRIPLET_OUT }}'"
 
-      - name: Run CMake with vcpkg.json manifest
+      - name: Run CMake with vcpkg.json manifest clang
+        if: matrix.name == 'ubuntu-latest-clang'
         uses: lukka/run-cmake@v10
-        shell: bash
+        with:
+          cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
+          configurePreset: ninja-multi-vcpkg
+          buildPreset: ninja-multi-vcpkg
+          testPreset: ninja-multi-vcpkg
+          configurePresetAdditionalArgs: "['-DCMAKE_C_COMPILER=clang', '-DCMAKE_CXX_COMPILER=clang++']"
+
+      - name: Run CMake with vcpkg.json manifest other compilers
+        if: matrix.name != 'ubuntu-latest-clang'
+        uses: lukka/run-cmake@v10
         with:
           cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
           configurePreset: ninja-multi-vcpkg
