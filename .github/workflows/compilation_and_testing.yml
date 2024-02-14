@@ -37,6 +37,11 @@ jobs:
         run: |
           apt-get update
           apt-get install -y curl zip unzip tar
+      - name: set compiler
+        if: matrix.name == 'ubuntu-latest-clang'
+        run: |
+          export CC = clang
+          export CXX = clang++
       - name: Dump the content of $RUNNER_TEMP
         run: find $RUNNER_TEMP
         shell: bash
