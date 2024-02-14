@@ -39,7 +39,7 @@ jobs:
       - name: set compiler
         if: matrix.name == 'ubuntu-latest-clang'
         run: |
-          sudo apt-get install clang-17
+          sudo apt-get install clang-16
           clang --version
         shell: bash
       - name: Dump the content of $RUNNER_TEMP
