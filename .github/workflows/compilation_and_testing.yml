@@ -22,7 +22,7 @@ jobs:
       - name: install zip
         run: |
           apt-get update
-          apt-get install curl zip unzip tar
+          apt-get install -y curl zip unzip tar
       - name: Dump the content of $RUNNER_TEMP
         run: find $RUNNER_TEMP
         shell: bash
