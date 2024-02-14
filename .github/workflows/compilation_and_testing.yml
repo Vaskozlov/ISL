@@ -34,7 +34,6 @@ jobs:
       - name: install zip
         if: matrix.os == 'ubuntu-latest'
         run: |
-          add-apt-repository ppa:git-core/ppa -y
           apt-get update
           apt-get install -y curl zip unzip tar git
       - name: set compiler
