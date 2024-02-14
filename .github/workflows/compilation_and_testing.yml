@@ -2,14 +2,19 @@ name: hosted-ninja-vcpkg-cacheoff
 on: [ push, workflow_dispatch ]
 
 jobs:
-  job:
-    name: ${{ matrix.os }}-${{ github.workflow }}
-    runs-on: self-hosted
+  build-linux:
+    runs-on: ubuntu-latest
+    # The Benchmark package on Ubuntu 22.04 LTS is problematic whereas this
+    # Docker container is based on Debian bookworm and has a newer version.
+    container: gcc:13
+    strategy:
+      fail-fast: false
+      matrix:
+        build_shared_libs: [OFF, ON]
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true
-
       - uses: lukka/get-cmake@latest
       - name: Dump the content of $RUNNER_TEMP
         run: find $RUNNER_TEMP
