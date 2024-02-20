@@ -34,6 +34,8 @@ jobs:
         run: |
           apt-get update
           apt-get install -y curl zip unzip tar git pkg-config gcc-13 g++-13
+          export CC=gcc-13
+          export CXX=g++-13
       - name: set compiler
         if: matrix.name == 'ubuntu-latest-clang'
         run: |
