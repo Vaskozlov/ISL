@@ -1,11 +1,12 @@
-#ifndef ISL_PROJECT_CONCEPTS_HPP
-#define ISL_PROJECT_CONCEPTS_HPP
-
+module;
 #include <exception>
 #include <type_traits>
 #include <utility>
 
-namespace isl {
+export module isl:concepts;
+
+export namespace isl
+{
     template<typename T>
     concept Trivial = std::is_trivial_v<T>;
 
@@ -23,7 +24,7 @@ namespace isl {
 
     template<typename T>
     concept CharacterLiteral =
-    IsSameToAny<std::remove_cvref_t<T>, char, char8_t, char16_t, char32_t, wchar_t>;
+        IsSameToAny<std::remove_cvref_t<T>, char, char8_t, char16_t, char32_t, wchar_t>;
 
     template<typename T>
     concept CharacterArray = std::is_pointer_v<T> || std::is_array_v<T>;
@@ -37,5 +38,3 @@ namespace isl {
     template<typename T>
     concept FloatingPoint = std::is_floating_point_v<T>;
 }// namespace isl
-
-#endif /* ISL_PROJECT_CONCEPTS_HPP */

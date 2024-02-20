@@ -1,9 +1,11 @@
-#ifndef ISL_PROJECT_MEMORY_HPP
-#define ISL_PROJECT_MEMORY_HPP
+module;
 
-#include <isl/isl.hpp>
+#include <isl/detail/defines.hpp>
+#include <memory>
 
-namespace isl
+export module isl:memory;
+
+export namespace isl
 {
     template<typename T, typename... Ts>
     ISL_DECL auto makeUnique(Ts &&...args) -> std::unique_ptr<T>
@@ -35,5 +37,3 @@ namespace isl
         return std::shared_ptr<Target>{as<Target *>(new Constructed{std::forward<Ts>(args)...})};
     }
 }// namespace isl
-
-#endif /* ISL_PROJECT_MEMORY_HPP */

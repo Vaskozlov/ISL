@@ -1,15 +1,21 @@
-#ifndef ISL_PROJECT_JOIN_HPP
-#define ISL_PROJECT_JOIN_HPP
+module;
 
-#include <isl/string_view.hpp>
+#include <fmt/format.h>
+#include <isl/detail/defines.hpp>
 
-namespace isl
+export module isl:join;
+
+import :string_view;
+import :types;
+import :iterator;
+import :concepts;
+import :as;
+
+export namespace isl
 {
-
     template<Iterable Container, typename Function, StringLike<char> Separator>
-    [[nodiscard]] auto
-        join(const Container &container, Function &&function, const Separator &separator)
-            -> std::string
+    [[nodiscard]] auto join(
+        const Container &container, Function &&function, const Separator &separator) -> std::string
     {
         auto result = std::string{};
         auto begin = std::begin(container);
@@ -31,9 +37,8 @@ namespace isl
     }
 
     template<Iterable Container, typename Function, size_t N>
-    [[nodiscard]] ISL_INLINE auto
-        join(Container &&container, Function &&function, const CArray<char, N> &separator)
-            -> std::string
+    [[nodiscard]] ISL_INLINE auto join(
+        Container &&container, Function &&function, const CArray<char, N> &separator) -> std::string
     {
         return join(
             std::forward<Container>(container), std::forward<Function>(function),
@@ -64,11 +69,9 @@ namespace isl
     }
 
     template<Iterable Container, size_t N>
-    [[nodiscard]] ISL_INLINE auto join(Container &&container, const CArray<char, N> &separator)
-        -> std::string
+    [[nodiscard]] ISL_INLINE auto
+        join(Container &&container, const CArray<char, N> &separator) -> std::string
     {
         return join(std::forward<Container>(container), as<std::string_view>(separator));
     }
 }// namespace isl
-
-#endif /* ISL_PROJECT_JOIN_HPP */

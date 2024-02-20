@@ -1,5 +1,5 @@
 #include <isl/detail/debug/debug.hpp>
-#include <isl/flatmap.hpp>
+import isl;
 
 
 TEST_CASE("FlatmapIndexing", "[Flatmap]")

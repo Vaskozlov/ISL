@@ -1,14 +1,15 @@
-#ifndef ISL_PROJECT_TYPES_HPP
-#define ISL_PROJECT_TYPES_HPP
+module;
 
 #include <cinttypes>
-#include <isl/detail/as.hpp>
-#include <isl/detail/container_guard.hpp>
-#include <isl/detail/pair.hpp>
 #include <optional>
 #include <vector>
 
-namespace isl
+export module isl:types;
+
+export import :pair;
+import :container_guard;
+
+export namespace isl
 {
     using i8 = std::int8_t;
     using i16 = std::int16_t;
@@ -48,5 +49,3 @@ namespace isl
     template<typename T, size_t Size>
     using CArray = T[Size];
 }// namespace isl
-
-#endif /* ISL_PROJECT_TYPES_HPP */

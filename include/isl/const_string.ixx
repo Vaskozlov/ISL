@@ -1,9 +1,16 @@
-#ifndef ISL_PROJECT_CONST_STRING_HPP
-#define ISL_PROJECT_CONST_STRING_HPP
+module;
 
-#include <isl/string_view.hpp>
+#include <array>
+#include <string_view>
+#include <isl/detail/defines.hpp>
 
-namespace isl
+export module isl:const_string;
+
+import :string_view;
+import :iterator;
+import :types;
+
+export namespace isl
 {
     template<size_t Size>
     class ConstString : public AutoImplementedIteratorMethods<ConstString<Size>>
@@ -72,5 +79,3 @@ namespace isl
             operator<=>(const ConstString &other) const noexcept -> std::weak_ordering = default;
     };
 }// namespace isl
-
-#endif /* ISL_PROJECT_CONST_STRING_HPP */

@@ -1,5 +1,5 @@
-#include <isl/detail/concepts.hpp>
 #include <isl/detail/debug/debug.hpp>
+import isl;
 
 TEST_CASE("SameToAny", "[Concepts]")
 {

@@ -1,5 +1,5 @@
-#include "isl/raii.hpp"
-#include "isl/detail/debug/debug.hpp"
+#include <isl/detail/debug/debug.hpp>
+import isl;
 
 TEST_CASE("RaiiTest", "[Raii]")
 {

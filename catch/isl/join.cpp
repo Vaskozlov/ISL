@@ -1,5 +1,6 @@
 #include <isl/detail/debug/debug.hpp>
-#include <isl/join.hpp>
+#include <fmt/format.h>
+import isl;
 
 TEST_CASE("JoinInts", "[Join]")
 {

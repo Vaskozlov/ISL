@@ -1,5 +1,5 @@
 #include <isl/detail/debug/debug.hpp>
-#include <isl/string_view.hpp>
+import isl;
 
 TEST_CASE("StringViewLeftStrip", "[StringView]") {
     using namespace isl::string_view_literals;

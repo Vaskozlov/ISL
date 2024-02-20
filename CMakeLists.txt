@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20.0)
+cmake_minimum_required(VERSION 3.28.0)
 
 project(isl-project VERSION 0.0.2.1 LANGUAGES CXX)
 
@@ -9,6 +9,8 @@ include(cmake/InterproceduralOptimization.cmake)
 include(cmake/ProjectOptions.cmake)
 include(cmake/CompilerOptions.cmake)
 include(cmake/Libraries.cmake)
+
+include(include/isl/CMakeLists.txt)
 
 if (ISL_INCLUDE_TESTS)
     include(catch/CMakeLists.txt)

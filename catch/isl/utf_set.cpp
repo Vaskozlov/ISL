@@ -1,5 +1,5 @@
 #include <isl/detail/debug/debug.hpp>
-#include <isl/utf_set.hpp>
+import isl;
 
 // NOLINTBEGIN
 

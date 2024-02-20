@@ -1,11 +1,12 @@
-#ifndef CCL_PROJECT_LAZY_HPP
-#define CCL_PROJECT_LAZY_HPP
+module;
 
 #include <functional>
-#include <isl/isl.hpp>
+#include <isl/detail/defines.hpp>
 #include <variant>
 
-namespace isl
+export module isl:lazy;
+
+export namespace isl
 {
     template<typename T>
     concept LazyStorable = std::is_trivially_copyable_v<T> && std::is_trivially_destructible_v<T> &&
@@ -30,7 +31,7 @@ namespace isl
             return std::get<1>(*this);
         }
 
-        ISL_DECL auto get() noexcept(NoexceptComputable) ISL_LIFETIMEBOUND->T &
+        ISL_DECL auto get() noexcept(NoexceptComputable) ISL_LIFETIMEBOUND -> T &
         {
             compute();
             return std::get<1>(*this);
@@ -59,5 +60,3 @@ namespace isl
         return Lazy<decltype(function())>(std::forward<Func>(function));
     }
 }// namespace isl
-
-#endif /* CCL_PROJECT_LAZY_HPP */

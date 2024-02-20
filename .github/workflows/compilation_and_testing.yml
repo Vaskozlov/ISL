@@ -14,13 +14,6 @@ jobs:
           - name: windows-latest
             os: windows-latest
             vcpkgCommitId: 'c3801cf53c614ffc54c94051d124eba097b057b1'
-          - name: ubuntu-latest
-            os: ubuntu-latest
-            vcpkgCommitId: 'c3801cf53c614ffc54c94051d124eba097b057b1'
-            docker: "ubuntu:mantic"
-            cc: "gcc-13"
-            cxx: "g++-13"
-            deps: "gcc-13 g++-13"
           - name: ubuntu-latest-clang
             os: ubuntu-latest
             vcpkgCommitId: 'c3801cf53c614ffc54c94051d124eba097b057b1'
@@ -28,9 +21,6 @@ jobs:
             cc: "clang-17"
             cxx: "clang++-17"
             deps: "clang-17"
-          - name: macos-latest
-            os: macos-latest
-            vcpkgCommitId: 'c3801cf53c614ffc54c94051d124eba097b057b1'
 
     steps:
       - uses: actions/checkout@v4

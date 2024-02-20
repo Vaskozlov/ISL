@@ -31,6 +31,7 @@
 
   target_link_libraries(
           isl-catch
+          isl
           fmt::fmt
           Catch2::Catch2
           Catch2::Catch2WithMain

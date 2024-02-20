@@ -1,10 +1,12 @@
-#ifndef ISL_AS_HPP
-#define ISL_AS_HPP
+module;
 
 #include <isl/detail/defines.hpp>
 #include <utility>
+#include <type_traits>
 
-namespace isl
+export module isl:as;
+
+export namespace isl
 {
     namespace detail
     {
@@ -56,6 +58,3 @@ namespace isl
         return dynamic_cast<T>(value);
     }
 }// namespace isl
-
-
-#endif /* ISL_AS_HPP */

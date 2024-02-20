@@ -1,5 +1,5 @@
 #include <isl/detail/debug/debug.hpp>
-#include <isl/utf8.hpp>
+import isl;
 
 TEST_CASE("OneBytesUnicodeConversion", "[UnicodeConversion]")
 {

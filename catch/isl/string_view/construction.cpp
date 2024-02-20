@@ -1,6 +1,5 @@
 #include <isl/detail/debug/debug.hpp>
-#include <isl/string_view.hpp>
-
+import isl;
 
 TEST_CASE("StringViewConstructionEmptyArray", "[StringView]") {
     isl::string_view string{""};

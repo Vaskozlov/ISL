@@ -1,11 +1,15 @@
-#ifndef CCL_PROJECT_UTF_SET_HPP
-#define CCL_PROJECT_UTF_SET_HPP
+module;
 
 #include <bitset>
-#include <isl/range.hpp>
+#include <isl/detail/defines.hpp>
 #include <unordered_set>
 
-namespace isl
+export module isl:utf_set;
+
+import :as;
+import :range;
+
+export namespace isl
 {
     class UtfSet
     {
@@ -59,5 +63,3 @@ namespace isl
         }
     };
 }// namespace isl
-
-#endif /* CCL_PROJECT_UTF_SET_HPP */

@@ -1,27 +1,28 @@
-#ifndef ISL_PROJECT_ITERATOR_HPP
-#define ISL_PROJECT_ITERATOR_HPP
+module;
 
 #include <isl/detail/defines.hpp>
 #include <iterator>
 
-namespace isl
+export module isl:iterator;
+
+export namespace isl
 {
     template<typename T>
     class AutoImplementedIteratorMethods
     {
-        ISL_DECL auto toParent() const noexcept ISL_LIFETIMEBOUND->const T &
+        ISL_DECL auto toParent() const noexcept ISL_LIFETIMEBOUND -> const T &
         {
             return static_cast<const T &>(*this);
         }
 
-        ISL_DECL auto begin() const noexcept(noexcept(std::declval<const T>().begin()))
-            -> decltype(auto)
+        ISL_DECL auto begin() const
+            noexcept(noexcept(std::declval<const T>().begin())) -> decltype(auto)
         {
             return std::begin(toParent());
         }
 
-        ISL_DECL auto end() const noexcept(noexcept(std::declval<const T>().end()))
-            -> decltype(auto)
+        ISL_DECL auto end() const
+            noexcept(noexcept(std::declval<const T>().end())) -> decltype(auto)
         {
             return std::end(toParent());
         }
@@ -68,5 +69,3 @@ namespace isl
         }
     };
 }// namespace isl
-
-#endif /* ISL_PROJECT_ITERATOR_HPP */

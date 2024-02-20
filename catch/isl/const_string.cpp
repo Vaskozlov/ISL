@@ -1,5 +1,5 @@
-#include <isl/const_string.hpp>
 #include <isl/detail/debug/debug.hpp>
+import isl;
 
 template<isl::ConstString String>
 auto testConstString(isl::string_view input) -> bool

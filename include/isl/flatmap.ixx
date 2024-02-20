@@ -1,11 +1,15 @@
-#ifndef ISL_PROJECT_FLATMAP_HPP
-#define ISL_PROJECT_FLATMAP_HPP
+module;
 
-#include <isl/isl.hpp>
-#include <isl/iterator.hpp>
+#include <functional>
+#include <isl/detail/defines.hpp>
 #include <utility>
 
-namespace isl
+export module isl:flatmap;
+
+import :iterator;
+import :types;
+
+export namespace isl
 {
     template<typename Key, typename Value, size_t Size, typename Pred = std::equal_to<>>
     class StaticFlatmap
@@ -143,5 +147,3 @@ namespace isl
         }
     };
 }// namespace isl
-
-#endif /* ISL_PROJECT_FLATMAP_HPP */

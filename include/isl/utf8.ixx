@@ -1,13 +1,16 @@
-#ifndef CCL_PROJECT_UTF8_HPP
-#define CCL_PROJECT_UTF8_HPP
-
-#include <bit>
+module;
 #include <cstddef>
-#include <isl/isl.hpp>
-#include <iterator>
-#include <numeric>
+#include <isl/detail/defines.hpp>
+#include <stdexcept>
+#include <string_view>
 
-namespace isl::utf8
+export module isl:utf8;
+
+export import :as;
+export import :types;
+export import :concepts;
+
+export namespace isl::utf8
 {
     [[nodiscard]] consteval auto operator"" _B(unsigned long long value) -> std::byte
     {
@@ -131,5 +134,3 @@ namespace isl::utf8
         // NOLINTEND
     }
 }// namespace isl::utf8
-
-#endif /* CCL_PROJECT_UTF8_HPP */

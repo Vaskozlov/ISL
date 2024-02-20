@@ -1,8 +1,9 @@
-#ifndef ISL_PROJECT_PAIR_HPP
-#define ISL_PROJECT_PAIR_HPP
-
-#include <isl/detail/concepts.hpp>
+module;
+#include <compare>
 #include <isl/detail/defines.hpp>
+
+export module isl:pair;
+export import :concepts;
 
 namespace isl::detail
 {
@@ -26,9 +27,7 @@ namespace isl::detail
           , second{second_elem}
         {}
 
-        ISL_DECL auto operator<=>(const TrivialPair &other) const noexcept
-            -> std::weak_ordering = default;
+        ISL_DECL auto
+            operator<=>(const TrivialPair &other) const noexcept -> std::weak_ordering = default;
     };
 }// namespace isl::detail
-
-#endif /* ISL_PROJECT_PAIR_HPP */

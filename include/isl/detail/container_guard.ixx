@@ -1,10 +1,11 @@
-#ifndef ISL_PROJECT_CONTAINER_GUARD_HPP
-#define ISL_PROJECT_CONTAINER_GUARD_HPP
+module;
 
 #include <isl/detail/defines.hpp>
 #include <utility>
 
-namespace isl::detail
+export module isl:container_guard;
+
+export namespace isl::detail
 {
     template<typename T>
     class ContainerGuard : public T
@@ -19,5 +20,3 @@ namespace isl::detail
         }
     };
 }// namespace isl::detail
-
-#endif /* ISL_PROJECT_CONTAINER_GUARD_HPP */

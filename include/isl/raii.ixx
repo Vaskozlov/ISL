@@ -1,10 +1,12 @@
-#ifndef CCL_PROJECT_RAII_HPP
-#define CCL_PROJECT_RAII_HPP
+module;
 
 #include <fmt/format.h>
-#include <isl/isl.hpp>
+#include <isl/detail/defines.hpp>
+#include <optional>
 
-namespace isl
+export module isl:raii;
+
+export namespace isl
 {
     template<std::invocable DeleterFunction, std::invocable ConstructorFunction = void(*)()>
     class Raii
@@ -52,5 +54,3 @@ namespace isl
         }
     };
 }// namespace isl
-
-#endif /* CCL_PROJECT_RAII_HPP */

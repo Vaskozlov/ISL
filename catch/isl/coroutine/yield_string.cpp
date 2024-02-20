@@ -1,6 +1,7 @@
 #include <iostream>
 #include <isl/detail/debug/debug.hpp>
-#include <isl/generator.hpp>
+#include <coroutine>
+import isl;
 
 static auto stringGenerator() -> isl::Generator<std::string>
 {
