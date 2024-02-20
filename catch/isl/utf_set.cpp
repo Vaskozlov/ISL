@@ -3,8 +3,7 @@ import isl;
 
 // NOLINTBEGIN
 
-TEST_CASE("UtfSetAsciiTest", "[UtfSet]")
-{
+TEST_CASE("UtfSetAsciiTest", "[UtfSet]") {
     auto set = isl::UtfSet{};
 
     set.set(0);
@@ -30,8 +29,7 @@ TEST_CASE("UtfSetAsciiTest", "[UtfSet]")
     }
 }
 
-TEST_CASE("UtfSetUtfTest", "[UtfSet]")
-{
+TEST_CASE("UtfSetUtfTest", "[UtfSet]") {
     auto utf_set = isl::UtfSet{};
 
     utf_set.set(U'\uFFFF');
