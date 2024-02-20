@@ -48,6 +48,7 @@ namespace isl
         {
             std::swap(constructorFunction, other.constructorFunction);
             std::swap(deleterFunction, other.deleterFunction);
+            return *this;
         }
     };
 }// namespace isl

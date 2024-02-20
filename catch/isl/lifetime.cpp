@@ -1,3 +1,4 @@
+#include <fmt/format.h>
 #include <isl/lifetime.hpp>
 
 namespace isl::lifetime

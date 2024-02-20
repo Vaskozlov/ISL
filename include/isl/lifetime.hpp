@@ -2,8 +2,6 @@
 #define ISL_PROJECT_LIFETIME_HPP
 
 #include <atomic>
-#include <exception>
-#include <fmt/format.h>
 #include <isl/isl.hpp>
 #include <mutex>
 

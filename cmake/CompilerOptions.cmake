@@ -175,12 +175,10 @@ function(
 
     target_compile_options(
             ${project_name}
-            INTERFACE # C++ warnings
-            $<$<COMPILE_LANGUAGE:CXX>:${PROJECT_WARNINGS_CXX}>
-#C warnings
-            $<$<COMPILE_LANGUAGE:C>:${PROJECT_WARNINGS_C}>
-#Cuda warnings
-            $<$<COMPILE_LANGUAGE:CUDA>:${PROJECT_WARNINGS_CUDA}>)
+            INTERFACE
+            $<$<COMPILE_LANGUAGE:CXX>:${PROJECT_WARNINGS_CXX}> # C++ warnings
+            $<$<COMPILE_LANGUAGE:C>:${PROJECT_WARNINGS_C}> #C warnings
+            $<$<COMPILE_LANGUAGE:CUDA>:${PROJECT_WARNINGS_CUDA}>) #Cuda warnings
 
     add_compile_options(${PROJECT_WARNINGS_CXX})
 
@@ -193,8 +191,10 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_definitions(ISL_DEBUG=1)
 endif ()
 
-set(CMAKE_CXX_STANDARD 20)
+if (NOT DEFINED CMAKE_CXX_STANDARD)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+endif ()
 
 if (${ISL_ENABLE_IPO})
     isl_enable_ipo()
