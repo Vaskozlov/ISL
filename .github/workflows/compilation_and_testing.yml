@@ -38,7 +38,7 @@ jobs:
         if: matrix.name == 'ubuntu-latest-clang'
         run: |
           apt-get update
-          apt-get install clang-17
+          apt-get install -y clang-17
           clang --version
         shell: bash
       - name: Dump the content of $RUNNER_TEMP
@@ -63,8 +63,8 @@ jobs:
         if: matrix.name == 'ubuntu-latest-clang'
         uses: lukka/run-cmake@v10
         env:
-          CC: clang
-          CXX: clang++
+          CC: clang-17
+          CXX: clang++-17
         with:
           cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
           configurePreset: ninja-multi-vcpkg
