@@ -6,6 +6,7 @@ module;
 #include <optional>
 #include <string>
 #include <vector>
+#include <cmath>
 
 export module isl:types;
 
