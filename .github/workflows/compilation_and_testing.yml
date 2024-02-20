@@ -39,7 +39,7 @@ jobs:
         run: |
           apt-get update
           apt-get install -y clang-17
-          clang --version
+          clang-17 --version
         shell: bash
       - name: Dump the content of $RUNNER_TEMP
         run: find $RUNNER_TEMP
