@@ -1,4 +1,4 @@
-option(ISL_LIBCPP "Use libc++ when compiling with clang" OFF)
+option(ISL_LIBCPP "Use libc++ when compiling with clang" ON)
 option(ISL_STRICT_COMPILATION "Enable -Werror strict compilation" OFF)
 option(ISL_PRECOMPILED_HEADERS "Use precompiled headers" ON)
 option(ISL_ADDRESS_SANITIZER "Use sanitizers" OFF)
