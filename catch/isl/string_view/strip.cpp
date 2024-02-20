@@ -1,21 +1,24 @@
 #include <isl/detail/debug/debug.hpp>
 import isl;
 
-TEST_CASE("StringViewLeftStrip", "[StringView]") {
+TEST_CASE("StringViewLeftStrip", "[StringView]")
+{
     using namespace isl::string_view_literals;
 
     DEBUG_VAR own_string = "115223311"_sv;
     REQUIRE(own_string.leftStrip("15") == "223311"_sv);
 }
 
-TEST_CASE("StringViewRightStrip", "[StringView]") {
+TEST_CASE("StringViewRightStrip", "[StringView]")
+{
     using namespace isl::string_view_literals;
 
     DEBUG_VAR own_string = "1152233611"_sv;
     REQUIRE(own_string.rightStrip("16") == "1152233"_sv);
 }
 
-TEST_CASE("StringViewStrip", "[StringView]") {
+TEST_CASE("StringViewStrip", "[StringView]")
+{
     using namespace isl::string_view_literals;
 
     DEBUG_VAR own_string = "1152233611"_sv;

@@ -1,13 +1,15 @@
+#include <coroutine>
 #include <iostream>
 #include <isl/detail/debug/debug.hpp>
-#include <coroutine>
 import isl;
 
-static auto stringGenerator() -> isl::Generator<std::string> {
+static auto stringGenerator() -> isl::Generator<std::string>
+{
     co_yield std::string{"Hello, World!"};
 }
 
-TEST_CASE("YieldStringFromGenerator", "[Coroutine]") {
+TEST_CASE("YieldStringFromGenerator", "[Coroutine]")
+{
     auto generator = stringGenerator();
 
     REQUIRE(generator.yield() == "Hello, World!");

@@ -1,7 +1,8 @@
 #include <isl/detail/debug/debug.hpp>
 import isl;
 
-TEST_CASE("StringViewSubstr", "[StringView]") {
+TEST_CASE("StringViewSubstr", "[StringView]")
+{
     std::string_view std_string = "Hello, World!";
     isl::string_view own_string = "Hello, World!";
 

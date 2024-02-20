@@ -2,7 +2,8 @@
 import isl;
 
 
-TEST_CASE("StringViewWithoutLastCharacter", "[StringView]") {
+TEST_CASE("StringViewWithoutLastCharacter", "[StringView]")
+{
     using namespace isl::string_view_literals;
 
     REQUIRE("Hello, World!"_sv.removeLastCharacter() == "Hello, World"_sv);

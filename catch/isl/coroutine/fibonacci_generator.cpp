@@ -1,6 +1,6 @@
+#include <coroutine>
 #include <iostream>
 #include <isl/detail/debug/debug.hpp>
-#include <coroutine>
 import isl;
 
 constexpr static std::array<size_t, 20> FibonacciNumbers = {

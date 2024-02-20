@@ -2,7 +2,8 @@
 import isl;
 
 
-TEST_CASE("StringViewOpenCloseFind", "[StringView]") {
+TEST_CASE("StringViewOpenCloseFind", "[StringView]")
+{
     using namespace isl::string_view_literals;
 
     DEBUG_VAR own_string = "(Hello(, )World)!"_sv;
