@@ -33,12 +33,12 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           apt-get update
-          apt-get install -y gcc-13 g++-13 pkg-config
+          apt-get install -y curl zip unzip tar git pkg-config gcc-13 g++-13
       - name: set compiler
         if: matrix.name == 'ubuntu-latest-clang'
         run: |
           apt-get update
-          apt-get install -y clang-17 pkg-config
+          apt-get install -y curl zip unzip tar git pkg-config clang-17
           clang-17 --version
         shell: bash
       - name: Dump the content of $RUNNER_TEMP
