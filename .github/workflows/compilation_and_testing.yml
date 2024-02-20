@@ -20,7 +20,7 @@ jobs:
             docker: "ubuntu:mantic"
             cc: "clang-17"
             cxx: "clang++-17"
-            deps: "clang-17"
+            deps: "clang-17 libstdc++-11-dev clang-tidy-17"
 
     steps:
       - uses: actions/checkout@v4

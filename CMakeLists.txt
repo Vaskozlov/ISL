@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.28.0)
 
 project(isl-project VERSION 0.0.2.1 LANGUAGES CXX)
 
+set(CMAKE_SCAN_FOR_MODULES)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 include(GNUInstallDirs)
 include(CPack)
 
