@@ -1,7 +1,10 @@
 module;
 
+#include <array>
 #include <cinttypes>
+#include <cstddef>
 #include <optional>
+#include <string>
 #include <vector>
 
 export module isl:types;
