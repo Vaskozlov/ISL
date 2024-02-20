@@ -17,7 +17,7 @@ jobs:
           - name: ubuntu-latest
             os: ubuntu-latest
             vcpkgCommitId: 'c3801cf53c614ffc54c94051d124eba097b057b1'
-            docker: "gcc:13"
+            docker: "ubuntu:latest"
           - name: ubuntu-latest-clang
             os: ubuntu-latest
             vcpkgCommitId: 'c3801cf53c614ffc54c94051d124eba097b057b1'
@@ -35,12 +35,12 @@ jobs:
       - name: install zip
         if: matrix.os == 'ubuntu-latest'
         run: |
-          sudo apt-get update
-          sudo apt-get install -y curl zip unzip tar git
+          apt-get update
+          apt-get install -y curl zip unzip tar git
       - name: set compiler
         if: matrix.name == 'ubuntu-latest-clang'
         run: |
-          sudo apt-get install clang-17
+          apt-get install clang-17
           clang --version
         shell: bash
       - name: Dump the content of $RUNNER_TEMP
