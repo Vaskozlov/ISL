@@ -61,23 +61,11 @@ jobs:
         run: echo "root='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT }}', triplet='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_DEFAULT_TRIPLET_OUT }}'"
 
       - name: Run CMake with vcpkg.json manifest clang
-        if: matrix.name == 'ubuntu-latest-clang'
+        if: runner.os == 'Linux'
         uses: lukka/run-cmake@v10
         env:
-          CC: clang-17
-          CXX: clang++-17
-        with:
-          cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
-          configurePreset: ninja-multi-vcpkg
-          buildPreset: ninja-multi-vcpkg
-          testPreset: ninja-multi-vcpkg
-
-      - name: Run CMake with vcpkg.json manifest clang
-        if: matrix.name == 'ubuntu-latest'
-        uses: lukka/run-cmake@v10
-        env:
-          CC: gcc-13
-          CXX: g++-13
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
         with:
           cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
           configurePreset: ninja-multi-vcpkg
@@ -85,7 +73,7 @@ jobs:
           testPreset: ninja-multi-vcpkg
 
       - name: Run CMake with vcpkg.json manifest other compilers
-        if: matrix.name != 'ubuntu-latest-clang'
+        if: runner.os != 'Linux'
         uses: lukka/run-cmake@v10
         with:
           cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
