@@ -5,7 +5,7 @@ module;
 
 export module isl:join;
 
-import :string_view;
+import :stringView;
 import :types;
 import :iterator;
 import :concepts;

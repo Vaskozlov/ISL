@@ -8,7 +8,7 @@ export import :utf_set;
 export import :utf8;
 export import :lifetime;
 export import :lazy;
-export import :string_view;
+export import :stringView;
 export import :join;
 export import :memory;
 export import :raii;
