@@ -2,11 +2,11 @@ module;
 
 #include <array>
 #include <cinttypes>
+#include <cmath>
 #include <cstddef>
 #include <optional>
 #include <string>
 #include <vector>
-#include <cmath>
 
 export module isl:types;
 
@@ -53,3 +53,25 @@ export namespace isl
     template<typename T, size_t Size>
     using CArray = T[Size];
 }// namespace isl
+
+int test()
+{
+int16_t data[5] = {};
+int16_t *A = data;
+int16_t *B = A;
+int16_t C = 5;
+int16_t D = 0x7FFF;
+
+for (; C > 0; --C) {
+    register int16_t AC = *B;
+    ++B;
+
+    if (AC >= 0) {
+        continue;
+    }
+
+    if (AC - D >= 0) {
+        D = AC;
+    }
+}
+}
