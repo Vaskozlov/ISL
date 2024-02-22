@@ -17,29 +17,20 @@ jobs:
           - name: ubuntu-latest
             os: ubuntu-latest
             vcpkgCommitId: 'c3801cf53c614ffc54c94051d124eba097b057b1'
-            docker: "ubuntu:noble"
+            docker: "vaskozlov/gcc-clang-cmake"
             cc: "gcc-14"
             cxx: "g++-14"
-            deps: "gcc-14 g++-14"
 
           - name: ubuntu-latest-clang
             os: ubuntu-latest
             vcpkgCommitId: 'c3801cf53c614ffc54c94051d124eba097b057b1'
-            docker: "ubuntu:noble"
+            docker: "vaskozlov/gcc-clang-cmake"
             cc: "clang-18"
             cxx: "clang++-18"
-            deps: "clang-18 libstdc++-11-dev clang-tidy-18"
 
     steps:
       - uses: actions/checkout@v4
       - uses: lukka/get-cmake@latest
-      - name: install compiler
-        if: runner.os == 'Linux'
-        run: |
-          apt-get update
-          apt-get install -y curl zip unzip tar git pkg-config
-          apt-get install -y ${{matrix.deps}}
-        shell: bash
       - name: Dump the content of $RUNNER_TEMP
         run: find $RUNNER_TEMP
         shell: bash
@@ -66,9 +57,9 @@ jobs:
           CXX: ${{ matrix.cxx }}
         with:
           cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
-          configurePreset: ninja-multi-vcpkg
-          buildPreset: ninja-multi-vcpkg
-          testPreset: ninja-multi-vcpkg
+          configurePreset: ninja
+          buildPreset: ninja
+          testPreset: ninja
 
       - name: Run CMake with vcpkg.json manifest other compilers
         if: runner.os != 'Linux'
