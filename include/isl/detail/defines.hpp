@@ -90,14 +90,6 @@
 
 #define ISL_NOEXCEPT_IF(EXPR) noexcept(noexcept(EXPR))
 
-#if defined(__has_builtin) && __has_builtin(__builtin_unreachable)
-#    define ISL_UNREACHABLE __builtin_unreachable()
-#elif defined(_MSC_VER)
-#    define ISL_UNREACHABLE __assume(false)
-#else
-#    define ISL_UNREACHABLE assert(false)
-#endif
-
 #if defined(__clang__) || defined(__GNUC__)
 #    define ISL_PURE __attribute__((pure))
 #else
@@ -120,11 +112,6 @@
 
 namespace isl
 {
-    [[noreturn]] ISL_INLINE auto unreachable() -> void
-    {
-        ISL_UNREACHABLE;
-    }
-
     enum class FunctionAPI : bool
     {
         SAFE,
