@@ -1,15 +1,18 @@
 module;
 
 #include <algorithm>
-#include <fmt/format.h>
 #include <isl/detail/defines.hpp>
 #include <numeric>
+#include <array>
+#include <string_view>
+#include <stdexcept>
+#include <format>
 
-export module isl:stringView;
+export module isl:string_view;
 
 import :as;
-import :concepts;
-import :iterator;
+export import :concepts;
+export import :iterator;
 
 export namespace isl
 {
@@ -445,7 +448,7 @@ export namespace isl
 }// namespace isl
 
 export template<>
-struct fmt::formatter<isl::string_view> : public fmt::formatter<std::string_view>
+struct std::formatter<isl::string_view> : public std::formatter<std::string_view>
 {
     auto format(const isl::string_view &str, format_context &ctx) const -> decltype(ctx.out())
     {

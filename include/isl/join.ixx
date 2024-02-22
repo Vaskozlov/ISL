@@ -1,14 +1,14 @@
 module;
 
-#include <fmt/format.h>
+#include <string>
 #include <isl/detail/defines.hpp>
 
 export module isl:join;
 
-import :stringView;
-import :types;
-import :iterator;
-import :concepts;
+export import :string_view;
+export import :types;
+export import :iterator;
+export import :concepts;
 import :as;
 
 export namespace isl {
@@ -59,7 +59,7 @@ export namespace isl {
             return join(
                 std::forward<decltype(container)>(container),
                 []<typename T>(T&&elem) -> decltype(auto) {
-                    return fmt::to_string(std::forward<T>(elem));
+                    return std::to_string(std::forward<T>(elem));
                 },
                 std::forward<Separator>(separator));
         }

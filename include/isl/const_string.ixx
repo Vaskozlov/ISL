@@ -6,7 +6,7 @@ module;
 
 export module isl:const_string;
 
-import :stringView;
+import :string_view;
 import :iterator;
 import :types;
 

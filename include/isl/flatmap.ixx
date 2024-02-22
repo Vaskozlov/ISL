@@ -9,8 +9,8 @@ module;
 
 export module isl:flatmap;
 
-import :iterator;
-import :types;
+export import :iterator;
+export import :types;
 
 export namespace isl
 {

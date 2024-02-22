@@ -1,6 +1,5 @@
 module;
 
-#include <fmt/format.h>
 #include <isl/detail/defines.hpp>
 #include <optional>
 #include <utility>

@@ -6,7 +6,7 @@ module;
 
 export module isl:utf8;
 
-export import :as;
+import :as;
 export import :types;
 export import :concepts;
 

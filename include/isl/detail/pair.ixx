@@ -3,7 +3,7 @@ module;
 #include <isl/detail/defines.hpp>
 
 export module isl:pair;
-export import :concepts;
+import :concepts;
 
 namespace isl::detail
 {

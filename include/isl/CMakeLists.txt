@@ -31,8 +31,3 @@ isl_set_project_warnings(
         ${ISL_LIBCPP}
         OFF
 )
-
-target_link_libraries(
-        isl
-        fmt::fmt
-)

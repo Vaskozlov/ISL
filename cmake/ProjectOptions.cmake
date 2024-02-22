@@ -7,7 +7,7 @@ option(ISL_ENABLE_IPO "Enable IPO/LTO" OFF)
 option(ISL_HARDENING "Enable hardening" OFF)
 option(ISL_INCLUDE_TESTS "Include tests?" OFF)
 option(ISL_STATIC_LIBRARY "Create static version of library " ${MSVC})
-option(ISL_UNITY_BUILD "Use unity build for targets " ON)
+option(ISL_UNITY_BUILD "Use unity build for targets " OFF)
 
 message(STATUS "CC " ${CMAKE_C_COMPILER})
 message(STATUS "CXX " ${CMAKE_CXX_COMPILER})

@@ -11,7 +11,8 @@ module;
 export module isl:types;
 
 export import :pair;
-import :container_guard;
+export import :concepts;
+export import :container_guard;
 
 export namespace isl
 {

@@ -1,4 +1,4 @@
-#include <fmt/format.h>
+#include <string>
 #include <isl/detail/debug/debug.hpp>
 import isl;
 
@@ -10,7 +10,7 @@ TEST_CASE("JoinInts", "[Join]")
         isl::join(
             vector_of_int,
             [](auto &&elem) {
-                return fmt::to_string(elem);
+                return std::to_string(elem);
             },
             ", ") == "10, 20, 30");
 

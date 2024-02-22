@@ -4,10 +4,10 @@ module;
 #include <isl/detail/defines.hpp>
 export module isl:range;
 
-import :types;
-import :pair;
-import :iterator;
-import :concepts;
+export import :types;
+export import :pair;
+export import :iterator;
+export import :concepts;
 
 export namespace isl
 {

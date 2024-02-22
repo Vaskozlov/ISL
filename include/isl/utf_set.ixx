@@ -7,7 +7,7 @@ module;
 export module isl:utf_set;
 
 import :as;
-import :range;
+export import :range;
 
 export namespace isl
 {
