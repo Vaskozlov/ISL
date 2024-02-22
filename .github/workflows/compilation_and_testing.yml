@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        name: [ ubuntu-latest, windows-latest ]
+        name: [ ubuntu-latest, windows-latest, ubuntu-latest-clang ]
         include:
           - name: windows-latest
             os: windows-latest
@@ -17,10 +17,18 @@ jobs:
           - name: ubuntu-latest
             os: ubuntu-latest
             vcpkgCommitId: 'c3801cf53c614ffc54c94051d124eba097b057b1'
-            docker: "ubuntu:mantic"
-            cc: "clang-17"
-            cxx: "clang++-17"
-            deps: "clang-17 libstdc++-11-dev clang-tidy-17"
+            docker: "ubuntu:noble"
+            cc: "gcc-14"
+            cxx: "g++-14"
+            deps: "gcc-14 g++-14"
+
+          - name: ubuntu-latest-clang
+            os: ubuntu-latest
+            vcpkgCommitId: 'c3801cf53c614ffc54c94051d124eba097b057b1'
+            docker: "ubuntu:noble"
+            cc: "clang-18"
+            cxx: "clang++-18"
+            deps: "clang-18 libstdc++-11-dev clang-tidy-18"
 
     steps:
       - uses: actions/checkout@v4
