@@ -207,7 +207,7 @@ export namespace isl
             auto pairs_count = as<size_t>(0);
 
             const auto matched_pair_iterator =
-                std::find_if(begin(), end(), [&pairs_count, starter, ender](CharT chr) {
+                std::ranges::find_if(*this, [&pairs_count, starter, ender](CharT chr) {
                     pairs_count += as<size_t>(chr == starter);
                     pairs_count -= as<size_t>(chr == ender);
                     return pairs_count == 0;

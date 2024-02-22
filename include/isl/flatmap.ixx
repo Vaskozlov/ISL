@@ -1,5 +1,6 @@
 module;
 
+#include <algorithm>
 #include <exception>
 #include <functional>
 #include <isl/detail/defines.hpp>
@@ -131,7 +132,7 @@ export namespace isl
         template<typename Self>
         ISL_DECL static auto staticFind(Self &self, const Key &key) noexcept -> auto
         {
-            return std::find_if(std::begin(self), std::end(self), [&key](const value_type &value) {
+            return std::ranges::find_if(self, [&key](const value_type &value) {
                 return Pred{}(key, value.first);
             });
         }
