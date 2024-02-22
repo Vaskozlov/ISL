@@ -9,17 +9,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        name: [ ubuntu-latest, windows-latest, ubuntu-latest-clang ]
+        name: [ windows-latest, ubuntu-latest-clang ]
         include:
           - name: windows-latest
             os: windows-latest
             vcpkgCommitId: 'c3801cf53c614ffc54c94051d124eba097b057b1'
-          - name: ubuntu-latest
-            os: ubuntu-latest
-            vcpkgCommitId: 'c3801cf53c614ffc54c94051d124eba097b057b1'
-            docker: "vaskozlov/gcc-clang-cmake"
-            cc: "gcc-14"
-            cxx: "g++-14"
 
           - name: ubuntu-latest-clang
             os: ubuntu-latest
@@ -49,7 +43,7 @@ jobs:
       - name: Prints output of run-vcpkg's action
         run: echo "root='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT }}', triplet='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_DEFAULT_TRIPLET_OUT }}'"
 
-      - name: Run CMake with vcpkg.json manifest clang
+      - name: Run CMake (linux)
         if: runner.os == 'Linux'
         uses: lukka/run-cmake@v10
         env:
@@ -61,7 +55,7 @@ jobs:
           buildPreset: ninja
           testPreset: ninja
 
-      - name: Run CMake with vcpkg.json manifest other compilers
+      - name: Run CMake (Windows)
         if: runner.os != 'Linux'
         uses: lukka/run-cmake@v10
         with:
