@@ -5,7 +5,7 @@ module;
 #include <isl/detail/defines.hpp>
 #include <numeric>
 
-export module isl:string_view;
+export module isl:stringView;
 
 import :as;
 import :concepts;
