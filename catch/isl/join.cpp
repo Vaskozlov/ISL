@@ -1,5 +1,5 @@
-#include <string>
 #include <isl/detail/debug/debug.hpp>
+#include <string>
 import isl;
 
 TEST_CASE("JoinInts", "[Join]")
