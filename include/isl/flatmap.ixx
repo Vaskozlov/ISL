@@ -1,11 +1,7 @@
 module;
 
-#include <algorithm>
-#include <exception>
-#include <functional>
 #include <isl/detail/defines.hpp>
-#include <stdexcept>
-#include <utility>
+#include <isl/std.hpp>
 
 export module isl:flatmap;
 

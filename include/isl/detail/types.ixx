@@ -1,12 +1,6 @@
 module;
 
-#include <array>
-#include <cinttypes>
-#include <cmath>
-#include <cstddef>
-#include <optional>
-#include <string>
-#include <vector>
+#include <isl/std.hpp>
 
 export module isl:types;
 

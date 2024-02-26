@@ -1,5 +1,5 @@
 #include <isl/detail/debug/debug.hpp>
-#include <utility>
+#include <isl/std.hpp>
 import isl;
 
 TEST_CASE("LazyObjectInitializedGet", "[Lazy]")

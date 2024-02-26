@@ -1,7 +1,6 @@
 module;
 
-#include <array>
-#include <string_view>
+#include <isl/std.hpp>
 #include <isl/detail/defines.hpp>
 
 export module isl:const_string;

@@ -1,10 +1,7 @@
 module;
 
-#include <atomic>
 #include <isl/detail/defines.hpp>
-#include <memory>
-#include <mutex>
-#include <print>
+#include <isl/std.hpp>
 
 export module isl:lifetime;
 

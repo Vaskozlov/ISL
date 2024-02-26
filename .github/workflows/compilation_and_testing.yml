@@ -25,9 +25,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: lukka/get-cmake@latest
+
       - name: Dump the content of $RUNNER_TEMP
         run: find $RUNNER_TEMP
         shell: bash
+
       - name: Dump the content of $RUNNER_WORKSPACE
         run: find $RUNNER_WORKSPACE
         shell: bash

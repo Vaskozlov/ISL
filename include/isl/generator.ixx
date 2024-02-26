@@ -1,38 +1,18 @@
 module;
 
-#include <exception>
 #include <isl/detail/defines.hpp>
-#include <iterator>
-#include <optional>
-#include <stdexcept>
-#include <type_traits>
-
-#if __has_include(<coroutine>)
-#    include <coroutine>
-#    define ISL_EXPERIMENTAL_COROUTINE false
-#else
-#    include <experimental/coroutine>
-#    define ISL_EXPERIMENTAL_COROUTINE true
-#endif
+#include <isl/std.hpp>
 
 export module isl:generator;
 
 export namespace isl {
-    namespace detail {
-#if ISL_EXPERIMENTAL_COROUTINE
-        namespace coroutine = std::experimental;
-#else
-        namespace coroutine = std;
-#endif /* ISL_EXPERIMENTAL_COROUTINE */
-    } // namespace detail
-
     template<typename T>
     class Generator {
     public:
         class promise_type {
         public:
-            using suspend_always = detail::coroutine::suspend_always;
-            using suspend_never = detail::coroutine::suspend_never;
+            using suspend_always = std::suspend_always;
+            using suspend_never = std::suspend_never;
 
             static constexpr bool TrivialTypeStored = std::is_trivial_v<T>;
             using ValueStorageType = std::conditional_t<TrivialTypeStored, std::optional<T>, T *>;
@@ -186,7 +166,7 @@ export namespace isl {
         };
 
         friend promise_type;
-        using coro_handle = detail::coroutine::coroutine_handle<promise_type>;
+        using coro_handle = std::coroutine_handle<promise_type>;
 
         coro_handle handle;
 

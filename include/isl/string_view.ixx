@@ -1,12 +1,7 @@
 module;
 
-#include <algorithm>
 #include <isl/detail/defines.hpp>
-#include <numeric>
-#include <array>
-#include <string_view>
-#include <stdexcept>
-#include <format>
+#include <isl/std.hpp>
 
 export module isl:string_view;
 

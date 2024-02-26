@@ -1,7 +1,6 @@
 #ifndef ISL_DEFINES_HPP
 #define ISL_DEFINES_HPP
 
-
 #include <cassert>
 #include <cinttypes>
 #include <cstddef>

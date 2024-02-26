@@ -1,8 +1,7 @@
 module;
 
 #include <isl/detail/defines.hpp>
-#include <utility>
-#include <type_traits>
+#include <isl/std.hpp>
 
 export module isl:as;
 
