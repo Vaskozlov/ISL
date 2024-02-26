@@ -1,5 +1,5 @@
 module;
-#include <compare>
+#include <isl/std.hpp>
 #include <isl/detail/defines.hpp>
 
 export module isl:pair;

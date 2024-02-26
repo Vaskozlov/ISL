@@ -1,8 +1,5 @@
 module;
-#include <exception>
-#include <type_traits>
-#include <utility>
-
+#include <isl/std.hpp>
 export module isl:concepts;
 
 export namespace isl

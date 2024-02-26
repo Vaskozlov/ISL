@@ -1,7 +1,7 @@
 module;
 
 #include <isl/detail/defines.hpp>
-#include <iterator>
+#include <isl/std.hpp>
 
 export module isl:iterator;
 

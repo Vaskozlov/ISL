@@ -1,10 +1,7 @@
 #ifndef ISL_DEFINES_HPP
 #define ISL_DEFINES_HPP
 
-#include <cassert>
-#include <cinttypes>
-#include <cstddef>
-#include <version>
+#include <isl/std.hpp>
 
 #define ISL_DECL [[nodiscard]] constexpr
 
