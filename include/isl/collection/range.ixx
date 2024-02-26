@@ -1,12 +1,10 @@
 module;
+#include <isl/core/defines.hpp>
 #include <isl/std.hpp>
-#include <isl/detail/defines.hpp>
-export module isl:range;
+export module isl.collection:range;
 
-export import :types;
+export import isl.core;
 export import :pair;
-export import :iterator;
-export import :concepts;
 
 export namespace isl
 {

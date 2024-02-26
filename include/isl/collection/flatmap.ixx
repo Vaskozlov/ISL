@@ -1,12 +1,12 @@
 module;
 
-#include <isl/detail/defines.hpp>
+#include <isl/core/defines.hpp>
 #include <isl/std.hpp>
 
-export module isl:flatmap;
+export module isl.collection:flatmap;
 
-export import :iterator;
-export import :types;
+export import isl.core;
+export import :pair;
 
 export namespace isl
 {

@@ -2,9 +2,8 @@ module;
 
 #include <isl/std.hpp>
 
-export module isl:types;
+export module isl.core:types;
 
-export import :pair;
 export import :concepts;
 export import :container_guard;
 
@@ -40,10 +39,6 @@ export namespace isl
     using U16String = detail::ContainerGuard<std::u16string>;
     using U32String = detail::ContainerGuard<std::u32string>;
     using WString = detail::ContainerGuard<std::wstring>;
-
-    template<typename T1, typename T2>
-    using Pair = std::conditional_t<
-        Trivial<T1> && Trivial<T2>, detail::TrivialPair<T1, T2>, std::pair<T1, T2>>;
 
     template<typename T, size_t Size>
     using CArray = T[Size];

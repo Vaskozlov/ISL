@@ -1,16 +1,12 @@
 module;
-#include <isl/detail/defines.hpp>
+#include <isl/core/defines.hpp>
 #include <isl/std.hpp>
-export module isl:utf8;
+export module isl.character:utf8;
 
-import :as;
-export import :types;
-export import :concepts;
+export import isl.core;
 
-export namespace isl::utf8
-{
-    [[nodiscard]] consteval auto operator"" _B(unsigned long long value) -> std::byte
-    {
+export namespace isl::utf8 {
+    [[nodiscard]] consteval auto operator"" _B(unsigned long long value) -> std::byte {
         if (value > std::numeric_limits<u8>::max()) {
             throw std::logic_error(
                 "Unable to convert integer, which is greater than 255, to a byte");
@@ -22,8 +18,7 @@ export namespace isl::utf8
     template<typename T>
     concept ValueTypeUtf8 = IsSameToAny<typename T::value_type, char, char8_t>;
 
-    namespace constants
-    {
+    namespace constants {
         constexpr u32 OneByteMax = 127;
         constexpr u32 TwoBytesMax = 2047;
         constexpr u32 TreeBytesMax = 65'535;
@@ -41,42 +36,36 @@ export namespace isl::utf8
         constexpr u8 TrailingSize = 6;
 
         constexpr std::array<std::byte, 5> UtfMasks{
-            0_B, OneByteMask, TwoBytesMask, TreeBytesMask, FourBytesMask};
-    }// namespace constants
+            0_B, OneByteMask, TwoBytesMask, TreeBytesMask, FourBytesMask
+        };
+    } // namespace constants
 
-    ISL_DECL auto isTrailingCharacter(char chr) noexcept -> bool
-    {
+    ISL_DECL auto isTrailingCharacter(char chr) noexcept -> bool {
         return (as<std::byte>(chr) & constants::ContinuationMask) ==
                constants::ContinuationSignature;
     }
 
-    ISL_DECL auto isOneByteSize(char chr) noexcept -> bool
-    {
+    ISL_DECL auto isOneByteSize(char chr) noexcept -> bool {
         return (as<std::byte>(chr) & constants::OneByteMask) == 0_B;
     }
 
-    ISL_DECL auto isTwoBytesSize(char chr) noexcept -> bool
-    {
+    ISL_DECL auto isTwoBytesSize(char chr) noexcept -> bool {
         return (as<std::byte>(chr) & constants::TwoBytesMask) == constants::TwoBytesSignature;
     }
 
-    ISL_DECL auto isThreeBytesSize(char chr) noexcept -> bool
-    {
+    ISL_DECL auto isThreeBytesSize(char chr) noexcept -> bool {
         return (as<std::byte>(chr) & constants::TreeBytesMask) == constants::TreeBytesSignature;
     }
 
-    ISL_DECL auto isFourBytesSize(char chr) noexcept -> bool
-    {
+    ISL_DECL auto isFourBytesSize(char chr) noexcept -> bool {
         return (as<std::byte>(chr) & constants::FourBytesMask) == constants::FourBytesSignature;
     }
 
-    ISL_DECL auto getMask(u16 size) -> std::byte
-    {
+    ISL_DECL auto getMask(u16 size) -> std::byte {
         return constants::UtfMasks.at(size);
     }
 
-    ISL_DECL auto size(char chr) noexcept -> u16
-    {
+    ISL_DECL auto size(char chr) noexcept -> u16 {
         if (isOneByteSize(chr)) [[likely]] {
             return 1;
         }
@@ -97,8 +86,7 @@ export namespace isl::utf8
     }
 
     template<ValueTypeUtf8 T>
-    constexpr auto appendUtf32ToUtf8Container(T &string, char32_t chr) -> void
-    {
+    constexpr auto appendUtf32ToUtf8Container(T&string, char32_t chr) -> void {
         using namespace constants;
         using namespace std::string_view_literals;
 
@@ -108,17 +96,20 @@ export namespace isl::utf8
 
         if (chr <= OneByteMax) [[likely]] {
             string.push_back(as<char>(chr));
-        } else if (chr <= TwoBytesMax) {
+        }
+        else if (chr <= TwoBytesMax) {
             string.push_back(as<char>(TwoBytesSignature | as<std::byte>(chr >> 6)));
             string.push_back(
                 as<char>(ContinuationSignature | (as<std::byte>(chr) & non_continuation_mask)));
-        } else if (chr <= TreeBytesMax) {
+        }
+        else if (chr <= TreeBytesMax) {
             string.push_back(as<char>(TreeBytesSignature | as<std::byte>(chr >> 12)));
             string.push_back(as<char>(
                 ContinuationSignature | (as<std::byte>(chr >> 6) & non_continuation_mask)));
             string.push_back(
                 as<char>(ContinuationSignature | (as<std::byte>(chr) & non_continuation_mask)));
-        } else if (chr <= FourBytesMax) {
+        }
+        else if (chr <= FourBytesMax) {
             string.push_back(as<char>(FourBytesSignature | as<std::byte>(chr >> 18)));
             string.push_back(as<char>(
                 ContinuationSignature | (as<std::byte>(chr >> 12) & non_continuation_mask)));
@@ -126,9 +117,10 @@ export namespace isl::utf8
                 ContinuationSignature | (as<std::byte>(chr >> 6) & non_continuation_mask)));
             string.push_back(
                 as<char>(ContinuationSignature | (as<std::byte>(chr) & non_continuation_mask)));
-        } else {
+        }
+        else {
             throw std::invalid_argument{"unable to convert symbol to utf8"};
         }
         // NOLINTEND
     }
-}// namespace isl::utf8
+} // namespace isl::utf8

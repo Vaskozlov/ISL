@@ -1,15 +1,12 @@
 module;
 
+#include <isl/core/defines.hpp>
 #include <isl/std.hpp>
-#include <isl/detail/defines.hpp>
 
-export module isl:join;
+export module isl.algorithms:join;
 
-export import :string_view;
-export import :types;
-export import :iterator;
-export import :concepts;
-import :as;
+export import isl.core;
+export import isl.collection;
 
 export namespace isl {
     template<Iterable Container, typename Function, StringLike<char> Separator>

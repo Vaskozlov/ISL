@@ -1,9 +1,9 @@
 module;
-#include <isl/detail/defines.hpp>
+#include <isl/core/defines.hpp>
 #include <isl/std.hpp>
-export module isl:utf_set;
+export module isl.collection:utf_set;
 
-import :as;
+export import isl.core;
 export import :range;
 
 export namespace isl

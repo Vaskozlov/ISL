@@ -1,11 +1,11 @@
 module;
+#include <isl/core/defines.hpp>
 #include <isl/std.hpp>
-#include <isl/detail/defines.hpp>
 
-export module isl:pair;
-import :concepts;
+export module isl.collection:pair;
+import isl.core;
 
-namespace isl::detail
+export namespace isl::detail
 {
     template<typename T1, typename T2>
     class ISL_TRIVIAL_ABI TrivialPair
@@ -31,3 +31,10 @@ namespace isl::detail
             operator<=>(const TrivialPair &other) const noexcept -> std::weak_ordering = default;
     };
 }// namespace isl::detail
+
+export namespace isl
+{
+    template<typename T1, typename T2>
+    using Pair = std::conditional_t<
+        Trivial<T1> && Trivial<T2>, detail::TrivialPair<T1, T2>, std::pair<T1, T2>>;
+}// namespace isl

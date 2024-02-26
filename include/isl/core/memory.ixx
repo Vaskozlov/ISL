@@ -1,9 +1,9 @@
 module;
 
-#include <isl/detail/defines.hpp>
+#include <isl/core/defines.hpp>
 #include <isl/std.hpp>
 
-export module isl:memory;
+export module isl.core:memory;
 
 export namespace isl
 {

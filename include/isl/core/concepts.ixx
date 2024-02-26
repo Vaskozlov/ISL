@@ -1,6 +1,6 @@
 module;
 #include <isl/std.hpp>
-export module isl:concepts;
+export module isl.core:concepts;
 
 export namespace isl
 {

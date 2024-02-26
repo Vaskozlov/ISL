@@ -1,9 +1,9 @@
 module;
 
-#include <isl/detail/defines.hpp>
+#include <isl/core/defines.hpp>
 #include <isl/std.hpp>
 
-export module isl:generator;
+export module isl.coroutine:generator;
 
 export namespace isl {
     template<typename T>

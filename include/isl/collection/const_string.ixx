@@ -1,13 +1,12 @@
 module;
 
 #include <isl/std.hpp>
-#include <isl/detail/defines.hpp>
+#include <isl/core/defines.hpp>
 
-export module isl:const_string;
+export module isl.collection:const_string;
 
+export import isl.core;
 import :string_view;
-import :iterator;
-import :types;
 
 export namespace isl
 {
