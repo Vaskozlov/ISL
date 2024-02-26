@@ -6,6 +6,7 @@ jobs:
   check:
     name: Code style check
     runs-on: ubuntu-latest
+    container: vaskozlov/gcc-clang-cmake
 
     steps:
       - uses: actions/checkout@v4
@@ -14,7 +15,7 @@ jobs:
 
       - name: Install clang-format
         run: |
-          sudo apt install clang-format
+          apt install -y clang-format-17 clang-format-18
 
       - name: Run clang-format-diff
         run: bash ./scripts/tools/check_code_format.sh
