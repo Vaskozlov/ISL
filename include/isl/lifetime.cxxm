@@ -1,7 +1,6 @@
 module;
 
-#include <mutex>
-#include <print>
+#include <isl/std.hpp>
 
 module isl:lifetime_impl;
 import :lifetime;

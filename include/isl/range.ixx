@@ -1,6 +1,5 @@
 module;
-#include <compare>
-#include <concepts>
+#include <isl/std.hpp>
 #include <isl/detail/defines.hpp>
 export module isl:range;
 

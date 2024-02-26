@@ -1,7 +1,7 @@
 module;
 
 #include <isl/detail/defines.hpp>
-#include <memory>
+#include <isl/std.hpp>
 
 export module isl:memory;
 

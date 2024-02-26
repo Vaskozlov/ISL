@@ -1,8 +1,7 @@
 module;
 
-#include <functional>
 #include <isl/detail/defines.hpp>
-#include <variant>
+#include <isl/std.hpp>
 
 export module isl:lazy;
 
