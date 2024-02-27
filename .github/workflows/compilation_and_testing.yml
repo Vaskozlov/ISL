@@ -56,6 +56,7 @@ jobs:
           configurePreset: ninja
           buildPreset: ninja
           testPreset: ninja
+          configurePresetAdditionalArgs: "['-DLIBCXX_DIR=/usr']"
 
       - name: Run CMake (Windows)
         if: runner.os != 'Linux'
