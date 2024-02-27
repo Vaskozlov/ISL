@@ -26,11 +26,21 @@ target_compile_options(std
         -Wno-reserved-user-defined-literal
 )
 
+target_compile_options(std
+        PUBLIC
+        -nostdinc++
+        -I ${LIBCXX_DIR}/include/c++/v1
+)
+
 message(STATUS ${LIBCXX_DIR}/include/c++/v1)
 
 target_link_options(std
         INTERFACE
+        -nostdlib++
         -stdlib=libc++
+        -I ${LIBCXX_DIR}/include/c++/v1
+        -L ${LIBCXX_DIR}/lib
+        -Wl,-rpath,${LIBCXX_DIR}/lib
         -L${LIBCXX_DIR}/lib
         -Wl,-rpath,${LIBCXX_DIR}/lib
 )
