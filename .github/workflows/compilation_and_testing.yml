@@ -19,8 +19,8 @@ jobs:
             os: ubuntu-latest
             vcpkgCommitId: 'c3801cf53c614ffc54c94051d124eba097b057b1'
             docker: "vaskozlov/gcc-clang-cmake"
-            cc: "clang-19"
-            cxx: "clang++-19"
+            cc: "/usr/local/bin/clang"
+            cxx: "/usr/local/bin/clang++"
 
     steps:
       - uses: actions/checkout@v4
