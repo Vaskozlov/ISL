@@ -36,12 +36,4 @@
           Catch2::Catch2WithMain
   )
 
-  if (PRECOMPILED_HEADER)
-      target_precompile_headers(
-              isl-catch
-              REUSE_FROM
-              isl-lexer
-      )
-  endif ()
-
   add_test(isl-catch-test isl-catch)

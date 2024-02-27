@@ -1,6 +1,6 @@
 module;
 #include <isl/core/defines.hpp>
-#include <isl/std.hpp>
+
 export module isl.collection:range;
 
 export import isl.core;
@@ -8,7 +8,7 @@ export import :pair;
 
 export namespace isl
 {
-    template<std::unsigned_integral T = size_t>
+    template<std::unsigned_integral T = std::size_t>
     class Range
       : public AutoImplementedIteratorMethods<Range<T>>
       , public detail::TrivialPair<T, T>

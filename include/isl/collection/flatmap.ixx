@@ -1,7 +1,7 @@
 module;
 
 #include <isl/core/defines.hpp>
-#include <isl/std.hpp>
+
 
 export module isl.collection:flatmap;
 
@@ -10,7 +10,7 @@ export import :pair;
 
 export namespace isl
 {
-    template<typename Key, typename Value, size_t Size, typename Pred = std::equal_to<>>
+    template<typename Key, typename Value, std::size_t Size, typename Pred = std::equal_to<>>
     class StaticFlatmap
       : public AutoImplementedIteratorMethods<StaticFlatmap<Key, Value, Size, Pred>>
     {
@@ -24,15 +24,15 @@ export namespace isl
 
     private:
         storage_t storage{};
-        size_t occupied{};
+        std::size_t occupied{};
 
     public:
-        ISL_DECL auto size() const noexcept -> size_t
+        ISL_DECL auto size() const noexcept -> std::size_t
         {
             return occupied;
         }
 
-        ISL_DECL static auto capacity() noexcept -> size_t
+        ISL_DECL static auto capacity() noexcept -> std::size_t
         {
             return Size;
         }

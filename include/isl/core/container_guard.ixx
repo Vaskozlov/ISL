@@ -1,9 +1,8 @@
 module;
-
 #include <isl/core/defines.hpp>
-#include <isl/std.hpp>
-
 export module isl.core:container_guard;
+
+export import std;
 
 export namespace isl::detail
 {

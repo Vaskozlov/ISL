@@ -1,7 +1,6 @@
 module;
 
 #include <isl/core/defines.hpp>
-#include <isl/std.hpp>
 
 export module isl.collection:string_view;
 
@@ -12,7 +11,7 @@ export namespace isl
     namespace detail
     {
         template<typename T>
-        ISL_DECL auto strlen(T &&str) noexcept -> size_t
+        ISL_DECL auto strlen(T &&str) noexcept -> std::size_t
         {
             return std::basic_string_view{std::forward<T>(str)}.size();
         }
@@ -48,18 +47,18 @@ export namespace isl
 
     private:
         pointer string{nullptr};
-        size_t length{0};
+        std::size_t length{0};
 
     public:
         BasicStringView() noexcept = default;
 
-        template<size_t N>
+        template<std::size_t N>
         constexpr explicit BasicStringView(const std::array<CharT, N> &char_array) noexcept
           : string{char_array.data()}
           , length{char_array.size()}
         {}
 
-        constexpr BasicStringView(pointer char_pointer, size_t string_length) noexcept
+        constexpr BasicStringView(pointer char_pointer, std::size_t string_length) noexcept
           : string{char_pointer}
           , length{string_length}
         {}
@@ -87,7 +86,7 @@ export namespace isl
           , length{str.size()}
         {}
 
-        ISL_DECL auto size() const noexcept -> size_t
+        ISL_DECL auto size() const noexcept -> std::size_t
         {
             return length;
         }
@@ -112,14 +111,14 @@ export namespace isl
             return string + length;
         }
 
-        ISL_DECL auto substr(size_t first) const noexcept -> BasicStringView
+        ISL_DECL auto substr(std::size_t first) const noexcept -> BasicStringView
         {
             first = std::min(size(), first);
 
             return {begin() + first, end()};
         }
 
-        ISL_DECL auto substr(size_t first, size_t len) const noexcept -> BasicStringView
+        ISL_DECL auto substr(std::size_t first, std::size_t len) const noexcept -> BasicStringView
         {
             auto last = first + len;
 
@@ -141,7 +140,7 @@ export namespace isl
         }
 
         ISL_UNSAFE_VERSION
-        ISL_DECL auto find(CharT chr, size_t offset = 0) const noexcept -> size_t
+        ISL_DECL auto find(CharT chr, std::size_t offset = 0) const noexcept -> std::size_t
         {
             if (offset >= length) {
                 return npos;
@@ -152,7 +151,7 @@ export namespace isl
         }
 
         ISL_SAFE_VERSION
-        ISL_DECL auto find(CharT chr, size_t offset = 0) const noexcept -> std::optional<size_t>
+        ISL_DECL auto find(CharT chr, std::size_t offset = 0) const noexcept -> std::optional<std::size_t>
         {
             auto result = find<FunctionAPI::UNSAFE>(chr, offset);
 
@@ -164,7 +163,7 @@ export namespace isl
         }
 
         ISL_UNSAFE_VERSION
-        ISL_DECL auto find(CharT chr, iterator from) const noexcept -> size_t
+        ISL_DECL auto find(CharT chr, iterator from) const noexcept -> std::size_t
         {
             if (from >= end()) {
                 return npos;
@@ -175,7 +174,7 @@ export namespace isl
         }
 
         ISL_SAFE_VERSION
-        ISL_DECL auto find(CharT chr, iterator from) const noexcept -> std::optional<size_t>
+        ISL_DECL auto find(CharT chr, iterator from) const noexcept -> std::optional<std::size_t>
         {
             auto result = find<FunctionAPI::UNSAFE>(chr, from);
 
@@ -198,14 +197,14 @@ export namespace isl
          * @return index on success or npos on failure
          */
         ISL_UNSAFE_VERSION
-        ISL_DECL auto findMatchingPair(CharT starter, CharT ender) const noexcept -> size_t
+        ISL_DECL auto findMatchingPair(CharT starter, CharT ender) const noexcept -> std::size_t
         {
-            auto pairs_count = as<size_t>(0);
+            auto pairs_count = as<std::size_t>(0);
 
             const auto matched_pair_iterator =
                 std::ranges::find_if(*this, [&pairs_count, starter, ender](CharT chr) {
-                    pairs_count += as<size_t>(chr == starter);
-                    pairs_count -= as<size_t>(chr == ender);
+                    pairs_count += as<std::size_t>(chr == starter);
+                    pairs_count -= as<std::size_t>(chr == ender);
                     return pairs_count == 0;
                 });
 
@@ -224,7 +223,7 @@ export namespace isl
          */
         ISL_SAFE_VERSION
         ISL_DECL auto
-            findMatchingPair(CharT starter, CharT ender) const noexcept -> std::optional<size_t>
+            findMatchingPair(CharT starter, CharT ender) const noexcept -> std::optional<std::size_t>
         {
             auto result = findMatchingPair<FunctionAPI::UNSAFE>(starter, ender);
 
@@ -236,7 +235,7 @@ export namespace isl
         }
 
         ISL_UNSAFE_VERSION
-        ISL_DECL auto rfind(CharT chr, size_t offset = 0) const noexcept -> size_t
+        ISL_DECL auto rfind(CharT chr, std::size_t offset = 0) const noexcept -> std::size_t
         {
             if (offset >= length) {
                 return npos;
@@ -247,7 +246,7 @@ export namespace isl
         }
 
         ISL_SAFE_VERSION
-        ISL_DECL auto rfind(CharT chr, size_t offset = 0) const noexcept -> std::optional<size_t>
+        ISL_DECL auto rfind(CharT chr, std::size_t offset = 0) const noexcept -> std::optional<std::size_t>
         {
             auto result = rfind<FunctionAPI::UNSAFE>(chr, offset);
 
@@ -295,7 +294,7 @@ export namespace isl
         }
 
         ISL_UNSAFE_VERSION
-        ISL_DECL auto changeLength(size_t new_length) const noexcept -> BasicStringView
+        ISL_DECL auto changeLength(std::size_t new_length) const noexcept -> BasicStringView
         {
             auto new_string = *this;
             new_string.length = new_length;
@@ -303,7 +302,7 @@ export namespace isl
         }
 
         ISL_SAFE_VERSION
-        ISL_DECL auto changeLength(size_t new_length) const -> BasicStringView
+        ISL_DECL auto changeLength(std::size_t new_length) const -> BasicStringView
         {
             if (new_length > length) {
                 throw std::invalid_argument{"New length is greater than the old one"};
@@ -349,12 +348,12 @@ export namespace isl
             return *(end() - 1);
         }
 
-        ISL_DECL auto operator[](size_t index) const -> CharT
+        ISL_DECL auto operator[](std::size_t index) const -> CharT
         {
             return at(index);
         }
 
-        ISL_DECL auto at(size_t index) const -> CharT
+        ISL_DECL auto at(std::size_t index) const -> CharT
         {
             if (index >= length) {
                 throw std::out_of_range("index out of range");
@@ -363,7 +362,7 @@ export namespace isl
             return string[index];
         }
 
-        template<std::constructible_from<const CharT *, size_t> T>
+        template<std::constructible_from<const CharT *, std::size_t> T>
         ISL_DECL explicit operator T() const
         {
             return {string, length};
@@ -389,7 +388,7 @@ export namespace isl
         {
             auto min_size = std::min(size(), std::size(other));
 
-            for (auto i = as<size_t>(0); i != min_size; ++i) {
+            for (auto i = as<std::size_t>(0); i != min_size; ++i) {
                 if (this->operator[](i) != other[i]) {
                     return this->operator[](i) <=> other[i];
                 }
@@ -400,40 +399,40 @@ export namespace isl
 
     private:
         template<typename T>
-        ISL_DECL static auto distance(T first, T last) noexcept -> size_t
+        ISL_DECL static auto distance(T first, T last) noexcept -> std::size_t
         {
-            return as<size_t>(std::distance(first, last));
+            return as<std::size_t>(std::distance(first, last));
         }
     };
 
     namespace string_view_literals
     {
         [[nodiscard]] consteval auto
-            operator""_sv(const char *string, size_t length) -> BasicStringView<char>
+            operator""_sv(const char *string, std::size_t length) -> BasicStringView<char>
         {
             return {string, length};
         }
 
         [[nodiscard]] consteval auto
-            operator""_sv(const char8_t *string, size_t length) -> BasicStringView<char8_t>
+            operator""_sv(const char8_t *string, std::size_t length) -> BasicStringView<char8_t>
         {
             return {string, length};
         }
 
         [[nodiscard]] consteval auto
-            operator""_sv(const char16_t *string, size_t length) -> BasicStringView<char16_t>
+            operator""_sv(const char16_t *string, std::size_t length) -> BasicStringView<char16_t>
         {
             return {string, length};
         }
 
         [[nodiscard]] consteval auto
-            operator""_sv(const char32_t *string, size_t length) -> BasicStringView<char32_t>
+            operator""_sv(const char32_t *string, std::size_t length) -> BasicStringView<char32_t>
         {
             return {string, length};
         }
 
         [[nodiscard]] consteval auto
-            operator""_sv(const wchar_t *string, size_t length) -> BasicStringView<wchar_t>
+            operator""_sv(const wchar_t *string, std::size_t length) -> BasicStringView<wchar_t>
         {
             return {string, length};
         }

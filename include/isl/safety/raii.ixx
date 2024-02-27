@@ -1,9 +1,9 @@
 module;
 
 #include <isl/core/defines.hpp>
-#include <isl/std.hpp>
 
 export module isl.safety:raii;
+export import std;
 
 export namespace isl {
     template<std::invocable DeleterFunction, std::invocable ConstructorFunction = void(*)()>

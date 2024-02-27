@@ -1,7 +1,7 @@
 module;
 
 #include <isl/core/defines.hpp>
-#include <isl/std.hpp>
+
 
 export module isl.algorithms:join;
 
@@ -31,7 +31,7 @@ export namespace isl {
         return result;
     }
 
-    template<Iterable Container, typename Function, size_t N>
+    template<Iterable Container, typename Function, std::size_t N>
     [[nodiscard]] ISL_INLINE auto join(
         Container&&container, Function&&function, const CArray<char, N>&separator) -> std::string {
         return join(
@@ -62,7 +62,7 @@ export namespace isl {
         }
     }
 
-    template<Iterable Container, size_t N>
+    template<Iterable Container, std::size_t N>
     [[nodiscard]] ISL_INLINE auto
     join(Container&&container, const CArray<char, N>&separator) -> std::string {
         return join(std::forward<Container>(container), as<std::string_view>(separator));

@@ -1,9 +1,6 @@
-module;
-
-#include <isl/std.hpp>
-
 export module isl.core:types;
 
+export import std;
 export import :concepts;
 export import :container_guard;
 
@@ -28,7 +25,7 @@ export namespace isl
     template<typename T>
     using Optional = std::optional<T>;
 
-    template<typename T, size_t Size>
+    template<typename T, std::size_t Size>
     using Array = detail::ContainerGuard<std::array<T, Size>>;
 
     template<typename T, typename Alloc = std::allocator<T>>
@@ -40,6 +37,6 @@ export namespace isl
     using U32String = detail::ContainerGuard<std::u32string>;
     using WString = detail::ContainerGuard<std::wstring>;
 
-    template<typename T, size_t Size>
+    template<typename T, std::size_t Size>
     using CArray = T[Size];
 }// namespace isl

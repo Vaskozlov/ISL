@@ -1,6 +1,6 @@
 module;
 #include <isl/core/defines.hpp>
-#include <isl/std.hpp>
+
 export module isl.collection:utf_set;
 
 export import isl.core;
@@ -10,7 +10,7 @@ export namespace isl
 {
     class UtfSet
     {
-        static constexpr auto smallStorageSize = as<size_t>(128);
+        static constexpr auto smallStorageSize = as<std::size_t>(128);
 
         std::bitset<smallStorageSize> smallStorage{};
         std::unordered_set<char32_t> storage;

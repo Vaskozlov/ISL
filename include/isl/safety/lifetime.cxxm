@@ -1,6 +1,6 @@
 module;
 
-#include <isl/std.hpp>
+
 
 module isl.safety:lifetime_impl;
 import :lifetime;

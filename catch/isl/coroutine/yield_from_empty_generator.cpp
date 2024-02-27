@@ -1,8 +1,8 @@
-#include <isl/std.hpp>
+
 #include <isl/detail/debug/debug.hpp>
 import isl;
 
-static auto intGenerator() -> isl::Generator<size_t>
+static auto intGenerator() -> isl::Generator<std::size_t>
 {
     co_yield isl::as<size_t>(0);
 }

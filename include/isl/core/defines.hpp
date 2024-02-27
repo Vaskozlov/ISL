@@ -1,7 +1,6 @@
 #ifndef ISL_DEFINES_HPP
 #define ISL_DEFINES_HPP
 
-#include <isl/std.hpp>
 
 #define ISL_DECL [[nodiscard]] constexpr
 

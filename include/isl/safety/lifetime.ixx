@@ -1,7 +1,7 @@
 module;
 
 #include <isl/core/defines.hpp>
-#include <isl/std.hpp>
+
 
 export module isl.safety:lifetime;
 
