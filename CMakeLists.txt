@@ -14,10 +14,6 @@ include(cmake/ProjectOptions.cmake)
 include(cmake/CompilerOptions.cmake)
 include(cmake/Libraries.cmake)
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    include(std.cmake)
-endif()
-
 include(include/isl/CMakeLists.txt)
 
 if (ISL_INCLUDE_TESTS)

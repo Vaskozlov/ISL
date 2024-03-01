@@ -1,6 +1,7 @@
 include(FetchContent)
 FetchContent_Declare(
         std_module
+        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external-dependencies
         URL "file://${LIBCXX_DIR}/share/libc++/v1"
         DOWNLOAD_EXTRACT_TIMESTAMP TRUE
         SYSTEM
