@@ -1,7 +1,5 @@
 module;
-
 #include <isl/core/defines.hpp>
-
 export module isl.collection:string_view;
 
 export import isl.core;
@@ -75,15 +73,9 @@ export namespace isl
         {}
 
         // NOLINTNEXTLINE
-        constexpr BasicStringView(std::string_view str) noexcept
-          : string{str.data()}
-          , length{str.size()}
-        {}
-
-        // NOLINTNEXTLINE
-        constexpr BasicStringView(const std::string &str) noexcept
-          : string{str.c_str()}
-          , length{str.size()}
+        constexpr BasicStringView(const StringLike<CharT> auto &str) noexcept
+          : string{std::data(str)}
+          , length{std::size(str)}
         {}
 
         ISL_DECL auto size() const noexcept -> std::size_t
@@ -151,7 +143,8 @@ export namespace isl
         }
 
         ISL_SAFE_VERSION
-        ISL_DECL auto find(CharT chr, std::size_t offset = 0) const noexcept -> std::optional<std::size_t>
+        ISL_DECL auto
+            find(CharT chr, std::size_t offset = 0) const noexcept -> std::optional<std::size_t>
         {
             auto result = find<FunctionAPI::UNSAFE>(chr, offset);
 
@@ -190,6 +183,14 @@ export namespace isl
             return find<FunctionAPI::SAFE>(chr).has_value();
         }
 
+        template<std::integral T>
+        ISL_DECL auto toInt(std::size_t base = 10)
+        {
+            T value = 0;
+            std::from_chars(begin(), end(), value, base);
+            return value;
+        }
+
         /**
          * @brief returns index of the element, which closes range opened with starter
          * @param starter character, that starts range
@@ -222,8 +223,8 @@ export namespace isl
          * @return index on success or std::nullopt failure
          */
         ISL_SAFE_VERSION
-        ISL_DECL auto
-            findMatchingPair(CharT starter, CharT ender) const noexcept -> std::optional<std::size_t>
+        ISL_DECL auto findMatchingPair(CharT starter, CharT ender) const noexcept
+            -> std::optional<std::size_t>
         {
             auto result = findMatchingPair<FunctionAPI::UNSAFE>(starter, ender);
 
@@ -246,7 +247,8 @@ export namespace isl
         }
 
         ISL_SAFE_VERSION
-        ISL_DECL auto rfind(CharT chr, std::size_t offset = 0) const noexcept -> std::optional<std::size_t>
+        ISL_DECL auto
+            rfind(CharT chr, std::size_t offset = 0) const noexcept -> std::optional<std::size_t>
         {
             auto result = rfind<FunctionAPI::UNSAFE>(chr, offset);
 
@@ -440,9 +442,10 @@ export namespace isl
 }// namespace isl
 
 export template<>
-struct std::formatter<isl::string_view> : public std::formatter<std::string_view>
+struct std::formatter<isl::string_view, char> : std::formatter<std::string_view>
 {
-    auto format(const isl::string_view &str, format_context &ctx) const -> decltype(ctx.out())
+    template<class FormatContext>
+    constexpr auto format(isl::string_view str, FormatContext &ctx) const -> decltype(auto)
     {
         return formatter<std::string_view>::format(isl::as<std::string_view>(str), ctx);
     }
