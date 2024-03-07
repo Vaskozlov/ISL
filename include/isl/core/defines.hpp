@@ -105,13 +105,4 @@
         using base_exception::classname;                                                           \
     }
 
-namespace isl
-{
-    enum class FunctionAPI : bool
-    {
-        SAFE,
-        UNSAFE
-    };
-}// namespace isl
-
 #endif /* ISL_DEFINES_HPP */

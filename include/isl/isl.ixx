@@ -1,5 +1,3 @@
-module;
-
 export module isl;
 
 export import isl.core;

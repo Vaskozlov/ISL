@@ -4,6 +4,12 @@ export import std;
 
 export namespace isl
 {
+    enum class FunctionAPI : bool
+    {
+        SAFE,
+        UNSAFE
+    };
+
     template<typename T>
     concept Trivial = std::is_trivial_v<T>;
 
