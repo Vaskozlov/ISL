@@ -74,6 +74,6 @@ export namespace isl
         }
 
         ISL_DECL auto
-            operator<=>(const ConstString &other) const noexcept -> std::weak_ordering = default;
+            operator<=>(const ConstString &other) const noexcept -> std::strong_ordering = default;
     };
 }// namespace isl

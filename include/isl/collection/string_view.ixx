@@ -380,13 +380,13 @@ export namespace isl
             return std::equal(begin(), end(), std::begin(other), std::end(other));
         }
 
-        ISL_DECL auto operator<=>(BasicStringView other) const noexcept -> std::weak_ordering
+        ISL_DECL auto operator<=>(BasicStringView other) const noexcept -> std::strong_ordering
         {
             return this->operator<=>(as<std::string_view>(other));
         }
 
         ISL_DECL auto
-            operator<=>(const StringLike<CharT> auto &other) const noexcept -> std::weak_ordering
+            operator<=>(const StringLike<CharT> auto &other) const noexcept -> std::strong_ordering
         {
             auto min_size = std::min(size(), std::size(other));
 

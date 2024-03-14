@@ -1,6 +1,5 @@
 module;
 #include <isl/core/defines.hpp>
-
 export module isl.collection:range;
 
 export import isl.core;
@@ -43,7 +42,7 @@ export namespace isl
             }
 
             ISL_DECL auto
-                operator<=>(const iterator &other) const noexcept -> std::weak_ordering = default;
+                operator<=>(const iterator &other) const noexcept -> std::strong_ordering = default;
         };
 
         using detail::TrivialPair<T, T>::TrivialPair;
