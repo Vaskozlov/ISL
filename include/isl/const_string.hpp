@@ -5,7 +5,7 @@
 
 namespace isl
 {
-    template<size_t Size>
+    template<std::size_t Size>
     class ConstString : public AutoImplementedIteratorMethods<ConstString<Size>>
     {
     public:
@@ -36,7 +36,7 @@ namespace isl
             return string.begin() + size();
         }
 
-        ISL_DECL auto size() const noexcept -> size_t
+        ISL_DECL auto size() const noexcept -> std::size_t
         {
             return string.size() - 1;
         }
@@ -58,12 +58,12 @@ namespace isl
             return {string.begin(), string.begin() + size()};
         }
 
-        ISL_DECL auto at(size_t index) const -> char
+        ISL_DECL auto at(std::size_t index) const -> char
         {
             return string.at(index);
         }
 
-        ISL_DECL auto operator[](size_t index) const noexcept -> char
+        ISL_DECL auto operator[](std::size_t index) const noexcept -> char
         {
             return string[index];
         }

@@ -6,7 +6,7 @@
 
 namespace isl
 {
-    template<std::unsigned_integral T = size_t>
+    template<std::unsigned_integral T = std::size_t>
     class Range
       : public AutoImplementedIteratorMethods<Range<T>>
       , public detail::TrivialPair<T, T>

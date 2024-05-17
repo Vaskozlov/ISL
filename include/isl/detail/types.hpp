@@ -29,7 +29,7 @@ namespace isl
     template<typename T>
     using Optional = std::optional<T>;
 
-    template<typename T, size_t Size>
+    template<typename T, std::size_t Size>
     using Array = detail::ContainerGuard<std::array<T, Size>>;
 
     template<typename T, typename Alloc = std::allocator<T>>
@@ -45,7 +45,7 @@ namespace isl
     using Pair = std::conditional_t<
         Trivial<T1> && Trivial<T2>, detail::TrivialPair<T1, T2>, std::pair<T1, T2>>;
 
-    template<typename T, size_t Size>
+    template<typename T, std::size_t Size>
     using CArray = T[Size];
 }// namespace isl
 

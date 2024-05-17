@@ -2,7 +2,7 @@
 #include <isl/detail/debug/debug.hpp>
 #include <isl/generator.hpp>
 
-static auto intGenerator() -> isl::Generator<size_t>
+static auto intGenerator() -> isl::Generator<std::size_t>
 {
     co_yield 0ZU;
 }
