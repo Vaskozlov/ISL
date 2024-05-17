@@ -5,6 +5,7 @@ jobs:
   job:
     name: ${{ matrix.os }}-${{ github.workflow }}
     runs-on: ${{ matrix.os }}
+    container: ${{ matrix.docker }}
     strategy:
       fail-fast: false
       matrix:
@@ -14,6 +15,7 @@ jobs:
             vcpkgCommitId: 'c3801cf53c614ffc54c94051d124eba097b057b1'
           - os: ubuntu-latest
             vcpkgCommitId: 'c3801cf53c614ffc54c94051d124eba097b057b1'
+            docker: "vaskozlov/gcc-clang-cmake"
           - os: macos-latest
             vcpkgCommitId: 'c3801cf53c614ffc54c94051d124eba097b057b1'
 
