@@ -199,7 +199,7 @@ namespace isl
         ISL_UNSAFE_VERSION
         ISL_DECL auto findMatchingPair(CharT starter, CharT ender) const noexcept -> std::size_t
         {
-            auto pairs_count = 0ZU;
+            auto pairs_count = as<std::size_t>(0);
 
             const auto matched_pair_iterator =
                 std::find_if(begin(), end(), [&pairs_count, starter, ender](CharT chr) {
@@ -388,7 +388,7 @@ namespace isl
         {
             auto min_size = std::min(size(), std::size(other));
 
-            for (auto i = 0ZU; i != min_size; ++i) {
+            for (auto i = as<std::size_t>(0); i != min_size; ++i) {
                 if (this->operator[](i) != other[i]) {
                     return this->operator[](i) <=> other[i];
                 }
