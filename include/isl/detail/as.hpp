@@ -9,7 +9,7 @@ namespace isl
     namespace detail
     {
         template<typename From, typename To>
-        concept CanDoUpcastingOrDowncasting =
+        concept CanDoUpcastingOrDownCasting =
             requires(const From *from) { static_cast<const To *>(from); };
     }// namespace detail
 
@@ -49,7 +49,7 @@ namespace isl
                  (!std::derived_from<std::remove_const_t<U>, std::remove_pointer_t<T>>)
     {
         static_assert(
-            detail::CanDoUpcastingOrDowncasting<std::remove_pointer_t<U>, std::remove_pointer_t<T>>,
+            detail::CanDoUpcastingOrDownCasting<std::remove_pointer_t<U>, std::remove_pointer_t<T>>,
             "Cast from U to T failed. Upcast is impossible and downcast is impossible too, "
             "because U and T have different base classes.");
 
