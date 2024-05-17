@@ -5,7 +5,8 @@
 #include <type_traits>
 #include <utility>
 
-namespace isl {
+namespace isl
+{
     template<typename T>
     concept Trivial = std::is_trivial_v<T>;
 
@@ -16,14 +17,14 @@ namespace isl {
     concept Exception = std::is_base_of_v<std::exception, T>;
 
     template<typename T>
-    concept Iterable = requires(const T &value) { (++value.begin()) != value.end(); };
+    concept Iterable = requires(const T &value) { ++value.begin() != value.end(); };
 
     template<typename T, typename... Ts>
     concept IsSameToAny = (... || std::is_same_v<T, Ts>);
 
     template<typename T>
     concept CharacterLiteral =
-    IsSameToAny<std::remove_cvref_t<T>, char, char8_t, char16_t, char32_t, wchar_t>;
+        IsSameToAny<std::remove_cvref_t<T>, char, char8_t, char16_t, char32_t, wchar_t>;
 
     template<typename T>
     concept CharacterArray = std::is_pointer_v<T> || std::is_array_v<T>;

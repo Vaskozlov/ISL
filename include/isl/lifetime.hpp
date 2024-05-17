@@ -18,9 +18,8 @@ namespace isl::lifetime
         private:
             friend LifetimeMonitor;
 
-            static inline constinit std::atomic<Id> CurrentId = 1;               // NOLINT
-            static inline std::mutex LockForObjectCreation;                      // NOLINT
-            static inline Vector<std::unique_ptr<LifetimeObject>> CreatedObjects;// NOLINT
+            static inline constinit std::atomic<Id> CurrentId = 1;// NOLINT
+            static inline std::mutex LockForObjectCreation;       // NOLINT
 
             Id uniqueId{CurrentId.fetch_add(1U, std::memory_order_relaxed)};
             Id weakId{uniqueId};
@@ -56,6 +55,8 @@ namespace isl::lifetime
                 return true;
             }
         };
+
+        inline Vector<std::unique_ptr<LifetimeObject>> CreatedObjects;// NOLINT
     }// namespace detail
 
     class LifetimeMonitor
