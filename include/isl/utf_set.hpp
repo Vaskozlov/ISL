@@ -11,7 +11,7 @@ namespace isl
     {
         static constexpr auto smallStorageSize = 128ZU;
 
-        std::bitset<smallStorageSize> smallStorage{};
+        std::bitset<smallStorageSize> smallStorage;
         std::unordered_set<char32_t> storage;
 
     public:
