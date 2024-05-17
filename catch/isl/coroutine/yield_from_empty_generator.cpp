@@ -4,7 +4,7 @@
 
 static auto intGenerator() -> isl::Generator<size_t>
 {
-    co_yield isl::as<size_t>(0);
+    co_yield 0ZU;
 }
 
 TEST_CASE("YieldFromEmptyGenerator", "[Coroutine]")

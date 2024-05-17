@@ -199,7 +199,7 @@ namespace isl
         ISL_UNSAFE_VERSION
         ISL_DECL auto findMatchingPair(CharT starter, CharT ender) const noexcept -> size_t
         {
-            auto pairs_count = as<size_t>(0);
+            auto pairs_count = 0ZU;
 
             const auto matched_pair_iterator =
                 std::find_if(begin(), end(), [&pairs_count, starter, ender](CharT chr) {
@@ -222,8 +222,8 @@ namespace isl
          * @return index on success or std::nullopt failure
          */
         ISL_SAFE_VERSION
-        ISL_DECL auto findMatchingPair(CharT starter, CharT ender) const noexcept
-            -> std::optional<size_t>
+        ISL_DECL auto
+            findMatchingPair(CharT starter, CharT ender) const noexcept -> std::optional<size_t>
         {
             auto result = findMatchingPair<FunctionAPI::UNSAFE>(starter, ender);
 
@@ -257,8 +257,8 @@ namespace isl
             return result;
         }
 
-        ISL_DECL auto leftStrip(BasicStringView characters_to_strip) const noexcept
-            -> BasicStringView
+        ISL_DECL auto
+            leftStrip(BasicStringView characters_to_strip) const noexcept -> BasicStringView
         {
             auto stripped_string = *this;
             auto has_characters_to_strip = [&stripped_string, &characters_to_strip]() {
@@ -274,8 +274,8 @@ namespace isl
             return stripped_string;
         }
 
-        ISL_DECL auto rightStrip(BasicStringView characters_to_strip) const noexcept
-            -> BasicStringView
+        ISL_DECL auto
+            rightStrip(BasicStringView characters_to_strip) const noexcept -> BasicStringView
         {
             auto stripped_string = *this;
 
@@ -383,12 +383,12 @@ namespace isl
             return this->operator<=>(as<std::string_view>(other));
         }
 
-        ISL_DECL auto operator<=>(const StringLike<CharT> auto &other) const noexcept
-            -> std::weak_ordering
+        ISL_DECL auto
+            operator<=>(const StringLike<CharT> auto &other) const noexcept -> std::weak_ordering
         {
             auto min_size = std::min(size(), std::size(other));
 
-            for (auto i = as<size_t>(0); i != min_size; ++i) {
+            for (auto i = 0ZU; i != min_size; ++i) {
                 if (this->operator[](i) != other[i]) {
                     return this->operator[](i) <=> other[i];
                 }
@@ -407,32 +407,32 @@ namespace isl
 
     namespace string_view_literals
     {
-        [[nodiscard]] consteval auto operator""_sv(const char *string, size_t length)
-            -> BasicStringView<char>
+        [[nodiscard]] consteval auto
+            operator""_sv(const char *string, size_t length) -> BasicStringView<char>
         {
             return {string, length};
         }
 
-        [[nodiscard]] consteval auto operator""_sv(const char8_t *string, size_t length)
-            -> BasicStringView<char8_t>
+        [[nodiscard]] consteval auto
+            operator""_sv(const char8_t *string, size_t length) -> BasicStringView<char8_t>
         {
             return {string, length};
         }
 
-        [[nodiscard]] consteval auto operator""_sv(const char16_t *string, size_t length)
-            -> BasicStringView<char16_t>
+        [[nodiscard]] consteval auto
+            operator""_sv(const char16_t *string, size_t length) -> BasicStringView<char16_t>
         {
             return {string, length};
         }
 
-        [[nodiscard]] consteval auto operator""_sv(const char32_t *string, size_t length)
-            -> BasicStringView<char32_t>
+        [[nodiscard]] consteval auto
+            operator""_sv(const char32_t *string, size_t length) -> BasicStringView<char32_t>
         {
             return {string, length};
         }
 
-        [[nodiscard]] consteval auto operator""_sv(const wchar_t *string, size_t length)
-            -> BasicStringView<wchar_t>
+        [[nodiscard]] consteval auto
+            operator""_sv(const wchar_t *string, size_t length) -> BasicStringView<wchar_t>
         {
             return {string, length};
         }

@@ -9,7 +9,7 @@ namespace isl
 {
     class UtfSet
     {
-        static constexpr auto smallStorageSize = as<size_t>(128);
+        static constexpr auto smallStorageSize = 128ZU;
 
         std::bitset<smallStorageSize> smallStorage{};
         std::unordered_set<char32_t> storage;
