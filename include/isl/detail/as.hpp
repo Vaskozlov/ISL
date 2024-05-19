@@ -11,6 +11,10 @@ namespace isl
         template<typename From, typename To>
         concept CanDoUpcastingOrDownCasting =
             requires(const From *from) { static_cast<const To *>(from); };
+
+        template<typename Dp, typename Bp>
+        concept DerivedOrSame = std::is_same_v<std::remove_cvref_t<Dp>, std::remove_cvref_t<Bp>> ||
+                                std::derived_from<std::remove_cvref_t<Dp>, std::remove_cvref_t<Bp>>;
     }// namespace detail
 
     template<typename T, typename U>
@@ -21,32 +25,28 @@ namespace isl
 
     template<typename T, typename U>
     ISL_DECL auto as(U &value) ISL_NOEXCEPT_IF(static_cast<T>(value)) -> T
-        requires std::is_reference_v<T> &&
-                 std::derived_from<std::remove_const_t<U>, std::remove_cvref_t<T>>
+        requires std::is_reference_v<T> && detail::DerivedOrSame<U, T>
     {
         return static_cast<T>(value);
     }
 
     template<typename T, typename U>
     ISL_DECL auto as(U &value) noexcept(false) -> T
-        requires std::is_reference_v<T> &&
-                 (!std::derived_from<std::remove_const_t<U>, std::remove_reference_t<T>>)
+        requires std::is_reference_v<T> && (!detail::DerivedOrSame<U, T>)
     {
         return dynamic_cast<T>(value);
     }
 
     template<typename T, typename U>
     ISL_DECL auto as(U *value) ISL_NOEXCEPT_IF(static_cast<T>(value)) -> T
-        requires std::is_pointer_v<T> &&
-                 std::derived_from<std::remove_const_t<U>, std::remove_pointer_t<T>>
+        requires std::is_pointer_v<T> && detail::DerivedOrSame<U, std::remove_pointer_t<T>>
     {
         return static_cast<T>(value);
     }
 
     template<typename T, typename U>
     ISL_DECL auto as(U *value) noexcept(false) -> T
-        requires std::is_pointer_v<T> &&
-                 (!std::derived_from<std::remove_const_t<U>, std::remove_pointer_t<T>>)
+        requires std::is_pointer_v<T> && (!detail::DerivedOrSame<U, std::remove_pointer_t<T>>)
     {
         static_assert(
             detail::CanDoUpcastingOrDownCasting<std::remove_pointer_t<U>, std::remove_pointer_t<T>>,

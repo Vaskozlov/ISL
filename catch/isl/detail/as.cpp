@@ -1,27 +1,8 @@
 #include <isl/detail/debug/debug.hpp>
 #include <isl/isl.hpp>
+#include "test_structures.hpp"
 
 // NOLINTBEGIN
-
-struct A
-{
-    A() = default;
-
-    virtual ~A() = default;
-
-    virtual auto getId() const -> int
-    {
-        return 10;
-    }
-};
-
-struct B : A
-{
-    auto getId() const -> int override
-    {
-        return 20;
-    }
-};
 
 TEST_CASE("TestAsOnInts", "[AsConversion]")
 {
