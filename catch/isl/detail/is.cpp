@@ -1,6 +1,6 @@
+#include "test_structures.hpp"
 #include <isl/detail/debug/debug.hpp>
 #include <isl/isl.hpp>
-#include "test_structures.hpp"
 
 // NOLINTBEGIN
 
@@ -28,12 +28,12 @@ TEST_CASE("TestIsOnPointer", "[IsConversion]")
     auto *a = as<A *>(&b);
     auto *b_from_a = as<B *>(a);
 
-    REQUIRE(is<A*>(&b));
-    REQUIRE(is<B*>(&b));
-    REQUIRE(is<A*>(a));
-    REQUIRE(is<B*>(a));
-    REQUIRE(is<A*>(b_from_a));
-    REQUIRE(is<B*>(b_from_a));
+    REQUIRE(is<A *>(&b));
+    REQUIRE(is<B *>(&b));
+    REQUIRE(is<A *>(a));
+    REQUIRE(is<B *>(a));
+    REQUIRE(is<A *>(b_from_a));
+    REQUIRE(is<B *>(b_from_a));
 }
 
 TEST_CASE("TestIsOnReferences", "[IsConversion]")
@@ -45,12 +45,12 @@ TEST_CASE("TestIsOnReferences", "[IsConversion]")
     auto &a = as<A &>(b);
     auto &b_from_a = as<B &>(a);
 
-    REQUIRE(is<A&>(b));
-    REQUIRE(is<B&>(b));
-    REQUIRE(is<A&>(a));
-    REQUIRE(is<B&>(a));
-    REQUIRE(is<A&>(b_from_a));
-    REQUIRE(is<B&>(b_from_a));
+    REQUIRE(is<A &>(b));
+    REQUIRE(is<B &>(b));
+    REQUIRE(is<A &>(a));
+    REQUIRE(is<B &>(a));
+    REQUIRE(is<A &>(b_from_a));
+    REQUIRE(is<B &>(b_from_a));
 }
 
 // NOLINTEND

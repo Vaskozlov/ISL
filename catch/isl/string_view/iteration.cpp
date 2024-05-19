@@ -1,6 +1,6 @@
+#include <algorithm>
 #include <isl/detail/debug/debug.hpp>
 #include <isl/string_view.hpp>
-#include <algorithm>
 
 TEST_CASE("StringViewIteration", "[StringView]")
 {

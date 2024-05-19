@@ -1,7 +1,8 @@
 #include <isl/detail/debug/debug.hpp>
 #include <isl/string_view.hpp>
 
-TEST_CASE("StringViewRfind", "[StringView]") {
+TEST_CASE("StringViewRfind", "[StringView]")
+{
     std::string_view std_string = "Hello, World!";
     isl::string_view isl_string = "Hello, World!";
 

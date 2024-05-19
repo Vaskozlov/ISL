@@ -1,6 +1,6 @@
+#include "test_structures.hpp"
 #include <isl/detail/debug/debug.hpp>
 #include <isl/isl.hpp>
-#include "test_structures.hpp"
 
 // NOLINTBEGIN
 
