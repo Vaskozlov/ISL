@@ -1,13 +1,15 @@
 #ifndef ISL_PROJECT_TEST_STRUCTURES_HPP
 #define ISL_PROJECT_TEST_STRUCTURES_HPP
 
+#include <isl/isl.hpp>
+
 struct A
 {
     A() = default;
 
     virtual ~A() = default;
 
-    virtual auto getId() const -> int
+    ISL_DECL virtual auto getId() const -> int
     {
         return 10;
     }
@@ -15,9 +17,18 @@ struct A
 
 struct B : A
 {
-    auto getId() const -> int override
+    ISL_DECL auto getId() const -> int override
     {
         return 20;
+    }
+};
+
+
+struct C : A
+{
+    ISL_DECL auto getId() const -> int override
+    {
+        return 42;
     }
 };
 

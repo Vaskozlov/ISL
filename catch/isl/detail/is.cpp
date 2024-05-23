@@ -7,50 +7,58 @@
 TEST_CASE("TestIsOnSimilarTypes", "[IsConversion]")
 {
     using namespace isl;
-    auto value = as<i64>(42);
+    constexpr auto value = as<i64>(42);
 
-    REQUIRE(isl::is<i64>(value));
+    STATIC_REQUIRE(isl::is<i64>(value));
 }
 
 TEST_CASE("TestIsOnDifferentTypes", "[IsConversion]")
 {
     using namespace isl;
-    auto value = as<i64>(42);
+    constexpr auto value = as<i64>(42);
 
-    REQUIRE(!isl::is<i32>(value));
+    STATIC_REQUIRE(!isl::is<i32>(value));
 }
 
 TEST_CASE("TestIsOnPointer", "[IsConversion]")
 {
     using namespace isl;
 
-    auto b = B{};
-    auto *a = as<A *>(&b);
-    auto *b_from_a = as<B *>(a);
+    constexpr static auto b = B{};
+    constexpr auto *a = as<const A *>(&b);
+    constexpr auto *b_from_a = as<const B *>(a);
 
-    REQUIRE(is<A *>(&b));
-    REQUIRE(is<B *>(&b));
-    REQUIRE(is<A *>(a));
-    REQUIRE(is<B *>(a));
-    REQUIRE(is<A *>(b_from_a));
-    REQUIRE(is<B *>(b_from_a));
+    STATIC_REQUIRE(is<A *>(&b));
+    STATIC_REQUIRE(is<B *>(&b));
+    STATIC_REQUIRE(is<A *>(a));
+    STATIC_REQUIRE(is<B *>(a));
+    STATIC_REQUIRE(is<A *>(b_from_a));
+    STATIC_REQUIRE(is<B *>(b_from_a));
+
+    STATIC_REQUIRE_FALSE(is<C *>(a));
+    STATIC_REQUIRE_FALSE(is<C *>(&b));
+    STATIC_REQUIRE_FALSE(is<C *>(b_from_a));
 }
 
 TEST_CASE("TestIsOnReferences", "[IsConversion]")
 {
     using namespace isl;
 
-    auto b = B{};
+    constexpr static auto b = B{};
 
-    auto &a = as<A &>(b);
-    auto &b_from_a = as<B &>(a);
+    constexpr auto &a = as<const A &>(b);
+    constexpr auto &b_from_a = as<const B &>(a);
 
-    REQUIRE(is<A &>(b));
-    REQUIRE(is<B &>(b));
-    REQUIRE(is<A &>(a));
-    REQUIRE(is<B &>(a));
-    REQUIRE(is<A &>(b_from_a));
-    REQUIRE(is<B &>(b_from_a));
+    STATIC_REQUIRE(is<A &>(b));
+    STATIC_REQUIRE(is<B &>(b));
+    STATIC_REQUIRE(is<A &>(a));
+    STATIC_REQUIRE(is<B &>(a));
+    STATIC_REQUIRE(is<A &>(b_from_a));
+    STATIC_REQUIRE(is<B &>(b_from_a));
+
+    STATIC_REQUIRE_FALSE(is<C &>(a));
+    STATIC_REQUIRE_FALSE(is<C &>(b));
+    STATIC_REQUIRE_FALSE(is<C &>(b_from_a));
 }
 
 // NOLINTEND
