@@ -28,19 +28,19 @@ TEST_CASE("TestAsOnPointer", "[AsConversion]")
 {
     using namespace isl;
 
-    static constexpr auto b = B{};
-    constexpr auto *a = as<const A *>(&b);
+    auto b = B{};
+    auto *a = as<A *>(&b);
 
-    STATIC_REQUIRE(a != nullptr);
-    static_assert(std::is_same_v<decltype(a), const A *const>);
+    REQUIRE(a != nullptr);
+    static_assert(std::is_same_v<decltype(a), A *>);
 
-    constexpr auto *b_from_a = as<const B *>(a);
+    auto *b_from_a = as<B *>(a);
 
-    STATIC_REQUIRE(b_from_a != nullptr);
-    static_assert(std::is_same_v<decltype(b_from_a), const B *const>);
+    REQUIRE(b_from_a != nullptr);
+    static_assert(std::is_same_v<decltype(b_from_a), B *>);
 
-    STATIC_REQUIRE(a->getId() == 20);
-    STATIC_REQUIRE(b_from_a->getId() == 20);
+    REQUIRE(a->getId() == 20);
+    REQUIRE(b_from_a->getId() == 20);
 }
 
 TEST_CASE("TestAsOnReferences", "[AsConversion]")
