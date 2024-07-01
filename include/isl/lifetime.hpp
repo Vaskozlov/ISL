@@ -3,9 +3,10 @@
 
 #include <atomic>
 #include <exception>
-#include <fmt/format.h>
 #include <isl/isl.hpp>
+#include <memory>
 #include <mutex>
+#include <print>
 
 namespace isl::lifetime
 {
