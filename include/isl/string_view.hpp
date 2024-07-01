@@ -69,7 +69,7 @@ namespace isl
         {}
 
         // NOLINTNEXTLINE
-        constexpr BasicStringView(const CharacterArray auto &str) noexcept
+        constexpr BasicStringView(const AnyTrait<std::is_pointer, std::is_array> auto &str) noexcept
           : string{str}
           , length{detail::strlen(str)}
         {}
@@ -151,7 +151,8 @@ namespace isl
         }
 
         ISL_SAFE_VERSION
-        ISL_DECL auto find(CharT chr, std::size_t offset = 0) const noexcept -> std::optional<std::size_t>
+        ISL_DECL auto
+            find(CharT chr, std::size_t offset = 0) const noexcept -> std::optional<std::size_t>
         {
             auto result = find<FunctionAPI::UNSAFE>(chr, offset);
 
@@ -222,8 +223,8 @@ namespace isl
          * @return index on success or std::nullopt failure
          */
         ISL_SAFE_VERSION
-        ISL_DECL auto
-            findMatchingPair(CharT starter, CharT ender) const noexcept -> std::optional<std::size_t>
+        ISL_DECL auto findMatchingPair(CharT starter, CharT ender) const noexcept
+            -> std::optional<std::size_t>
         {
             auto result = findMatchingPair<FunctionAPI::UNSAFE>(starter, ender);
 
@@ -246,7 +247,8 @@ namespace isl
         }
 
         ISL_SAFE_VERSION
-        ISL_DECL auto rfind(CharT chr, std::size_t offset = 0) const noexcept -> std::optional<std::size_t>
+        ISL_DECL auto
+            rfind(CharT chr, std::size_t offset = 0) const noexcept -> std::optional<std::size_t>
         {
             auto result = rfind<FunctionAPI::UNSAFE>(chr, offset);
 

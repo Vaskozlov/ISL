@@ -1,14 +1,14 @@
 #ifndef ISL_PROJECT_TYPES_HPP
 #define ISL_PROJECT_TYPES_HPP
 
-#include <cmath>
 #include <cinttypes>
+#include <cmath>
 #include <cstddef>
-#include <string>
 #include <isl/detail/as.hpp>
 #include <isl/detail/container_guard.hpp>
 #include <isl/detail/pair.hpp>
 #include <optional>
+#include <string>
 #include <vector>
 
 namespace isl
@@ -46,7 +46,8 @@ namespace isl
 
     template<typename T1, typename T2>
     using Pair = std::conditional_t<
-        Trivial<T1> && Trivial<T2>, detail::TrivialPair<T1, T2>, std::pair<T1, T2>>;
+        std::is_trivial_v<T1> && std::is_trivial_v<T2>, detail::TrivialPair<T1, T2>,
+        std::pair<T1, T2>>;
 
     template<typename T, std::size_t Size>
     using CArray = T[Size];

@@ -9,7 +9,7 @@ namespace isl::detail
     template<typename T1, typename T2>
     class ISL_TRIVIAL_ABI TrivialPair
     {
-        static_assert(Trivial<T1> && Trivial<T2>);
+        static_assert(std::is_trivial_v<T1> && std::is_trivial_v<T2>);
 
     public:
         T1 first{};
