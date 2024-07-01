@@ -4,28 +4,28 @@
 
 TEST_CASE("StringViewConstructionEmptyArray", "[StringView]")
 {
-    isl::string_view string{""};
-    REQUIRE(string.empty());
+    constexpr static isl::string_view string{""};
+    STATIC_REQUIRE(string.empty());
 }
 
 TEST_CASE("StringViewConstructionArray", "[StringView]")
 {
-    isl::string_view string{"Hello, World!"};
-    REQUIRE(string.size() == 13);
+    constexpr static isl::string_view string{"Hello, World!"};
+    STATIC_REQUIRE(string.size() == 13);
 }
 
 TEST_CASE("StringViewConstructionEmptyPointer", "[StringView]")
 {
-    const char *str = "";
-    isl::string_view string{str};
-    REQUIRE(string.empty());
+    constexpr static char *str = "";
+    constexpr static isl::string_view string{str};
+    STATIC_REQUIRE(string.empty());
 }
 
 TEST_CASE("StringViewConstructionPointer", "[StringView]")
 {
-    const char *str = "Hello, World!";
-    isl::string_view string{str};
-    REQUIRE(string.size() == 13);
+    constexpr static char *str = "Hello, World!";
+    constexpr static isl::string_view string{str};
+    STATIC_REQUIRE(string.size() == 13);
 }
 
 TEST_CASE("StringViewConstructionFromTwoPointers", "[StringView]")

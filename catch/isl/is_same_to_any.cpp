@@ -3,6 +3,6 @@
 
 TEST_CASE("SameToAny", "[Concepts]")
 {
-    REQUIRE(isl::IsSameToAny<int, float, double, int>);
-    REQUIRE(!isl::IsSameToAny<int, float, double, unsigned int>);
+    STATIC_REQUIRE(isl::IsSameToAny<int, float, double, int>);
+    STATIC_REQUIRE(!isl::IsSameToAny<int, float, double, unsigned int>);
 }

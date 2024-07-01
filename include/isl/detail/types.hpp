@@ -1,7 +1,10 @@
 #ifndef ISL_PROJECT_TYPES_HPP
 #define ISL_PROJECT_TYPES_HPP
 
+#include <cmath>
 #include <cinttypes>
+#include <cstddef>
+#include <string>
 #include <isl/detail/as.hpp>
 #include <isl/detail/container_guard.hpp>
 #include <isl/detail/pair.hpp>
