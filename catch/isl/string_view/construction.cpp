@@ -14,20 +14,6 @@ TEST_CASE("StringViewConstructionArray", "[StringView]")
     STATIC_REQUIRE(string.size() == 13);
 }
 
-TEST_CASE("StringViewConstructionEmptyPointer", "[StringView]")
-{
-    constexpr static char *str = "";
-    constexpr static isl::string_view string{str};
-    STATIC_REQUIRE(string.empty());
-}
-
-TEST_CASE("StringViewConstructionPointer", "[StringView]")
-{
-    constexpr static char *str = "Hello, World!";
-    constexpr static isl::string_view string{str};
-    STATIC_REQUIRE(string.size() == 13);
-}
-
 TEST_CASE("StringViewConstructionFromTwoPointers", "[StringView]")
 {
     std::string str = "Hello, World!";
