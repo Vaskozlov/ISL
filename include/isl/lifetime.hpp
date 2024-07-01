@@ -6,7 +6,6 @@
 #include <isl/isl.hpp>
 #include <memory>
 #include <mutex>
-#include <print>
 
 namespace isl::lifetime
 {
