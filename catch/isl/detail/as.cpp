@@ -10,7 +10,7 @@ TEST_CASE("TestAsOnInts", "[AsConversion]")
 
     constexpr auto forty_two = as<i64>(42);
 
-    static_assert(std::is_same_v<const i64, decltype(forty_two)>);
+    static_assert(std::same_as<const i64, decltype(forty_two)>);
     STATIC_REQUIRE(forty_two == 42);
 }
 
@@ -20,7 +20,7 @@ TEST_CASE("TestAsOnFloats", "[AsConversion]")
 
     constexpr auto forty_two = as<f32>(42);
 
-    static_assert(std::is_same_v<const f32, decltype(forty_two)>);
+    static_assert(std::same_as<const f32, decltype(forty_two)>);
     STATIC_REQUIRE((forty_two - 42.0F) <= 1e-10F);
 }
 
@@ -32,12 +32,12 @@ TEST_CASE("TestAsOnPointer", "[AsConversion]")
     auto *a = as<A *>(&b);
 
     REQUIRE(a != nullptr);
-    static_assert(std::is_same_v<decltype(a), A *>);
+    static_assert(std::same_as<decltype(a), A *>);
 
     auto *b_from_a = as<B *>(a);
 
     REQUIRE(b_from_a != nullptr);
-    static_assert(std::is_same_v<decltype(b_from_a), B *>);
+    static_assert(std::same_as<decltype(b_from_a), B *>);
 
     REQUIRE(a->getId() == 20);
     REQUIRE(b_from_a->getId() == 20);
@@ -50,10 +50,10 @@ TEST_CASE("TestAsOnReferences", "[AsConversion]")
     constexpr static auto b = B{};
 
     constexpr auto &a = as<const A &>(b);
-    static_assert(std::is_same_v<decltype(a), const A &>);
+    static_assert(std::same_as<decltype(a), const A &>);
 
     const auto &b_from_a = as<const B &>(a);
-    static_assert(std::is_same_v<decltype(b_from_a), const B &>);
+    static_assert(std::same_as<decltype(b_from_a), const B &>);
 
     STATIC_REQUIRE(a.getId() == 20);
     STATIC_REQUIRE(b_from_a.getId() == 20);

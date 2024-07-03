@@ -128,7 +128,7 @@ namespace isl
 
         template<typename U>
         auto yield_value(U &&new_value) -> suspend_always
-            requires(std::is_same_v<T, std::remove_cvref_t<U>>)
+            requires(std::same_as<T, std::remove_cvref_t<U>>)
         {
             if constexpr (TrivialTypeStored) {
                 value = new_value;

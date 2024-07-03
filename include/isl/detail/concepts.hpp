@@ -26,7 +26,7 @@ namespace isl
     concept Iterable = requires(const T &value) { ++value.begin() != value.end(); };
 
     template<typename T, typename... Ts>
-    concept IsSameToAny = (... || std::is_same_v<T, Ts>);
+    concept IsSameToAny = (... || std::same_as<T, Ts>);
 
     template<typename T>
     concept CharacterLiteral =
