@@ -40,6 +40,16 @@ namespace isl::lifetime
             friend auto completeMove(LifetimeObject &from, LifetimeObject &to) -> void;
             friend auto completeCopy(const LifetimeObject &from, LifetimeObject &to) -> void;
 
+            ISL_DECL auto getUniqueId() const noexcept -> Id
+            {
+                return uniqueId;
+            }
+
+            ISL_DECL auto getWeakId() const noexcept -> Id
+            {
+                return weakId;
+            }
+
             ISL_DECL auto canBeUsed() const noexcept -> bool
             {
                 return !moved && !deleted;
@@ -72,6 +82,16 @@ namespace isl::lifetime
 
         auto operator=(LifetimeMonitor &&other) noexcept -> LifetimeMonitor &;
         auto operator=(const LifetimeMonitor &other) -> LifetimeMonitor &;
+
+        ISL_DECL auto getUniqueId() const noexcept -> Id
+        {
+            return lifetimeObject->getUniqueId();
+        }
+
+        ISL_DECL auto getWeakId() const noexcept -> Id
+        {
+            return lifetimeObject->getWeakId();
+        }
     };
 }// namespace isl::lifetime
 
