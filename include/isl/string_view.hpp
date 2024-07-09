@@ -1,7 +1,6 @@
 #ifndef ISL_PROJECT_STRING_VIEW_HPP
 #define ISL_PROJECT_STRING_VIEW_HPP
 
-#include <fmt/format.h>
 #include <isl/isl.hpp>
 #include <isl/iterator.hpp>
 #include <numeric>
@@ -441,6 +440,8 @@ namespace isl
     }// namespace string_view_literals
 }// namespace isl
 
+
+#ifdef FMT_FORMAT_H_
 template<>
 struct fmt::formatter<isl::string_view> : public fmt::formatter<std::string_view>
 {
@@ -449,5 +450,6 @@ struct fmt::formatter<isl::string_view> : public fmt::formatter<std::string_view
         return formatter<std::string_view>::format(isl::as<std::string_view>(str), ctx);
     }
 };
+#endif /* FMT_FORMAT_H_ */
 
 #endif /* ISL_PROJECT_STRING_VIEW_HPP*/

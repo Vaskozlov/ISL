@@ -1,7 +1,6 @@
 #ifndef CCL_PROJECT_RAII_HPP
 #define CCL_PROJECT_RAII_HPP
 
-#include <fmt/format.h>
 #include <isl/isl.hpp>
 
 namespace isl

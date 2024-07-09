@@ -28,16 +28,16 @@ TEST_CASE("TestIsOnPointer", "[IsConversion]")
     auto *a = as<const A *>(&b);
     auto *b_from_a = as<const B *>(a);
 
-    REQUIRE(is< A *>(&b));
-    REQUIRE(is< B *>(&b));
-    REQUIRE(is< A *>(a));
-    REQUIRE(is< B *>(a));
-    REQUIRE(is< A *>(b_from_a));
-    REQUIRE(is< B *>(b_from_a));
+    REQUIRE(is<A *>(&b));
+    REQUIRE(is<B *>(&b));
+    REQUIRE(is<A *>(a));
+    REQUIRE(is<B *>(a));
+    REQUIRE(is<A *>(b_from_a));
+    REQUIRE(is<B *>(b_from_a));
 
-    REQUIRE(is< C *>(a));
-    REQUIRE(is< C *>(&b));
-    REQUIRE(is< C *>(b_from_a));
+    REQUIRE_FALSE(is<C *>(a));
+    REQUIRE_FALSE(is<C *>(&b));
+    REQUIRE_FALSE(is<C *>(b_from_a));
 }
 
 TEST_CASE("TestIsOnReferences", "[IsConversion]")
