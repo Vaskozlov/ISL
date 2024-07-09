@@ -1,6 +1,7 @@
 #ifndef ISL_PROJECT_STRING_VIEW_HPP
 #define ISL_PROJECT_STRING_VIEW_HPP
 
+#include <algorithm>
 #include <isl/isl.hpp>
 #include <isl/iterator.hpp>
 #include <numeric>
