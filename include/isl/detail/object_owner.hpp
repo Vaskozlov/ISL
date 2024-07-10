@@ -158,9 +158,15 @@ namespace isl
 #ifdef ISL_DEBUG
     template<typename T>
     using ObjectOwner = detail::ObjectOwnerDebug<T>;
+
+    template<typename T>
+    using WeakObjectOwner = detail::WeakObjectOwnerDebug<T>;
 #else
     template<typename T>
     using ObjectOwner = detail::ObjectOwnerRelease<T>;
+
+    template<typename T>
+    using WeakObjectOwner = detail::WeakObjectOwnerRelease<T>;
 #endif /* ISL_DEBUG */
 }// namespace isl
 
