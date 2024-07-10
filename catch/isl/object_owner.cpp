@@ -8,8 +8,12 @@ TEST_CASE("ObjectOwnerDebugString", "[ObjectOwner]")
 
     {
         auto object = isl::detail::ObjectOwnerDebug<std::string>{"Hello, world!"};
+        auto object_with_the_same_lifetime = std::string{};
         auto object_copy = object;
         auto inner_reference = object.createReference();
+        auto reference_with_same_lifetime =
+            inner_reference.createReferenceWithSameLifetime(object_with_the_same_lifetime);
+
         outer_reference =
             std::make_unique<isl::detail::ObjectReferenceDebug<std::string>>(inner_reference);
 

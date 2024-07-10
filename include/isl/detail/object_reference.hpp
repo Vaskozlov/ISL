@@ -28,7 +28,7 @@ namespace isl::detail
         auto operator=(ObjectReferenceDebug &&) -> void = delete;
         auto operator=(const ObjectReferenceDebug &) -> void = delete;
 
-        auto operator->() -> T *
+        auto operator->() ISL_LIFETIMEBOUND->T *
         {
             if (*isObjectDestroyed) {
                 throw std::logic_error("An attempt to use dead reference");
@@ -37,7 +37,7 @@ namespace isl::detail
             return object;
         }
 
-        auto operator->() const -> const T *
+        auto operator->() const ISL_LIFETIMEBOUND->const T *
         {
             if (*isObjectDestroyed) {
                 throw std::logic_error("An attempt to use dead reference");
@@ -46,7 +46,7 @@ namespace isl::detail
             return object;
         }
 
-        auto operator*() -> T &
+        auto operator*() ISL_LIFETIMEBOUND->T &
         {
             if (*isObjectDestroyed) {
                 throw std::logic_error("An attempt to use dead reference");
@@ -55,7 +55,7 @@ namespace isl::detail
             return *object;
         }
 
-        auto operator*() const -> const T &
+        auto operator*() const ISL_LIFETIMEBOUND->const T &
         {
             if (*isObjectDestroyed) {
                 throw std::logic_error("An attempt to use dead reference");
@@ -65,17 +65,18 @@ namespace isl::detail
         }
 
         template<typename U>
-        [[nodiscard]] auto createReferenceWithSameLifetime(U &value) -> ObjectReferenceDebug<U>
+        [[nodiscard]] auto createReferenceWithSameLifetime(U &value) const ISL_LIFETIMEBOUND
+            -> ObjectReferenceDebug<U>
         {
             return ObjectReferenceDebug<U>{value, isObjectDestroyed};
         }
 
-        ISL_DECL auto getPtr() noexcept -> T *
+        ISL_DECL auto getPtr() noexcept ISL_LIFETIMEBOUND -> T *
         {
             return object;
         }
 
-        ISL_DECL auto getPtr() const noexcept -> const T *
+        ISL_DECL auto getPtr() const noexcept ISL_LIFETIMEBOUND -> const T *
         {
             return object;
         }
@@ -100,38 +101,39 @@ namespace isl::detail
         auto operator=(ObjectReferenceRelease &&) -> void = delete;
         auto operator=(const ObjectReferenceRelease &) -> void = delete;
 
-        ISL_DECL auto operator->() noexcept -> T *
+        ISL_DECL auto operator->() noexcept ISL_LIFETIMEBOUND->T *
         {
             return object;
         }
 
-        ISL_DECL auto operator->() const noexcept -> const T *
+        ISL_DECL auto operator->() const noexcept ISL_LIFETIMEBOUND->const T *
         {
             return object;
         }
 
-        ISL_DECL auto operator*() noexcept -> T &
+        ISL_DECL auto operator*() noexcept ISL_LIFETIMEBOUND->T &
         {
             return *object;
         }
 
-        ISL_DECL auto operator*() const noexcept -> const T &
+        ISL_DECL auto operator*() const noexcept ISL_LIFETIMEBOUND->const T &
         {
             return *object;
         }
 
         template<typename U>
-        ISL_DECL auto createReferenceWithSameLifetime(U &value) -> ObjectReferenceRelease<U>
+        ISL_DECL auto createReferenceWithSameLifetime(U &value) const noexcept ISL_LIFETIMEBOUND
+            -> ObjectReferenceRelease<U>
         {
             return ObjectReferenceRelease<U>{value};
         }
 
-        ISL_DECL auto getPtr() noexcept -> T *
+        ISL_DECL auto getPtr() noexcept ISL_LIFETIMEBOUND -> T *
         {
             return object;
         }
 
-        ISL_DECL auto getPtr() const noexcept -> const T *
+        ISL_DECL auto getPtr() const noexcept ISL_LIFETIMEBOUND -> const T *
         {
             return object;
         }
