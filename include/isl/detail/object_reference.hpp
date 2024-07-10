@@ -11,8 +11,8 @@ namespace isl::detail
     class ObjectReferenceDebug
     {
     private:
-        std::shared_ptr<bool> isObjectDestroyed;
         T *object{nullptr};
+        std::shared_ptr<bool> isObjectDestroyed;
 
     public:
         ObjectReferenceDebug(const ObjectReferenceDebug &) = default;
