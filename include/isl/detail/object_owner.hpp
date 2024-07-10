@@ -86,10 +86,10 @@ namespace isl
 {
 #ifdef ISL_DEBUG
     template<typename T>
-    using ObejctOwner = detail::ObjectOwnerDebug<T>;
+    using ObjectOwner = detail::ObjectOwnerDebug<T>;
 #else
     template<typename T>
-    using ObejctOwner = detail::ObjectOwnerRelease<T>;
+    using ObjectOwner = detail::ObjectOwnerRelease<T>;
 #endif /* ISL_DEBUG */
 }// namespace isl
 
