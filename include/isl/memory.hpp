@@ -2,6 +2,7 @@
 #define ISL_PROJECT_MEMORY_HPP
 
 #include <isl/isl.hpp>
+#include <isl/detail/object_owner.hpp>
 
 namespace isl
 {
