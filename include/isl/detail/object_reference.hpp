@@ -64,6 +64,12 @@ namespace isl::detail
             return *object;
         }
 
+        template<typename U>
+        [[nodiscard]] auto createReferenceWithSameLifetime(U &value) -> ObjectReferenceDebug<U>
+        {
+            return ObjectReferenceDebug<U>{value, isObjectDestroyed};
+        }
+
         ISL_DECL auto getPtr() noexcept -> T *
         {
             return object;
@@ -76,7 +82,7 @@ namespace isl::detail
     };
 
     template<typename T>
-    class ObjectReferenceRelease
+    class ISL_TRIVIAL_ABI ObjectReferenceRelease
     {
     private:
         T *object{nullptr};
@@ -85,7 +91,7 @@ namespace isl::detail
         ObjectReferenceRelease(const ObjectReferenceRelease &) = default;
         ObjectReferenceRelease(ObjectReferenceRelease &&) noexcept = default;
 
-        explicit ObjectReferenceRelease(T &original_object)
+        explicit constexpr ObjectReferenceRelease(T &original_object)
           : object{&original_object}
         {}
 
@@ -112,6 +118,12 @@ namespace isl::detail
         ISL_DECL auto operator*() const noexcept -> const T &
         {
             return *object;
+        }
+
+        template<typename U>
+        ISL_DECL auto createReferenceWithSameLifetime(U &value) -> ObjectReferenceRelease<U>
+        {
+            return ObjectReferenceRelease<U>{value};
         }
 
         ISL_DECL auto getPtr() noexcept -> T *
