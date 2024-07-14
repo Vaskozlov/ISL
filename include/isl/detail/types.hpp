@@ -7,7 +7,9 @@
 #include <isl/detail/as.hpp>
 #include <isl/detail/container_guard.hpp>
 #include <isl/detail/pair.hpp>
+#include <map>
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -37,6 +39,14 @@ namespace isl
 
     template<typename T, typename Alloc = std::allocator<T>>
     using Vector = detail::ContainerGuard<std::vector<T, Alloc>>;
+
+    template<class Key, class Compare = std::less<Key>, class Allocator = std::allocator<Key>>
+    using Set = detail::ContainerGuard<std::set<Key, Compare, Allocator>>;
+
+    template<
+        class Key, class T, class Compare = std::less<Key>,
+        class Allocator = std::allocator<std::pair<const Key, T>>>
+    using Map = detail::ContainerGuard<std::map<Key, T, Compare, Allocator>>;
 
     using String = detail::ContainerGuard<std::string>;
     using U8String = detail::ContainerGuard<std::u8string>;
