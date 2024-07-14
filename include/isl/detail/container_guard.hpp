@@ -13,10 +13,15 @@ namespace isl::detail
         using T::T;
 
         template<typename... Ts>
-        ISL_DECL ISL_INLINE auto operator[](Ts &&...args) ISL_LIFETIMEBOUND->decltype(auto)
+        ISL_DECL auto operator[](Ts &&...args) ISL_LIFETIMEBOUND->decltype(auto)
         {
-            return this->operator[](std::forward<Ts>(args)...);
+            return this->at(std::forward<Ts>(args)...);
         }
+
+        template<std::ranges::range R>
+        explicit ContainerGuard(R &&range)
+          : T{range.begin(), range.end()}
+        {}
     };
 }// namespace isl::detail
 
