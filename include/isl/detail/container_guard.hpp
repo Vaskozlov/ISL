@@ -2,6 +2,7 @@
 #define ISL_PROJECT_CONTAINER_GUARD_HPP
 
 #include <isl/detail/defines.hpp>
+#include <ranges>
 #include <utility>
 
 namespace isl::detail
