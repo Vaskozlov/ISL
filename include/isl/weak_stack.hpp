@@ -31,7 +31,7 @@ namespace isl
         WeakStack(const std::initializer_list<T> &initial_values)
         {
             for (const T &value : initial_values) {
-                emplace_back(value);
+                emplace(value);
             }
         }
 
