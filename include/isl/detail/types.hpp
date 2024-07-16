@@ -10,6 +10,7 @@
 #include <map>
 #include <optional>
 #include <set>
+#include <stack>
 #include <string>
 #include <vector>
 
@@ -39,6 +40,9 @@ namespace isl
 
     template<typename T, typename Alloc = std::allocator<T>>
     using Vector = detail::ContainerGuard<std::vector<T, Alloc>>;
+
+    template<typename T, typename Alloc = std::allocator<T>>
+    using Stack = std::stack<T, isl::Vector<T, Alloc>>;
 
     template<class Key, class Compare = std::less<Key>, class Allocator = std::allocator<Key>>
     using Set = detail::ContainerGuard<std::set<Key, Compare, Allocator>>;
