@@ -41,17 +41,25 @@ namespace isl
 
         Generator(const Generator &) = delete;
 
-        Generator(Generator &&) noexcept = default;
+        Generator(Generator &&other) noexcept
+          : handle{std::exchange(other.handle, nullptr)}
+        {}
 
         ~Generator()
         {
-            handle.destroy();
+            if (handle != nullptr) {
+                handle.destroy();
+            }
         }
 
         auto operator=(const Generator &) -> Generator & = delete;
-        auto operator=(Generator &&) noexcept -> Generator & = default;
 
-        auto yield() noexcept(false) ISL_LIFETIMEBOUND->T &
+        auto operator=(Generator &&other) noexcept -> Generator &
+        {
+            std::swap(handle, other.handle);
+        }
+
+        auto yield() noexcept(false) ISL_LIFETIMEBOUND -> T &
         {
             handle.resume();
 
@@ -147,7 +155,7 @@ namespace isl
         auto return_void() const noexcept -> void
         {}
 
-        [[nodiscard]] auto getValue() noexcept(false) ISL_LIFETIMEBOUND->T &
+        [[nodiscard]] auto getValue() noexcept(false) ISL_LIFETIMEBOUND -> T &
         {
             if (exceptionPtr != nullptr) {
                 std::rethrow_exception(exceptionPtr);
@@ -160,7 +168,7 @@ namespace isl
             return *value;
         }
 
-        [[nodiscard]] auto getValue() const noexcept(false) ISL_LIFETIMEBOUND->const T &
+        [[nodiscard]] auto getValue() const noexcept(false) ISL_LIFETIMEBOUND -> const T &
         {
             if (exceptionPtr != nullptr) {
                 std::rethrow_exception(exceptionPtr);
@@ -250,8 +258,8 @@ namespace isl
             return promise.getValue();
         }
 
-        [[nodiscard]] auto operator==([[maybe_unused]] std::default_sentinel_t _) const noexcept
-            -> bool
+        [[nodiscard]] auto
+            operator==([[maybe_unused]] std::default_sentinel_t _) const noexcept -> bool
         {
             const promise_type &promise = generatorPtr->getPromise();
             return promise.getValuePtr() == nullptr;
