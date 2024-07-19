@@ -4,7 +4,7 @@
 #include <atomic>
 #include <exception>
 #include <isl/isl.hpp>
-#include <memory>
+#include <isl/memory.hpp>
 #include <mutex>
 
 namespace isl::lifetime
@@ -66,7 +66,7 @@ namespace isl::lifetime
             }
         };
 
-        inline Vector<std::unique_ptr<LifetimeObject>> CreatedObjects;// NOLINT
+        inline Vector<UniquePtr<LifetimeObject>> CreatedObjects;// NOLINT
     }// namespace detail
 
     class LifetimeMonitor
