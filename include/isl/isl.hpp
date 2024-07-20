@@ -7,5 +7,6 @@
 #include <isl/detail/config.hpp>
 #include <isl/detail/pair.hpp>
 #include <isl/detail/types.hpp>
+#include <isl/detail/hash.hpp>
 
 #endif /* ISL_ISL_HPP */
