@@ -9,32 +9,55 @@ namespace isl
 {
     class UtfSet
     {
-        static constexpr auto smallStorageSize = as<size_t>(128);
+    public:
+        static constexpr auto asciiStorageSize = as<size_t>(128);
 
-        std::bitset<smallStorageSize> smallStorage;
-        std::unordered_set<char32_t> storage;
+    private:
+        std::bitset<asciiStorageSize> asciiSymbolsStorage;
+        isl::UnorderedSet<char32_t> nonAsciiStorage;
 
     public:
         UtfSet() = default;
 
+        UtfSet(
+            std::bitset<asciiStorageSize>
+                ascii_symbols,
+            isl::UnorderedSet<char32_t>
+                non_ascii_symbols)
+          : asciiSymbolsStorage{ascii_symbols}
+          , nonAsciiStorage{std::move(non_ascii_symbols)}
+        {}
+
+        UtfSet(
+            std::bitset<asciiStorageSize>
+                ascii_symbols,
+            const isl::Vector<Range<char32_t>> &ranges)
+          : asciiSymbolsStorage{ascii_symbols}
+        {
+            for (const auto range : ranges) {
+                set(range, true);
+            }
+        }
+
+
         [[nodiscard]] auto empty() const noexcept -> bool
         {
-            return smallStorage.none() && storage.empty();
+            return asciiSymbolsStorage.none() && nonAsciiStorage.empty();
         }
 
         [[nodiscard]] auto at(char32_t chr) const noexcept -> bool
         {
-            if (chr < smallStorageSize) [[likely]] {
-                return smallStorage.test(chr);
+            if (chr < asciiStorageSize) [[likely]] {
+                return asciiSymbolsStorage.test(chr);
             }
 
-            return storage.contains(chr);
+            return nonAsciiStorage.contains(chr);
         }
 
         auto set(char32_t chr, bool value = true) -> void
         {
-            if (chr < smallStorageSize) [[likely]] {
-                smallStorage.set(chr, value);
+            if (chr < asciiStorageSize) [[likely]] {
+                asciiSymbolsStorage.set(chr, value);
             } else [[unlikely]] {
                 setBigChar(chr, value);
             }
@@ -52,9 +75,9 @@ namespace isl
         auto setBigChar(char32_t chr, bool value) -> void
         {
             if (value) [[likely]] {
-                storage.insert(chr);
+                nonAsciiStorage.insert(chr);
             } else [[unlikely]] {
-                storage.erase(chr);
+                nonAsciiStorage.erase(chr);
             }
         }
     };
