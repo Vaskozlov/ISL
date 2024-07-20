@@ -12,6 +12,8 @@
 #include <set>
 #include <stack>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace isl
@@ -51,6 +53,16 @@ namespace isl
         class Key, class T, class Compare = std::less<Key>,
         class Allocator = std::allocator<std::pair<const Key, T>>>
     using Map = detail::ContainerGuard<std::map<Key, T, Compare, Allocator>>;
+
+    template<
+        class Value, class Hash = std::hash<Value>, class Pred = std::equal_to<Value>,
+        class Alloc = std::allocator<Value>>
+    using UnorderedSet = detail::ContainerGuard<std::unordered_set<Value, Hash, Pred, Alloc>>;
+
+    template<
+        class Key, class Tp, class Hash = std::hash<Key>, class Pred = std::equal_to<Key>,
+        class Alloc = std::allocator<std::pair<const Key, Tp>>>
+    using UnorderedMap = detail::ContainerGuard<std::unordered_map<Key, Tp, Hash, Pred, Alloc>>;
 
     using String = detail::ContainerGuard<std::string>;
     using U8String = detail::ContainerGuard<std::u8string>;
