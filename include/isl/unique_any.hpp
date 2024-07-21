@@ -21,23 +21,23 @@ namespace isl
     public:
         UniqueAny() = default;
 
-        constexpr UniqueAny(std::nullopt_t)
+         UniqueAny(std::nullopt_t)
         {}
 
         template<typename T>
-        ISL_DECL explicit UniqueAny(isl::UniquePtr<T> unique_ptr)
+        [[nodiscard]] explicit UniqueAny(isl::UniquePtr<T> unique_ptr)
         {
             emplace<T>(std::move(unique_ptr));
         }
 
         template<typename T>
-        ISL_DECL explicit UniqueAny(T &&object)
+        [[nodiscard]] explicit UniqueAny(T &&object)
         {
             emplace<T>(std::forward<T>(object));
         }
 
         template<typename T, typename... Ts>
-        ISL_DECL explicit UniqueAny(std::in_place_type_t<T>, Ts &&...args)
+        [[nodiscard]] explicit UniqueAny(std::in_place_type_t<T>, Ts &&...args)
         {
             emplace<T>(std::forward<Ts>(args)...);
         }
@@ -60,18 +60,18 @@ namespace isl
             return *this;
         }
 
-        ISL_DECL auto hasValue() const noexcept -> bool
+        [[nodiscard]] auto hasValue() const noexcept -> bool
         {
             return pointer != nullptr;
         }
 
-        ISL_DECL auto getTypeIndex() const noexcept -> std::type_index
+        [[nodiscard]] auto getTypeIndex() const noexcept -> std::type_index
         {
             return typeIndex;
         }
 
         template<typename T>
-        constexpr auto emplace(isl::UniquePtr<T> unique_ptr) -> void
+         auto emplace(isl::UniquePtr<T> unique_ptr) -> void
         {
             pointer = static_cast<void *>(unique_ptr.release());
             typeIndex = std::type_index{typeid(T)};
@@ -81,7 +81,7 @@ namespace isl
         }
 
         template<typename T, typename... Ts>
-        constexpr auto emplace(Ts &&...args) -> void
+         auto emplace(Ts &&...args) -> void
         {
             pointer = static_cast<void *>(new T{std::forward<Ts>(args)...});
             typeIndex = std::type_index{typeid(T)};
@@ -91,7 +91,7 @@ namespace isl
         }
 
         template<typename T>
-        ISL_DECL auto getNoThrow() -> isl::UniquePtr<T>
+        [[nodiscard]] auto getNoThrow() -> isl::UniquePtr<T>
         {
             if (std::type_index{typeid(T)} == typeIndex) {
                 deleter = nullptr;
@@ -103,7 +103,7 @@ namespace isl
         }
 
         template<typename T>
-        ISL_DECL auto get() -> isl::UniquePtr<T>
+        [[nodiscard]] auto get() -> isl::UniquePtr<T>
         {
             auto result = getNoThrow<T>();
 
@@ -116,7 +116,7 @@ namespace isl
             return result;
         }
 
-        constexpr ~UniqueAny()
+        ~UniqueAny()
         {
             if (deleter != nullptr) {
                 deleter(pointer);
@@ -126,13 +126,13 @@ namespace isl
 
 
     template<typename T>
-    ISL_DECL auto anyCast(UniqueAny &unique_any) -> isl::UniquePtr<T>
+    [[nodiscard]] auto anyCast(UniqueAny &unique_any) -> isl::UniquePtr<T>
     {
         return unique_any.template get<T>();
     }
 
     template<typename T, typename... Ts>
-    ISL_DECL auto makeAny(Ts &&...args) -> UniqueAny
+    [[nodiscard]] auto makeAny(Ts &&...args) -> UniqueAny
     {
         return UniqueAny{std::in_place_type<T>, std::forward<Ts>(args)...};
     }
