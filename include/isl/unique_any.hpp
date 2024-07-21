@@ -1,6 +1,7 @@
 #ifndef ISL_PROJECT_UNIQUE_ANY_HPP
 #define ISL_PROJECT_UNIQUE_ANY_HPP
 
+#include <format>
 #include <functional>
 #include <isl/memory.hpp>
 #include <typeindex>
@@ -84,7 +85,7 @@ namespace isl
         }
 
         template<typename T>
-        ISL_DECL auto get() -> isl::UniquePtr<T>
+        ISL_DECL auto getNoThrow() -> isl::UniquePtr<T>
         {
             if (std::type_index{typeid(T)} == typeIndex) {
                 deleter = nullptr;
@@ -95,6 +96,20 @@ namespace isl
             return nullptr;
         }
 
+        template<typename T>
+        ISL_DECL auto get() -> isl::UniquePtr<T>
+        {
+            auto result = getNoThrow<T>();
+
+            if (result == nullptr) {
+                throw bad_unique_any_cast{std::format(
+                    "An attempt to get object of type {}, but stored object has type {}",
+                    typeid(T).name(), typeIndex.name())};
+            }
+
+            return result;
+        }
+
         constexpr ~UniqueAny()
         {
             if (deleter != nullptr) {
@@ -102,6 +117,13 @@ namespace isl
             }
         }
     };
+
+
+    template<typename T>
+    auto uAnyCast(UniqueAny &unique_any) -> isl::UniquePtr<T>
+    {
+        return unique_any.template get<T>();
+    }
 }// namespace isl
 
 #endif /* ISL_PROJECT_UNIQUE_ANY_HPP */
