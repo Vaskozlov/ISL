@@ -24,6 +24,12 @@ namespace isl
         {}
 
         template<typename T>
+        ISL_DECL UniqueAny(isl::UniquePtr<T> unique_ptr)
+        {
+            emplace<T>(std::move(unique_ptr));
+        }
+
+        template<typename T>
         ISL_DECL UniqueAny(T &&object)
         {
             emplace<T>(std::forward<T>(object));
@@ -55,6 +61,16 @@ namespace isl
         ISL_DECL auto getTypeIndex() const noexcept -> std::type_index
         {
             return typeIndex;
+        }
+
+        template<typename T>
+        constexpr auto emplace(isl::UniquePtr<T> unique_ptr) -> void
+        {
+            pointer = static_cast<void *>(unique_ptr.release());
+            typeIndex = std::type_index{typeid(T)};
+            deleter = [](void *p) {
+                delete static_cast<T *>(p);
+            };
         }
 
         template<typename T, typename... Ts>
