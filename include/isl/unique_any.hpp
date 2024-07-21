@@ -120,7 +120,7 @@ namespace isl
 
 
     template<typename T>
-    auto uAnyCast(UniqueAny &unique_any) -> isl::UniquePtr<T>
+    auto anyCast(UniqueAny &unique_any) -> isl::UniquePtr<T>
     {
         return unique_any.template get<T>();
     }
