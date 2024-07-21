@@ -18,6 +18,11 @@ namespace isl
         std::type_index typeIndex{typeid(std::nullopt_t)};
 
     public:
+        UniqueAny() = default;
+
+        constexpr UniqueAny(std::nullopt_t)
+        {}
+
         template<typename T>
         ISL_DECL UniqueAny(T &&object)
         {
