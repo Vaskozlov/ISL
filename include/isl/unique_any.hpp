@@ -24,13 +24,13 @@ namespace isl
         {}
 
         template<typename T>
-        ISL_DECL UniqueAny(isl::UniquePtr<T> unique_ptr)
+        ISL_DECL explicit UniqueAny(isl::UniquePtr<T> unique_ptr)
         {
             emplace<T>(std::move(unique_ptr));
         }
 
         template<typename T>
-        ISL_DECL UniqueAny(T &&object)
+        ISL_DECL explicit UniqueAny(T &&object)
         {
             emplace<T>(std::forward<T>(object));
         }
