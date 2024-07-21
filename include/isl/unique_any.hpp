@@ -51,7 +51,7 @@ namespace isl
 
         auto operator=(const UniqueAny &) -> void = delete;
 
-        constexpr auto operator=(UniqueAny &&other) noexcept -> UniqueAny &
+         auto operator=(UniqueAny &&other) noexcept -> UniqueAny &
         {
             std::swap(pointer, other.pointer);
             std::swap(deleter, other.deleter);
