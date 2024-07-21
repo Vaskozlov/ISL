@@ -45,13 +45,8 @@ namespace isl
 
     template<typename T, typename U>
     ISL_DECL auto as(U *value) noexcept(false) -> T
-        requires std::is_pointer_v<T> && (!DerivedOrSame<U, std::remove_pointer_t<T>>)
+        requires(std::is_pointer_v<T> && !DerivedOrSame<U, std::remove_pointer_t<T>>)
     {
-        static_assert(
-            CanDoUpcastingOrDownCasting<std::remove_pointer_t<U>, std::remove_pointer_t<T>>,
-            "Cast from U to T failed. Upcast is impossible and downcast is impossible too, "
-            "because U and T have different base classes.");
-
         return dynamic_cast<T>(value);
     }
 }// namespace isl
