@@ -95,18 +95,6 @@ namespace isl
             return nullptr;
         }
 
-        template<typename T>
-        ISL_DECL auto getAsBaseClass() -> isl::UniquePtr<T>
-        {
-            if (auto *casted_ptr = dynamic_cast<T *>(pointer); casted_ptr != nullptr) {
-                deleter = nullptr;
-                typeIndex = std::type_index{typeid(std::nullopt_t)};
-                return isl::UniquePtr<T>{static_cast<T *>(std::exchange(pointer, nullptr))};
-            }
-
-            return nullptr;
-        }
-
         constexpr ~UniqueAny()
         {
             if (deleter != nullptr) {
