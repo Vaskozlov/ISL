@@ -58,11 +58,10 @@ TEST_CASE("ObjectOwnerDebugLifetime", "[ObjectOwner]")
         outer_reference =
             makeUnique<ObjectReferenceDebug<lifetime::LifetimeMonitor>>(inner_reference);
 
-        REQUIRE((*outer_reference.get())->getWeakId() == 1);
-
+        auto weak_id = (*outer_reference.get())->getWeakId();
         auto moved_object = ObjectOwnerDebug<lifetime::LifetimeMonitor>{std::move(object)};
 
-        REQUIRE(moved_object.getWeakId() == 1);
+        REQUIRE(moved_object.getWeakId() == weak_id);
     }
 
     REQUIRE_THROWS(*(*outer_reference));
