@@ -36,6 +36,12 @@ namespace isl
             emplace<T>(std::forward<T>(object));
         }
 
+        template<typename T, typename... Ts>
+        ISL_DECL explicit UniqueAny(std::in_place_type_t<T>, Ts &&...args)
+        {
+            emplace<T>(std::forward<Ts>(args)...);
+        }
+
         UniqueAny(const UniqueAny &) = delete;
 
         UniqueAny(UniqueAny &&other) noexcept
@@ -120,9 +126,15 @@ namespace isl
 
 
     template<typename T>
-    auto anyCast(UniqueAny &unique_any) -> isl::UniquePtr<T>
+    ISL_DECL auto anyCast(UniqueAny &unique_any) -> isl::UniquePtr<T>
     {
         return unique_any.template get<T>();
+    }
+
+    template<typename T, typename... Ts>
+    ISL_DECL auto makeAny(Ts &&...args) -> UniqueAny
+    {
+        return UniqueAny{std::in_place_type<T>, std::forward<Ts>(args)...};
     }
 }// namespace isl
 
