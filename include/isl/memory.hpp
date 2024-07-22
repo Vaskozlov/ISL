@@ -37,14 +37,14 @@ namespace isl
     }
 
     template<typename T, typename... Ts>
-    ISL_DECL auto makeShared(Ts &&...args) -> std::shared_ptr<T>
+    ISL_DECL auto makeShared(Ts &&...args) -> SharedPtr<T>
         requires std::constructible_from<T, Ts...>
     {
         return SharedPtr<T>{::new T{std::forward<Ts>(args)...}};
     }
 
     template<typename Target, typename Constructed, typename... Ts>
-    ISL_DECL auto makeShared(Ts &&...args) -> std::shared_ptr<Target>
+    ISL_DECL auto makeShared(Ts &&...args) -> SharedPtr<Target>
         requires std::derived_from<Constructed, Target> &&
                  std::constructible_from<Constructed, Ts...>
     {
