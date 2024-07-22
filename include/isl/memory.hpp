@@ -8,16 +8,24 @@
 namespace isl
 {
     template<typename T>
-    using UniquePtr = std::unique_ptr<T, std::default_delete<T>>;
+    class UniquePtr : public std::unique_ptr<T, std::default_delete<T>>
+    {
+    public:
+        using std::unique_ptr<T, std::default_delete<T>>::unique_ptr;
+    };
 
     template<typename T>
-    using SharedPtr = std::shared_ptr<T>;
+    class SharedPtr : public std::shared_ptr<T>
+    {
+    public:
+        using std::shared_ptr<T>::shared_ptr;
+    };
 
     template<typename T, typename... Ts>
     ISL_DECL auto makeUnique(Ts &&...args) -> UniquePtr<T>
         requires std::constructible_from<T, Ts...>
     {
-        return std::make_unique<T>(std::forward<Ts>(args)...);
+        return UniquePtr<T>{::new T{std::forward<Ts>(args)...}};
     }
 
     template<typename Target, typename Constructed, typename... Ts>
@@ -25,14 +33,14 @@ namespace isl
         requires std::derived_from<Constructed, Target> &&
                  std::constructible_from<Constructed, Ts...>
     {
-        return UniquePtr<Target>{as<Target *>(new Constructed{std::forward<Ts>(args)...})};
+        return UniquePtr<Target>{as<Target *>(::new Constructed{std::forward<Ts>(args)...})};
     }
 
     template<typename T, typename... Ts>
     ISL_DECL auto makeShared(Ts &&...args) -> std::shared_ptr<T>
         requires std::constructible_from<T, Ts...>
     {
-        return std::make_shared<T>(std::forward<Ts>(args)...);
+        return SharedPtr<T>{::new T{std::forward<Ts>(args)...}};
     }
 
     template<typename Target, typename Constructed, typename... Ts>
@@ -40,7 +48,7 @@ namespace isl
         requires std::derived_from<Constructed, Target> &&
                  std::constructible_from<Constructed, Ts...>
     {
-        return SharedPtr<Target>{as<Target *>(new Constructed{std::forward<Ts>(args)...})};
+        return SharedPtr<Target>{as<Target *>(::new Constructed{std::forward<Ts>(args)...})};
     }
 }// namespace isl
 
