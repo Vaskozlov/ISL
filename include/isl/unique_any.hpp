@@ -1,7 +1,6 @@
 #ifndef ISL_PROJECT_UNIQUE_ANY_HPP
 #define ISL_PROJECT_UNIQUE_ANY_HPP
 
-#include <format>
 #include <functional>
 #include <isl/memory.hpp>
 #include <typeindex>
@@ -21,7 +20,7 @@ namespace isl
     public:
         UniqueAny() = default;
 
-         UniqueAny(std::nullopt_t)
+        UniqueAny(std::nullopt_t)
         {}
 
         template<typename T>
@@ -51,7 +50,7 @@ namespace isl
 
         auto operator=(const UniqueAny &) -> void = delete;
 
-         auto operator=(UniqueAny &&other) noexcept -> UniqueAny &
+        auto operator=(UniqueAny &&other) noexcept -> UniqueAny &
         {
             std::swap(pointer, other.pointer);
             std::swap(deleter, other.deleter);
@@ -71,7 +70,7 @@ namespace isl
         }
 
         template<typename T>
-         auto emplace(isl::UniquePtr<T> unique_ptr) -> void
+        auto emplace(isl::UniquePtr<T> unique_ptr) -> void
         {
             pointer = static_cast<void *>(unique_ptr.release());
             typeIndex = std::type_index{typeid(T)};
@@ -81,7 +80,7 @@ namespace isl
         }
 
         template<typename T, typename... Ts>
-         auto emplace(Ts &&...args) -> void
+        auto emplace(Ts &&...args) -> void
         {
             pointer = static_cast<void *>(new T{std::forward<Ts>(args)...});
             typeIndex = std::type_index{typeid(T)};
@@ -108,9 +107,9 @@ namespace isl
             auto result = getNoThrow<T>();
 
             if (result == nullptr) {
-                throw bad_unique_any_cast{std::format(
-                    "An attempt to get object of type {}, but stored object has type {}",
-                    typeid(T).name(), typeIndex.name())};
+                throw bad_unique_any_cast{
+                    std::string{"An attempt to get object of type "} + typeid(T).name() +
+                    ", but stored object has type {}" + typeIndex.name()};
             }
 
             return result;
