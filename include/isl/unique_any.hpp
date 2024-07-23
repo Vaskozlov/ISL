@@ -130,6 +130,12 @@ namespace isl
         return unique_any.template get<T>();
     }
 
+    template<typename T>
+    [[nodiscard]] auto anyCast(UniqueAny &&unique_any) -> isl::UniquePtr<T>
+    {
+        return unique_any.template get<T>();
+    }
+
     template<typename T, typename... Ts>
     [[nodiscard]] auto makeAny(Ts &&...args) -> UniqueAny
     {
