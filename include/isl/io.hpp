@@ -26,7 +26,7 @@ namespace isl::io
     }
 
     template<StringLike<char>... Ts>
-    auto writeToFile(const std::string &filename, Ts &&...args) -> void
+    auto writeToFile(const std::filesystem::path &filename, Ts &&...args) -> void
     {
         auto out = std::ofstream{filename};
 
