@@ -1,6 +1,7 @@
 #ifndef ISL_PROJECT_REFERENCE_HPP
 #define ISL_PROJECT_REFERENCE_HPP
 
+#include <isl/detail/as.hpp>
 #include <isl/detail/concepts.hpp>
 #include <isl/detail/object_reference.hpp>
 
