@@ -6,10 +6,10 @@ include(GNUInstallDirs)
 include(FetchContent)
 include(CPack)
 
+include(cmake/Libraries.cmake)
 include(cmake/InterproceduralOptimization.cmake)
 include(cmake/ProjectOptions.cmake)
 include(cmake/CompilerOptions.cmake)
-include(cmake/ImportCatch2.cmake)
 
 if (ISL_INCLUDE_TESTS)
     include(catch/CMakeLists.txt)
