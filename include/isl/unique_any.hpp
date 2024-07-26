@@ -13,21 +13,26 @@ namespace isl
     {
         using Deleter = void (*)(void *);
 
-        void *pointer{};
-        Deleter deleter{};
+        struct PointerAndDeleter
+        {
+            void *pointer{};
+            Deleter deleter{};
+        };
+
+        union {
+            PointerAndDeleter deleterAndPointer{};
+            std::array<std::byte, sizeof(PointerAndDeleter)> rowBuffer;
+        };
+
         std::type_index typeIndex{typeid(std::nullopt_t)};
+        bool storesTrivialObject{};
 
     public:
         UniqueAny() = default;
 
         UniqueAny(std::nullopt_t)
+          : storesTrivialObject{true}
         {}
-
-        template<typename T>
-        [[nodiscard]] explicit UniqueAny(isl::UniquePtr<T> unique_ptr)
-        {
-            emplace<T>(std::move(unique_ptr));
-        }
 
         template<typename T>
         [[nodiscard]] explicit UniqueAny(T &&object)
@@ -44,24 +49,34 @@ namespace isl
         UniqueAny(const UniqueAny &) = delete;
 
         UniqueAny(UniqueAny &&other) noexcept
-          : pointer{std::exchange(other.pointer, nullptr)}
-          , deleter{std::exchange(other.deleter, nullptr)}
-        {}
+          : rowBuffer{other.rowBuffer}
+          , typeIndex{std::move(other.typeIndex)}
+          , storesTrivialObject{other.storesTrivialObject}
+        {
+            other.clearInternalStorage();
+        }
+
+        ~UniqueAny()
+        {
+            if (!storesTrivialObject && deleterAndPointer.deleter != nullptr) {
+                deleterAndPointer.deleter(deleterAndPointer.pointer);
+            }
+        }
 
         auto operator=(const UniqueAny &) -> void = delete;
 
         auto operator=(UniqueAny &&other) noexcept -> UniqueAny &
         {
-            std::swap(pointer, other.pointer);
-            std::swap(deleter, other.deleter);
+            std::swap(rowBuffer, other.rowBuffer);
             std::swap(typeIndex, other.typeIndex);
+            std::swap(storesTrivialObject, other.storesTrivialObject);
 
             return *this;
         }
 
         [[nodiscard]] auto hasValue() const noexcept -> bool
         {
-            return pointer != nullptr;
+            return typeIndex != std::type_index(typeid(std::nullopt_t));
         }
 
         [[nodiscard]] auto getTypeIndex() const noexcept -> std::type_index
@@ -69,95 +84,92 @@ namespace isl
             return typeIndex;
         }
 
-        template<typename T>
-        auto emplace(isl::UniquePtr<T> unique_ptr) -> void
-        {
-            pointer = static_cast<void *>(unique_ptr.release());
-            typeIndex = std::type_index{typeid(T)};
-            deleter = [](void *p) {
-                delete static_cast<T *>(p);
-            };
-        }
-
         template<typename T, typename... Ts>
         auto emplace(Ts &&...args) -> void
         {
-            pointer = static_cast<void *>(new T{std::forward<Ts>(args)...});
             typeIndex = std::type_index{typeid(T)};
-            deleter = [](void *p) {
-                delete static_cast<T *>(p);
-            };
-        }
 
-        template<typename T>
-        [[nodiscard]] auto getNoThrow() -> isl::UniquePtr<T>
-        {
-            if (std::type_index{typeid(T)} == typeIndex) {
-                deleter = nullptr;
-                typeIndex = std::type_index{typeid(std::nullopt_t)};
-                return isl::UniquePtr<T>{static_cast<T *>(std::exchange(pointer, nullptr))};
+            if constexpr (std::is_trivial_v<T> && sizeof(T) <= sizeof(PointerAndDeleter)) {
+                storesTrivialObject = true;
+                std::construct_at(
+                    reinterpret_cast<T *>(rowBuffer.data()), std::forward<Ts>(args)...);
+            } else {
+                storesTrivialObject = false;
+                deleterAndPointer.pointer = static_cast<void *>(new T{std::forward<Ts>(args)...});
+                deleterAndPointer.deleter = [](void *p) {
+                    delete static_cast<T *>(p);
+                };
             }
-
-            return nullptr;
         }
 
         template<typename T>
-        [[nodiscard]] auto get() -> isl::UniquePtr<T>
+        [[nodiscard]] auto get() -> T
         {
-            auto result = getNoThrow<T>();
+            storesTrivialObject = false;
 
-            if (result == nullptr) {
+            if (std::type_index{typeid(T)} != typeIndex) {
                 throw bad_unique_any_cast{
                     std::string{"An attempt to get object of type "} + typeid(T).name() +
                     ", but stored object has type {}" + typeIndex.name()};
             }
 
-            return result;
-        }
-
-        template<typename T>
-        [[nodiscard]] auto observeNoThrow() -> T *
-        {
-            if (std::type_index{typeid(T)} == typeIndex) {
-                return static_cast<T *>(pointer);
+            if constexpr (std::is_trivial_v<T> && sizeof(T) <= sizeof(PointerAndDeleter)) {
+                auto result = T{*reinterpret_cast<T *>(rowBuffer.data())};
+                clearInternalStorage();
+                return result;
+            } else {
+                T result = std::move(*static_cast<T *>(deleterAndPointer.pointer));
+                clearInternalStorage();
+                return result;
             }
-
-            return nullptr;
         }
 
         template<typename T>
         [[nodiscard]] auto observe() -> T *
         {
-            auto result = observeNoThrow<T>();
-
-            if (result == nullptr) {
+            if (std::type_index{typeid(T)} != typeIndex) {
                 throw bad_unique_any_cast{
-                    std::string{"An attempt to observe object of type "} + typeid(T).name() +
+                    std::string{"An attempt to get object of type "} + typeid(T).name() +
                     ", but stored object has type {}" + typeIndex.name()};
             }
 
-            return result;
+            if constexpr (std::is_trivial_v<T> && sizeof(T) <= sizeof(PointerAndDeleter)) {
+                return reinterpret_cast<T *>(rowBuffer.data());
+            } else {
+                return static_cast<T *>(deleterAndPointer.pointer);
+            }
         }
 
-        ~UniqueAny()
+    private:
+        auto clearInternalStorage() -> void
         {
-            if (deleter != nullptr) {
-                deleter(pointer);
+            if (!storesTrivialObject && deleterAndPointer.deleter != nullptr) {
+                deleterAndPointer.deleter(deleterAndPointer.pointer);
             }
+
+            rowBuffer.fill(std::byte{0});
+            typeIndex = std::type_index{typeid(std::nullopt_t)};
+            storesTrivialObject = false;
         }
     };
 
 
     template<typename T>
-    [[nodiscard]] auto anyCast(UniqueAny &unique_any) -> isl::UniquePtr<T>
+    [[nodiscard]] auto get(UniqueAny &unique_any) -> T
     {
         return unique_any.template get<T>();
     }
 
     template<typename T>
-    [[nodiscard]] auto anyCast(UniqueAny &&unique_any) -> isl::UniquePtr<T>
+    [[nodiscard]] auto get(UniqueAny &&unique_any) -> T
     {
         return unique_any.template get<T>();
+    }
+
+    template<typename T>
+    [[nodiscard]] auto observe(UniqueAny &unique_any) -> T *
+    {
+        return unique_any.template observe<T>();
     }
 
     template<typename T, typename... Ts>
