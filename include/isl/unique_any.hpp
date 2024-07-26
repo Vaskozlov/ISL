@@ -20,7 +20,7 @@ namespace isl
         };
 
         union {
-            PointerAndDeleter deleterAndPointer{};
+            PointerAndDeleter pointerAndDeleter{};
             std::array<std::byte, sizeof(PointerAndDeleter)> rowBuffer;
         };
 
@@ -50,9 +50,10 @@ namespace isl
 
         UniqueAny(UniqueAny &&other) noexcept
           : rowBuffer{other.rowBuffer}
-          , typeIndex{std::move(other.typeIndex)}
+          , typeIndex{other.typeIndex}
           , storesTrivialObject{other.storesTrivialObject}
         {
+            other.pointerAndDeleter.pointer = nullptr;
             other.clearInternalStorage();
         }
 
@@ -94,8 +95,8 @@ namespace isl
                     reinterpret_cast<T *>(rowBuffer.data()), std::forward<Ts>(args)...);
             } else {
                 storesTrivialObject = false;
-                deleterAndPointer.pointer = static_cast<void *>(new T{std::forward<Ts>(args)...});
-                deleterAndPointer.deleter = [](void *p) {
+                pointerAndDeleter.pointer = static_cast<void *>(new T{std::forward<Ts>(args)...});
+                pointerAndDeleter.deleter = [](void *p) {
                     delete static_cast<T *>(p);
                 };
             }
@@ -115,7 +116,7 @@ namespace isl
                 clearInternalStorage();
                 return result;
             } else {
-                T result = std::move(*static_cast<T *>(deleterAndPointer.pointer));
+                T result = std::move(*static_cast<T *>(pointerAndDeleter.pointer));
                 clearInternalStorage();
                 return result;
             }
@@ -133,15 +134,15 @@ namespace isl
             if constexpr (std::is_trivial_v<T> && sizeof(T) <= sizeof(PointerAndDeleter)) {
                 return reinterpret_cast<T *>(rowBuffer.data());
             } else {
-                return static_cast<T *>(deleterAndPointer.pointer);
+                return static_cast<T *>(pointerAndDeleter.pointer);
             }
         }
 
     private:
         auto deleteStoredObject() -> void
         {
-            if (!storesTrivialObject && deleterAndPointer.deleter != nullptr) {
-                deleterAndPointer.deleter(deleterAndPointer.pointer);
+            if (!storesTrivialObject && pointerAndDeleter.deleter != nullptr) {
+                pointerAndDeleter.deleter(pointerAndDeleter.pointer);
             }
         }
 
