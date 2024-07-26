@@ -115,6 +115,30 @@ namespace isl
             return result;
         }
 
+        template<typename T>
+        [[nodiscard]] auto observeNoThrow() -> T *
+        {
+            if (std::type_index{typeid(T)} == typeIndex) {
+                return static_cast<T *>(pointer);
+            }
+
+            return nullptr;
+        }
+
+        template<typename T>
+        [[nodiscard]] auto observe() -> T *
+        {
+            auto result = observeNoThrow<T>();
+
+            if (result == nullptr) {
+                throw bad_unique_any_cast{
+                    std::string{"An attempt to observe object of type "} + typeid(T).name() +
+                    ", but stored object has type {}" + typeIndex.name()};
+            }
+
+            return result;
+        }
+
         ~UniqueAny()
         {
             if (deleter != nullptr) {
