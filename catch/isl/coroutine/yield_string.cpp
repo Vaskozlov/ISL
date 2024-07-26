@@ -2,9 +2,9 @@
 #include <isl/detail/debug/debug.hpp>
 #include <isl/generator.hpp>
 
-static auto stringGenerator() -> isl::Generator<isl::String>
+static auto stringGenerator() -> isl::Generator<std::string>
 {
-    co_yield isl::String{"Hello, World!"};
+    co_yield std::string{"Hello, World!"};
 }
 
 TEST_CASE("YieldStringFromGenerator", "[Coroutine]")

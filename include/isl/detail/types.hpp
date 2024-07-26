@@ -37,44 +37,6 @@ namespace isl
     template<typename T>
     using Optional = std::optional<T>;
 
-    template<typename T, std::size_t Size>
-    CONTAINER_GUARD(Array, std::array, array, T, Size);
-
-    template<
-        typename CharT, typename Traits = std::char_traits<CharT>,
-        typename Allocator = std::allocator<CharT>>
-    CONTAINER_GUARD(BasicString, std::basic_string, basic_string, CharT, Traits, Allocator);
-
-    template<typename T, typename Alloc = std::allocator<T>>
-    CONTAINER_GUARD(Vector, std::vector, vector, T, Alloc);
-
-    template<typename T, typename Alloc = std::allocator<T>>
-    CONTAINER_GUARD(Stack, std::stack, stack, T, isl::Vector<T, Alloc>);
-
-    template<class Key, class Compare = std::less<Key>, class Allocator = std::allocator<Key>>
-    CONTAINER_GUARD(Set, std::set, set, Key, Compare, Allocator);
-
-    template<
-        class Key, class T, class Compare = std::less<Key>,
-        class Allocator = std::allocator<std::pair<const Key, T>>>
-    CONTAINER_GUARD(Map, std::map, map, Key, T, Compare, Allocator);
-
-    template<
-        class Value, class Hash = std::hash<Value>, class Pred = std::equal_to<Value>,
-        class Alloc = std::allocator<Value>>
-    CONTAINER_GUARD(UnorderedSet, std::unordered_set, unordered_set, Value, Hash, Pred, Alloc);
-
-    template<
-        class Key, class Tp, class Hash = std::hash<Key>, class Pred = std::equal_to<Key>,
-        class Alloc = std::allocator<std::pair<const Key, Tp>>>
-    CONTAINER_GUARD(UnorderedMap, std::unordered_map, unordered_map, Key, Tp, Hash, Pred, Alloc);
-
-    using String = BasicString<char>;
-    using U8String = BasicString<char8_t>;
-    using U16String = BasicString<char16_t>;
-    using U32String = BasicString<char32_t>;
-    using WString = BasicString<wchar_t>;
-
     template<typename T1, typename T2>
     using Pair = std::conditional_t<
         std::is_trivial_v<T1> && std::is_trivial_v<T2>, detail::TrivialPair<T1, T2>,

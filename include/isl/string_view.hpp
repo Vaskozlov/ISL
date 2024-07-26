@@ -81,7 +81,7 @@ namespace isl
         {}
 
         // NOLINTNEXTLINE
-        constexpr BasicStringView(const String &str) noexcept
+        constexpr BasicStringView(const std::string &str) noexcept
           : string{str.c_str()}
           , length{str.size()}
         {}

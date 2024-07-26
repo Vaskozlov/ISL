@@ -16,7 +16,7 @@ TEST_CASE("StringViewConstructionArray", "[StringView]")
 
 TEST_CASE("StringViewConstructionFromTwoPointers", "[StringView]")
 {
-    isl::String str = "Hello, World!";
+    std::string str = "Hello, World!";
     isl::string_view string{str.data(), str.data() + str.size()};// NOLINT
     REQUIRE(string.size() == 13);
 }

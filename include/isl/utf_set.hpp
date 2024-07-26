@@ -14,7 +14,7 @@ namespace isl
 
     private:
         std::bitset<asciiStorageSize> asciiSymbolsStorage;
-        isl::UnorderedSet<char32_t> nonAsciiStorage;
+        std::unordered_set<char32_t> nonAsciiStorage;
 
     public:
         UtfSet() = default;
@@ -22,7 +22,7 @@ namespace isl
         UtfSet(
             std::bitset<asciiStorageSize>
                 ascii_symbols,
-            isl::UnorderedSet<char32_t>
+            std::unordered_set<char32_t>
                 non_ascii_symbols)
           : asciiSymbolsStorage{ascii_symbols}
           , nonAsciiStorage{std::move(non_ascii_symbols)}
@@ -31,7 +31,7 @@ namespace isl
         UtfSet(
             std::bitset<asciiStorageSize>
                 ascii_symbols,
-            const isl::Vector<Range<char32_t>> &ranges)
+            const std::vector<Range<char32_t>> &ranges)
           : asciiSymbolsStorage{ascii_symbols}
         {
             for (const auto range : ranges) {
