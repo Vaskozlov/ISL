@@ -11,7 +11,7 @@
 
 namespace isl::io
 {
-    inline auto readFile(const std::filesystem::path &path) -> std::string
+    inline auto readFile(const std::filesystem::path &path) -> String
     {
         auto stream = std::ifstream(path);
 

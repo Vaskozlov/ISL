@@ -5,12 +5,11 @@
 
 namespace isl
 {
-
     template<Iterable Container, typename Function, StringLike<char> Separator>
     [[nodiscard]] auto join(
-        const Container &container, Function &&function, const Separator &separator) -> std::string
+        const Container &container, Function &&function, const Separator &separator) -> String
     {
-        auto result = std::string{};
+        auto result = String{};
         auto begin = std::begin(container);
         const auto end = std::end(container);
         const auto converted_separator = as<std::string_view>(separator);
@@ -31,7 +30,7 @@ namespace isl
 
     template<Iterable Container, typename Function, std::size_t N>
     [[nodiscard]] ISL_INLINE auto join(
-        Container &&container, Function &&function, const CArray<char, N> &separator) -> std::string
+        Container &&container, Function &&function, const CArray<char, N> &separator) -> String
     {
         return join(
             std::forward<Container>(container), std::forward<Function>(function),
@@ -41,7 +40,7 @@ namespace isl
     }
 
     template<Iterable Container, StringLike<char> Separator>
-    [[nodiscard]] auto join(Container &&container, Separator &&separator) -> std::string
+    [[nodiscard]] auto join(Container &&container, Separator &&separator) -> String
     {
         if constexpr (StringLike<decltype(*container.begin()), char>) {
             return join(
@@ -63,7 +62,7 @@ namespace isl
 
     template<Iterable Container, std::size_t N>
     [[nodiscard]] ISL_INLINE auto
-        join(Container &&container, const CArray<char, N> &separator) -> std::string
+        join(Container &&container, const CArray<char, N> &separator) -> String
     {
         return join(std::forward<Container>(container), as<std::string_view>(separator));
     }

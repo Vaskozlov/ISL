@@ -38,37 +38,42 @@ namespace isl
     using Optional = std::optional<T>;
 
     template<typename T, std::size_t Size>
-    using Array = detail::ContainerGuard<std::array<T, Size>>;
+    CONTAINER_GUARD(Array, std::array, array, T, Size);
+
+    template<
+        typename CharT, typename Traits = std::char_traits<CharT>,
+        typename Allocator = std::allocator<CharT>>
+    CONTAINER_GUARD(BasicString, std::basic_string, basic_string, CharT, Traits, Allocator);
 
     template<typename T, typename Alloc = std::allocator<T>>
-    using Vector = detail::ContainerGuard<std::vector<T, Alloc>>;
+    CONTAINER_GUARD(Vector, std::vector, vector, T, Alloc);
 
     template<typename T, typename Alloc = std::allocator<T>>
-    using Stack = std::stack<T, isl::Vector<T, Alloc>>;
+    CONTAINER_GUARD(Stack, std::stack, stack, T, isl::Vector<T, Alloc>);
 
     template<class Key, class Compare = std::less<Key>, class Allocator = std::allocator<Key>>
-    using Set = detail::ContainerGuard<std::set<Key, Compare, Allocator>>;
+    CONTAINER_GUARD(Set, std::set, set, Key, Compare, Allocator);
 
     template<
         class Key, class T, class Compare = std::less<Key>,
         class Allocator = std::allocator<std::pair<const Key, T>>>
-    using Map = detail::ContainerGuard<std::map<Key, T, Compare, Allocator>>;
+    CONTAINER_GUARD(Map, std::map, map, Key, T, Compare, Allocator);
 
     template<
         class Value, class Hash = std::hash<Value>, class Pred = std::equal_to<Value>,
         class Alloc = std::allocator<Value>>
-    using UnorderedSet = detail::ContainerGuard<std::unordered_set<Value, Hash, Pred, Alloc>>;
+    CONTAINER_GUARD(UnorderedSet, std::unordered_set, unordered_set, Value, Hash, Pred, Alloc);
 
     template<
         class Key, class Tp, class Hash = std::hash<Key>, class Pred = std::equal_to<Key>,
         class Alloc = std::allocator<std::pair<const Key, Tp>>>
-    using UnorderedMap = detail::ContainerGuard<std::unordered_map<Key, Tp, Hash, Pred, Alloc>>;
+    CONTAINER_GUARD(UnorderedMap, std::unordered_map, unordered_map, Key, Tp, Hash, Pred, Alloc);
 
-    using String = detail::ContainerGuard<std::string>;
-    using U8String = detail::ContainerGuard<std::u8string>;
-    using U16String = detail::ContainerGuard<std::u16string>;
-    using U32String = detail::ContainerGuard<std::u32string>;
-    using WString = detail::ContainerGuard<std::wstring>;
+    using String = BasicString<char>;
+    using U8String = BasicString<char8_t>;
+    using U16String = BasicString<char16_t>;
+    using U32String = BasicString<char32_t>;
+    using WString = BasicString<wchar_t>;
 
     template<typename T1, typename T2>
     using Pair = std::conditional_t<

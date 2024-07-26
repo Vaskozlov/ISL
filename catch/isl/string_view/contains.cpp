@@ -8,12 +8,12 @@ TEST_CASE("StringViewContains", "[StringView]")
     constexpr static isl::string_view own_string = "Hello, World!";
 
     for (auto chr : std_string) {
-        auto std_string_contains_chr = std_string.find(chr) != std::string::npos;
+        auto std_string_contains_chr = std_string.find(chr) != isl::String::npos;
         REQUIRE(std_string_contains_chr == own_string.contains(chr));
     }
 
     STATIC_REQUIRE(std::ranges::all_of(std_string, [](char chr) {
-        auto std_string_contains_chr = std_string.find(chr) != std::string::npos;
+        auto std_string_contains_chr = std_string.find(chr) != isl::String::npos;
         return std_string_contains_chr == own_string.contains(chr);
     }));
 }

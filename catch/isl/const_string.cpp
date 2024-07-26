@@ -1,17 +1,17 @@
 #include <isl/const_string.hpp>
 #include <isl/detail/debug/debug.hpp>
 
-template<isl::ConstString String>
+template<isl::ConstString STRING>
 auto testConstString(isl::string_view input) -> bool
 {
     DEBUG_VAR test_string = input;
 
-    REQUIRE(String.empty() == test_string.empty());
-    REQUIRE(String.size() == test_string.size());
-    REQUIRE(String == test_string);
+    REQUIRE(STRING.empty() == test_string.empty());
+    REQUIRE(STRING.size() == test_string.size());
+    REQUIRE(STRING == test_string);
 
-    REQUIRE(std::equal(String.cbegin(), String.cend(), test_string.cbegin(), test_string.cend()));
-    REQUIRE(std::equal(String.begin(), String.end(), test_string.begin()));
+    REQUIRE(std::equal(STRING.cbegin(), STRING.cend(), test_string.cbegin(), test_string.cend()));
+    REQUIRE(std::equal(STRING.begin(), STRING.end(), test_string.begin()));
 
     return true;
 }
