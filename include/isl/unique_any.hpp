@@ -58,9 +58,7 @@ namespace isl
 
         ~UniqueAny()
         {
-            if (!storesTrivialObject && deleterAndPointer.deleter != nullptr) {
-                deleterAndPointer.deleter(deleterAndPointer.pointer);
-            }
+            deleteStoredObject();
         }
 
         auto operator=(const UniqueAny &) -> void = delete;
@@ -87,6 +85,7 @@ namespace isl
         template<typename T, typename... Ts>
         auto emplace(Ts &&...args) -> void
         {
+            deleteStoredObject();
             typeIndex = std::type_index{typeid(T)};
 
             if constexpr (std::is_trivial_v<T> && sizeof(T) <= sizeof(PointerAndDeleter)) {
@@ -105,8 +104,6 @@ namespace isl
         template<typename T>
         [[nodiscard]] auto get() -> T
         {
-            storesTrivialObject = false;
-
             if (std::type_index{typeid(T)} != typeIndex) {
                 throw bad_unique_any_cast{
                     std::string{"An attempt to get object of type "} + typeid(T).name() +
@@ -141,12 +138,16 @@ namespace isl
         }
 
     private:
-        auto clearInternalStorage() -> void
+        auto deleteStoredObject() -> void
         {
             if (!storesTrivialObject && deleterAndPointer.deleter != nullptr) {
                 deleterAndPointer.deleter(deleterAndPointer.pointer);
             }
+        }
 
+        auto clearInternalStorage() -> void
+        {
+            deleteStoredObject();
             rowBuffer.fill(std::byte{0});
             typeIndex = std::type_index{typeid(std::nullopt_t)};
             storesTrivialObject = false;
