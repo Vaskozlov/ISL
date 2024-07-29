@@ -1,6 +1,6 @@
 #include <iostream>
+#include <isl/coroutine/generator.hpp>
 #include <isl/detail/debug/debug.hpp>
-#include <isl/generator.hpp>
 
 
 constexpr static std::array<std::size_t, 20> FibonacciNumbers = {

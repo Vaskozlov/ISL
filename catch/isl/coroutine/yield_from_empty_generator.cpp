@@ -1,6 +1,6 @@
+#include <isl/coroutine/generator.hpp>
 #include <iostream>
 #include <isl/detail/debug/debug.hpp>
-#include <isl/generator.hpp>
 
 static auto intGenerator() -> isl::Generator<std::size_t>
 {

@@ -1,27 +1,11 @@
 #ifndef ISL_PROJECT_GENERATOR_HPP
 #define ISL_PROJECT_GENERATOR_HPP
 
+#include <isl/coroutine/defines.hpp>
 #include <isl/isl.hpp>
-
-#if __has_include(<coroutine>)
-#    include <coroutine>
-#    define ISL_EXPERIMENTAL_COROUTINE false
-#else
-#    include <experimental/coroutine>
-#    define ISL_EXPERIMENTAL_COROUTINE true
-#endif
 
 namespace isl
 {
-    namespace detail
-    {
-#if ISL_EXPERIMENTAL_COROUTINE
-        namespace coroutine = std::experimental;
-#else
-        namespace coroutine = std;
-#endif /* ISL_EXPERIMENTAL_COROUTINE */
-    }// namespace detail
-
     template<typename T>
     class Generator
     {
@@ -31,7 +15,7 @@ namespace isl
 
         friend iterator;
         friend promise_type;
-        using coro_handle = detail::coroutine::coroutine_handle<promise_type>;
+        using coro_handle = coro::coroutine_handle<promise_type>;
 
         coro_handle handle;
 
@@ -57,6 +41,7 @@ namespace isl
         auto operator=(Generator &&other) noexcept -> Generator &
         {
             std::swap(handle, other.handle);
+            return *this;
         }
 
         auto yield() noexcept(false) ISL_LIFETIMEBOUND -> T &
@@ -107,15 +92,8 @@ namespace isl
     template<typename T>
     class Generator<T>::promise_type
     {
-    public:
-        using suspend_always = detail::coroutine::suspend_always;
-        using suspend_never = detail::coroutine::suspend_never;
-
-        static constexpr bool TrivialTypeStored = std::is_trivial_v<T>;
-        using ValueStorageType = std::conditional_t<TrivialTypeStored, std::optional<T>, T *>;
-
     private:
-        ValueStorageType value{};
+        coro::ValueStorageType<T> value{};
         std::exception_ptr exceptionPtr{nullptr};
 
     public:
@@ -124,21 +102,21 @@ namespace isl
             return Generator<T>{coro_handle::from_promise(*this)};
         }
 
-        [[nodiscard]] auto initial_suspend() const noexcept -> suspend_always
+        [[nodiscard]] auto initial_suspend() const noexcept -> coro::suspend_always
         {
             return {};
         }
 
-        [[nodiscard]] auto final_suspend() const noexcept -> suspend_always
+        [[nodiscard]] auto final_suspend() const noexcept -> coro::suspend_always
         {
             return {};
         }
 
         template<typename U>
-        auto yield_value(U &&new_value) -> suspend_always
+        auto yield_value(U &&new_value) -> coro::suspend_always
             requires(std::constructible_from<T, U>)
         {
-            if constexpr (TrivialTypeStored) {
+            if constexpr (std::is_trivial_v<T>) {
                 value = new_value;
             } else {
                 value = std::addressof(new_value);
@@ -183,7 +161,7 @@ namespace isl
 
         auto setValuePtr(T *ptr) noexcept -> void
         {
-            if constexpr (TrivialTypeStored) {
+            if constexpr (std::is_trivial_v<T>) {
                 value = *ptr;
             } else {
                 value = ptr;
@@ -192,7 +170,7 @@ namespace isl
 
         [[nodiscard]] auto getValuePtr() noexcept -> T *
         {
-            if constexpr (TrivialTypeStored) {
+            if constexpr (std::is_trivial_v<T>) {
                 if (!hasValue()) {
                     return nullptr;
                 }
@@ -205,7 +183,7 @@ namespace isl
 
         [[nodiscard]] auto getValuePtr() const noexcept -> const T *
         {
-            if constexpr (TrivialTypeStored) {
+            if constexpr (std::is_trivial_v<T>) {
                 if (!hasValue()) {
                     return nullptr;
                 }
@@ -219,7 +197,7 @@ namespace isl
     private:
         [[nodiscard]] ISL_INLINE auto hasValue() const noexcept -> bool
         {
-            if constexpr (TrivialTypeStored) {
+            if constexpr (std::is_trivial_v<T>) {
                 return value.has_value();
             } else {
                 return value != nullptr;
