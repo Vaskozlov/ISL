@@ -30,7 +30,7 @@ namespace isl
             return std::get<1>(*this);
         }
 
-        ISL_DECL auto get() noexcept(NoexceptComputable) ISL_LIFETIMEBOUND->T &
+        ISL_DECL auto get() noexcept(NoexceptComputable) ISL_LIFETIMEBOUND -> T &
         {
             compute();
             return std::get<1>(*this);

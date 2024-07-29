@@ -9,19 +9,19 @@ namespace isl
     template<typename T>
     class AutoImplementedIteratorMethods
     {
-        ISL_DECL auto toParent() const noexcept ISL_LIFETIMEBOUND->const T &
+        ISL_DECL auto toParent() const noexcept ISL_LIFETIMEBOUND -> const T &
         {
             return static_cast<const T &>(*this);
         }
 
-        ISL_DECL auto begin() const noexcept(noexcept(std::declval<const T>().begin()))
-            -> decltype(auto)
+        ISL_DECL auto begin() const
+            noexcept(noexcept(std::declval<const T>().begin())) -> decltype(auto)
         {
             return std::begin(toParent());
         }
 
-        ISL_DECL auto end() const noexcept(noexcept(std::declval<const T>().end()))
-            -> decltype(auto)
+        ISL_DECL auto end() const
+            noexcept(noexcept(std::declval<const T>().end())) -> decltype(auto)
         {
             return std::end(toParent());
         }

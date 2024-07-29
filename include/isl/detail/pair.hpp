@@ -26,8 +26,8 @@ namespace isl::detail
           , second{second_elem}
         {}
 
-        ISL_DECL auto operator<=>(const TrivialPair &other) const noexcept
-            -> std::weak_ordering = default;
+        ISL_DECL auto
+            operator<=>(const TrivialPair &other) const noexcept -> std::weak_ordering = default;
     };
 }// namespace isl::detail
 

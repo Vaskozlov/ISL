@@ -1,5 +1,5 @@
-#include <isl/coroutine/generator.hpp>
 #include <iostream>
+#include <isl/coroutine/generator.hpp>
 #include <isl/detail/debug/debug.hpp>
 
 static auto stringGenerator() -> isl::Generator<std::string>
