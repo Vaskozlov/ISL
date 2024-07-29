@@ -31,6 +31,7 @@ isl_set_project_warnings(
 
 target_link_libraries(
         isl-catch
+        isl
         Catch2::Catch2WithMain
 )
 
