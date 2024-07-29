@@ -54,7 +54,7 @@ namespace isl
             return *this;
         }
 
-        auto start() -> void
+        auto resume() -> void
         {
             handle.resume();
         }

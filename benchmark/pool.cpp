@@ -1,9 +1,8 @@
 #include <algorithm>
 #include <benchmark/benchmark.h>
+#include <isl/thread/pool.hpp>
 #include <random>
 #include <vector>
-
-#include <isl/thread/pool.hpp>
 
 isl::thread::Pool ThreadPool(4);
 
@@ -70,7 +69,7 @@ void fibonacciWithThreadPoolBenchmark(benchmark::State &state)
         for (auto v : numbers) {
             isl::TaskIdGenerator.restore();
             auto task = ThreadPool.submit(fibonacciWithThreadPool(v, ThreadPool), 0);
-            benchmark::DoNotOptimize(task.await_resume());
+            benchmark::DoNotOptimize(task.runBlocking());
         }
     }
 }

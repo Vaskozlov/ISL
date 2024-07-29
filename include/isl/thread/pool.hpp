@@ -88,6 +88,12 @@ namespace isl::thread
             {}
 
         public:
+            auto runBlocking() const -> decltype(auto)
+            {
+                pool->removeFromPool(job);
+                return task.get();
+            }
+
             [[nodiscard]] auto await_ready() const -> bool
             {
                 return task.has_result();
@@ -100,8 +106,7 @@ namespace isl::thread
 
             [[nodiscard]] auto await_resume() const -> decltype(auto)
             {
-                pool->removeFromPool(job);
-                return task.get();
+                return runBlocking();
             }
         };
 
