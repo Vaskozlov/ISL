@@ -27,32 +27,28 @@ namespace isl::lifetime
     LifetimeMonitor::LifetimeMonitor()
       : lifetimeObject{new detail::LifetimeObject}
     {
-        std::cout << std::format(
-                         "Constructor: object ({}, {}) constructed", lifetimeObject->uniqueId,
-                         lifetimeObject->weakId)
-                  << std::endl;
+        fmt::println(
+            "Constructor: object ({}, {}) constructed", lifetimeObject->uniqueId,
+            lifetimeObject->weakId);
     }
 
     LifetimeMonitor::LifetimeMonitor(const LifetimeMonitor &other)
       : lifetimeObject{new detail::LifetimeObject}
     {
         if (other.lifetimeObject->deleted) {
-            std::cout << std::format(
-                             "Copy constructor: unable to copy from a deleted object ({}, {})",
-                             other.lifetimeObject->uniqueId, other.lifetimeObject->weakId)
-                      << std::endl;
+            fmt::println(
+                "Copy constructor: unable to copy from a deleted object ({}, {})",
+                other.lifetimeObject->uniqueId, other.lifetimeObject->weakId);
         } else if (other.lifetimeObject->moved) {
-            std::cout << std::format(
-                             "Copy constructor: unable to copy from a moved object ({}, {})",
-                             other.lifetimeObject->uniqueId, other.lifetimeObject->weakId)
-                      << std::endl;
+            fmt::println(
+                "Copy constructor: unable to copy from a moved object ({}, {})",
+                other.lifetimeObject->uniqueId, other.lifetimeObject->weakId);
         } else {
             detail::completeCopy(*other.lifetimeObject, *lifetimeObject);
-            std::cout << std::format(
-                             "Copy constructor: object ({}, {}) has been copied from ({}, {})",
-                             lifetimeObject->uniqueId, lifetimeObject->weakId,
-                             other.lifetimeObject->uniqueId, other.lifetimeObject->weakId)
-                      << std::endl;
+            fmt::println(
+                "Copy constructor: object ({}, {}) has been copied from ({}, {})",
+                lifetimeObject->uniqueId, lifetimeObject->weakId, other.lifetimeObject->uniqueId,
+                other.lifetimeObject->weakId);
         }
     }
 
@@ -60,49 +56,43 @@ namespace isl::lifetime
       : lifetimeObject{new detail::LifetimeObject}
     {
         if (other.lifetimeObject->deleted) {
-            std::cout << std::format(
-                             "Move constructor: unable to move from a deleted object ({}, {})",
-                             other.lifetimeObject->uniqueId, other.lifetimeObject->weakId)
-                      << std::endl;
+            fmt::println(
+                "Move constructor: unable to move from a deleted object ({}, {})",
+                other.lifetimeObject->uniqueId, other.lifetimeObject->weakId);
         } else {
             detail::completeMove(*other.lifetimeObject, *lifetimeObject);
-            std::cout << std::format(
-                             "Move constructor: object ({}, {}) has been moved to ({}, {})",
-                             other.lifetimeObject->uniqueId, other.lifetimeObject->weakId,
-                             lifetimeObject->uniqueId, lifetimeObject->weakId)
-                      << std::endl;
+            fmt::println(
+                "Move constructor: object ({}, {}) has been moved to ({}, {})",
+                other.lifetimeObject->uniqueId, other.lifetimeObject->weakId,
+                lifetimeObject->uniqueId, lifetimeObject->weakId);
         }
     }
 
     LifetimeMonitor::~LifetimeMonitor()
     {
         if (!lifetimeObject->deleteObject()) {
-            std::cout << std::format(
-                             "Destructor: doube delete on object ({}, {})",
-                             lifetimeObject->uniqueId, lifetimeObject->weakId)
-                      << std::endl;
+            fmt::println(
+                "Destructor: doube delete on object ({}, {})", lifetimeObject->uniqueId,
+                lifetimeObject->weakId);
         } else {
-            std::cout << std::format(
-                             "Destructor: object ({}, {}) deleted", lifetimeObject->uniqueId,
-                             lifetimeObject->weakId)
-                      << std::endl;
+            fmt::println(
+                "Destructor: object ({}, {}) deleted", lifetimeObject->uniqueId,
+                lifetimeObject->weakId);
         }
     }
 
     auto LifetimeMonitor::operator=(LifetimeMonitor &&other) noexcept -> LifetimeMonitor &
     {
         if (other.lifetimeObject->deleted) {
-            std::cout << std::format(
-                             "Move assign: unable to move from a deleted object ({}, {})",
-                             other.lifetimeObject->uniqueId, other.lifetimeObject->weakId)
-                      << std::endl;
+            fmt::println(
+                "Move assign: unable to move from a deleted object ({}, {})",
+                other.lifetimeObject->uniqueId, other.lifetimeObject->weakId);
         } else {
             detail::completeMove(*other.lifetimeObject, *lifetimeObject);
-            std::cout << std::format(
-                             "Move assign: object ({}, {}) has been moved to ({}, {})",
-                             other.lifetimeObject->uniqueId, other.lifetimeObject->weakId,
-                             lifetimeObject->uniqueId, lifetimeObject->weakId)
-                      << std::endl;
+            fmt::println(
+                "Move assign: object ({}, {}) has been moved to ({}, {})",
+                other.lifetimeObject->uniqueId, other.lifetimeObject->weakId,
+                lifetimeObject->uniqueId, lifetimeObject->weakId);
         }
         return *this;
     }
@@ -114,12 +104,12 @@ namespace isl::lifetime
         }
 
         if (other.lifetimeObject->deleted) {
-            std::cout << std::format(
+            fmt::println(
                 "Copy assign: unable to move from a deleted object ({}, {})",
                 other.lifetimeObject->uniqueId, other.lifetimeObject->weakId);
         } else {
             detail::completeCopy(*other.lifetimeObject, *lifetimeObject);
-            std::cout << std::format(
+            fmt::println(
                 "Copy assign: object ({}, {}) has been moved to ({}, {})",
                 other.lifetimeObject->uniqueId, other.lifetimeObject->weakId,
                 lifetimeObject->uniqueId, lifetimeObject->weakId);
