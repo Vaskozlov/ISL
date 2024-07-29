@@ -13,6 +13,10 @@ include(cmake/ProjectOptions.cmake)
 include(cmake/CompilerOptions.cmake)
 include(src/CMakeLists.txt)
 
+if (ISL_INCLUDE_BENCHMARK)
+    include(benchmark/CMakeLists.txt)
+endif ()
+
 if (ISL_INCLUDE_TESTS)
     include(catch/CMakeLists.txt)
 endif ()
