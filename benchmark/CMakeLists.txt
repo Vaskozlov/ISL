@@ -26,7 +26,6 @@ add_dependencies(
         isl
         benchmark
         fmt::fmt
-        fibonacci
 )
 
 target_link_libraries(
