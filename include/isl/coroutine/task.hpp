@@ -54,6 +54,25 @@ namespace isl
             return *this;
         }
 
+        [[nodiscard]] auto await_ready() const noexcept -> bool
+        {
+            return has_result();
+        }
+
+        [[nodiscard]] auto await_suspend(coro::coroutine_handle<> handle) noexcept -> bool
+        {
+            return !handle.done();
+        }
+
+        [[nodiscard]] auto await_resume() const noexcept -> decltype(auto)
+        {
+            while (!handle.done()) {
+                handle.resume();
+            }
+
+            return handle.promise().get_value();
+        }
+
         auto resume() -> void
         {
             handle.resume();
