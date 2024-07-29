@@ -1,0 +1,32 @@
+#ifndef ISL_PROJECT_SPIN_LOCK_HPP
+#define ISL_PROJECT_SPIN_LOCK_HPP
+
+#include <atomic>
+#include <isl/raii.hpp>
+
+namespace isl::thread
+{
+    class SpinLock
+    {
+    private:
+        std::atomic_flag flag = ATOMIC_FLAG_INIT;
+
+    public:
+        auto lock() -> void
+        {
+            while (flag.test_and_set(std::memory_order_acquire)) {}
+        }
+
+        auto tryLock() -> bool
+        {
+            return !flag.test_and_set(std::memory_order_acquire);
+        }
+
+        auto unlock() -> void
+        {
+            flag.clear(std::memory_order_release);
+        }
+    };
+}// namespace isl::thread
+
+#endif /* ISL_PROJECT_SPIN_LOCK_HPP */
