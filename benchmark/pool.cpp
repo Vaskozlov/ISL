@@ -32,7 +32,7 @@ auto fibonacciWithThreadPool(isl::u64 n, isl::thread::Pool &pool) -> isl::Task<i
         co_return lhs + rhs;
     }
 
-    co_return (classicFibonacci(n - 1) + classicFibonacci(n - 2));
+    co_return classicFibonacci(n - 1) + classicFibonacci(n - 2);
 }
 
 auto createTestNumbers() -> std::vector<isl::u32>
