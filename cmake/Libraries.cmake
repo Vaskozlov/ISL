@@ -1,5 +1,13 @@
 include(cmake/CPM.cmake)
 
+find_package(Threads REQUIRED)
+
+CPMAddPackage(
+        NAME fmt
+        GIT_TAG master
+        GITHUB_REPOSITORY fmtlib/fmt
+)
+
 if (ISL_INCLUDE_TESTS)
     CPMAddPackage(
             NAME Catch2
