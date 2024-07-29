@@ -34,7 +34,7 @@ target_link_libraries(
         isl
         PUBLIC
         Threads::Threads
-        fmt::fmt
+        fmt::fmt-header-only
 )
 
 target_include_directories(isl

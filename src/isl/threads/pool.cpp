@@ -115,7 +115,7 @@ namespace isl::thread
         auto parent_job = getParentJob(parent_id);
         increaseParentsReferencesCount(parent_job);
 
-        auto job_it = readyTasks.emplaceFront(task_handle, parent_job, task_id, 0, false, false);
+        auto job_it = readyTasks.emplaceFront(task_handle, parent_job, task_id);
         handleToJob.emplace(task_id, job_it);
 
         return job_it;

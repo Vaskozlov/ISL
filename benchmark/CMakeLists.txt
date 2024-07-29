@@ -32,8 +32,7 @@ target_link_libraries(
         isl-bench
         benchmark
         isl
-        fibonacci
-        fmt::fmt
+        fmt::fmt-header-only
 )
 
 target_include_directories(isl-bench
