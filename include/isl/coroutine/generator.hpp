@@ -52,7 +52,7 @@ namespace isl
                 throw std::runtime_error{"attempt to yield value from finished generator"};
             }
 
-            promise_type &promise = getPromise();
+            auto &promise = getPromise();
             return promise.getValue();
         }
 
@@ -104,12 +104,12 @@ namespace isl
 
         [[nodiscard]] auto initial_suspend() const noexcept -> coro::suspend_always
         {
-            return {};
+            return coro::suspend_always{};
         }
 
         [[nodiscard]] auto final_suspend() const noexcept -> coro::suspend_always
         {
-            return {};
+            return coro::suspend_always{};
         }
 
         template<typename U>
@@ -226,20 +226,20 @@ namespace isl
 
         [[nodiscard]] auto operator*() -> T &
         {
-            promise_type &promise = generatorPtr->getPromise();
+            auto &promise = generatorPtr->getPromise();
             return promise.getValue();
         }
 
         [[nodiscard]] auto operator*() const -> const T &
         {
-            const promise_type &promise = generatorPtr->getPromise();
+            const auto &promise = generatorPtr->getPromise();
             return promise.getValue();
         }
 
         [[nodiscard]] auto
             operator==([[maybe_unused]] std::default_sentinel_t _) const noexcept -> bool
         {
-            const promise_type &promise = generatorPtr->getPromise();
+            const auto &promise = generatorPtr->getPromise();
             return promise.getValuePtr() == nullptr;
         }
 
