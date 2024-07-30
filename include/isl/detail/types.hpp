@@ -44,6 +44,16 @@ namespace isl
 
     template<typename T, std::size_t Size>
     using CArray = T[Size];
+
+    template<typename Key, typename Value>
+    class NoexceptMovableMap : public std::map<Key, Value>
+    {
+    public:
+        using std::map<Key, Value>::map;
+
+        NoexceptMovableMap(NoexceptMovableMap &&other) noexcept = default;
+        auto operator=(NoexceptMovableMap &&other) noexcept -> NoexceptMovableMap &= default;
+    };
 }// namespace isl
 
 #endif /* ISL_PROJECT_TYPES_HPP */
