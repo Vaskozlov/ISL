@@ -1,5 +1,5 @@
-#ifndef ISL_PROJECT_QUEUE_HPP
-#define ISL_PROJECT_QUEUE_HPP
+#ifndef ISL_PROJECT_LOCK_FREE_STACK_HPP
+#define ISL_PROJECT_LOCK_FREE_STACK_HPP
 
 #include <atomic>
 #include <isl/isl.hpp>
@@ -63,4 +63,4 @@ namespace isl::thread::lock_free
     };
 }// namespace isl::thread::lock_free
 
-#endif /* ISL_PROJECT_QUEUE_HPP */
+#endif /* ISL_PROJECT_LOCK_FREE_STACK_HPP */
