@@ -1,8 +1,10 @@
 #ifndef ISL_PROJECT_POOL_HPP
 #define ISL_PROJECT_POOL_HPP
 
+#include <condition_variable>
 #include <isl/coroutine/task.hpp>
 #include <isl/thread/spin_lock.hpp>
+#include <mutex>
 
 namespace isl::thread
 {
