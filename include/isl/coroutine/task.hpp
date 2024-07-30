@@ -127,17 +127,10 @@ namespace isl
         }
     };
 
-    template<typename T>
-    class Task<T>::promise_type
+    class TaskPromiseBase
     {
-    private:
-        std::optional<T> value{std::nullopt};
+    protected:
         std::exception_ptr exceptionPtr{nullptr};
-
-        Job job{
-            .handle = coro_handle::from_promise(*this),
-            .parent = nullptr,
-        };
 
     public:
         [[nodiscard]] auto initial_suspend() const noexcept -> coro::suspend_always
@@ -150,11 +143,6 @@ namespace isl
             return coro::suspend_always{};
         }
 
-        auto return_value(T new_value) noexcept -> void
-        {
-            value = std::move(new_value);
-        }
-
         [[nodiscard]] auto get_exception() const noexcept -> std::exception_ptr
         {
             return exceptionPtr;
@@ -163,6 +151,75 @@ namespace isl
         auto unhandled_exception() -> void
         {
             exceptionPtr = std::current_exception();
+        }
+    };
+
+    template<>
+    class Task<void>::promise_type : public TaskPromiseBase
+    {
+    private:
+        std::exception_ptr exceptionPtr{nullptr};
+        bool hasCompleted{};
+
+        Job job{
+            .handle = coro_handle::from_promise(*this),
+            .parent = nullptr,
+        };
+
+    public:
+        auto return_void() noexcept -> void
+        {
+            hasCompleted = true;
+        }
+
+        [[nodiscard]] auto get_return_object() -> Task<void>
+        {
+            return Task<void>{coro_handle::from_promise(*this)};
+        }
+
+        [[nodiscard]] auto get_job_ptr() noexcept -> Job *
+        {
+            return &job;
+        }
+
+        [[nodiscard]] auto get_job_ptr() const noexcept -> const Job *
+        {
+            return &job;
+        }
+
+        auto get_value() const noexcept(false) ISL_LIFETIMEBOUND -> void
+        {
+            if (exceptionPtr != nullptr) {
+                std::rethrow_exception(exceptionPtr);
+            }
+
+            if (!hasCompleted) {
+                throw std::runtime_error{"Task has not finished yet"};
+            }
+        }
+
+        [[nodiscard]] auto has_result() const noexcept -> bool
+        {
+            return hasCompleted || (exceptionPtr != nullptr);
+        }
+    };
+
+    template<typename T>
+    class Task<T>::promise_type : public TaskPromiseBase
+    {
+    private:
+        std::optional<T> value{std::nullopt};
+        std::exception_ptr exceptionPtr{nullptr};
+
+        Job job{
+            .handle = coro_handle::from_promise(*this),
+            .parent = nullptr,
+        };
+
+    public:
+        auto return_value(T new_value) noexcept -> void
+        {
+            value = std::move(new_value);
         }
 
         [[nodiscard]] auto get_return_object() -> Task<T>
