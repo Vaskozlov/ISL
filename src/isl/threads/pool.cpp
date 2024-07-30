@@ -103,7 +103,7 @@ namespace isl::thread
                 continue;
             }
 
-            std::destroy_at(job.getNodePtr());
+            delete job.getNodePtr();
             break;
         }
     }
