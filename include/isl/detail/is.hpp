@@ -14,7 +14,7 @@ namespace isl
     ISL_DECL auto is(const U &value) noexcept -> bool
         requires(!std::is_pointer_v<T> && !DerivedOrSame<U, T>)
     {
-        return is<std::remove_reference_t<T> *>(&value);
+        return is<std::remove_reference_t<T> *>(std::addressof(value));
     }
 
     template<typename T, typename U>
@@ -35,13 +35,8 @@ namespace isl
     ISL_DECL auto is(const U *value) noexcept(false) -> bool
         requires std::is_pointer_v<T> && (!DerivedOrSame<U, T>)
     {
-        if constexpr (!CanDoUpcastingOrDownCasting<
-                          std::remove_pointer_t<U>, std::remove_pointer_t<T>>) {
-            return false;
-        } else {
-            return dynamic_cast<const std::remove_cvref_t<std::remove_pointer_t<T>> *>(value) !=
-                   nullptr;
-        }
+        return dynamic_cast<const std::remove_cvref_t<std::remove_pointer_t<T>> *>(value) !=
+               nullptr;
     }
 }// namespace isl
 

@@ -12,14 +12,6 @@ TEST_CASE("TestIsOnSimilarTypes", "[IsConversion]")
     STATIC_REQUIRE(isl::is<i64>(value));
 }
 
-TEST_CASE("TestIsOnDifferentTypes", "[IsConversion]")
-{
-    using namespace isl;
-    constexpr auto value = as<i64>(42);
-
-    STATIC_REQUIRE(!isl::is<i32>(value));
-}
-
 TEST_CASE("TestIsOnPointer", "[IsConversion]")
 {
     using namespace isl;

@@ -8,10 +8,6 @@
 
 namespace isl
 {
-    template<typename From, typename To>
-    concept CanDoUpcastingOrDownCasting =
-        requires(const From *from) { static_cast<const To *>(from); };
-
     template<typename Dp, typename Bp>
     concept DerivedOrSame = std::same_as<std::remove_cvref_t<Dp>, std::remove_cvref_t<Bp>> ||
                             std::derived_from<std::remove_cvref_t<Dp>, std::remove_cvref_t<Bp>>;
