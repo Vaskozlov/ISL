@@ -1,73 +1,18 @@
 #ifndef ISL_PROJECT_POOL_HPP
 #define ISL_PROJECT_POOL_HPP
 
-#include <deque>
-#include <functional>
-#include <future>
-#include <iostream>
 #include <isl/coroutine/task.hpp>
-#include <isl/isl.hpp>
-#include <isl/thread/lazy_list.hpp>
 #include <isl/thread/spin_lock.hpp>
-#include <stop_token>
-#include <thread>
 
 namespace isl::thread
 {
-    struct CoGetTaskId
-    {
-        Id taskId;
-
-        [[nodiscard]] auto await_ready() const noexcept -> bool
-        {
-            return false;
-        }
-
-        [[nodiscard]] auto await_suspend(auto &&task) noexcept -> bool
-        {
-            taskId = task.promise().get_id();
-            return false;
-        }
-
-        [[nodiscard]] auto await_resume() const noexcept -> Id
-        {
-            return taskId;
-        }
-    };
-
     class Pool
     {
     private:
-        struct Job;
-        using JobIterator = typename LazyList<Job>::iterator;
-
-        struct Job
-        {
-            std::coroutine_handle<> handle;
-            JobIterator parent;
-            Id taskId;
-            std::atomic<ssize_t> referencesCount;
-            std::atomic_flag isRunning;
-            std::atomic_flag isCompleted;
-
-            auto operator==(const Job &other) const -> bool
-            {
-                return referencesCount == other.referencesCount;
-            }
-
-            auto operator<=>(const Job &other) const -> std::weak_ordering
-            {
-                return referencesCount <=> other.referencesCount;
-            }
-        };
-
-        std::unordered_map<Id, JobIterator> handleToJob;
-        LazyList<Job> tasks;
-        LazyList<Job> readyTasks;
-
+        lock_free::Stack tasksWithoutDependencies;
         std::vector<std::thread> threads;
+        std::mutex newTasksMutex;
         std::condition_variable hasNewTasks;
-        std::mutex tasksMutex;
         std::atomic<bool> runFlag{true};
 
         template<typename T>
@@ -78,19 +23,20 @@ namespace isl::thread
             using task_handle = typename Task<T>::coro_handle;
 
             Task<T> task;
+            Job *job{task.get_job_ptr()};
             Pool *pool;
-            JobIterator job;
 
-            explicit TaskFuture(Task<T> created_task, Pool &p, Id parent_id)
+            explicit TaskFuture(Task<T> created_task, Pool &p)
               : task{std::move(created_task)}
               , pool{&p}
-              , job{pool->submit(task.share_handle(), task.get_id(), parent_id)}
-            {}
+            {
+                pool->submit(job);
+            }
 
         public:
             auto runBlocking() const -> decltype(auto)
             {
-                pool->removeFromPool(job);
+                pool->await(job);
                 return task.get();
             }
 
@@ -99,9 +45,14 @@ namespace isl::thread
                 return task.has_result();
             }
 
-            auto await_suspend(std::coroutine_handle<> /* unused */) -> bool
+            auto await_suspend(auto &&parent) -> bool
             {
-                return !task.done();
+                auto has_completed = !job->isCompleted.test();
+
+                job->parent = parent.promise().get_job_ptr();
+                job->parent->referencesCount.fetch_add(!has_completed, std::memory_order_release);
+
+                return !has_completed;
             }
 
             [[nodiscard]] auto await_resume() const -> decltype(auto)
@@ -122,31 +73,29 @@ namespace isl::thread
         ~Pool();
 
         template<typename T>
-        auto submit(Task<T> task, Id parent_id) -> TaskFuture<T>
+        auto submit(Task<T> task) -> TaskFuture<T>
         {
-            return TaskFuture<T>{std::move(task), *this, parent_id};
+            return TaskFuture<T>{std::move(task), *this};
         }
 
         auto stop() -> void;
 
-        auto removeFromPool(JobIterator job) -> void;
+        auto await(Job *job) -> void;
 
     private:
-        auto submit(coro::coroutine_handle<> task_handle, Id task_id, Id parent_id) -> JobIterator;
+        auto submit(Job *job) -> void;
 
         auto doWork() -> void;
 
         auto worker(const std::atomic<bool> *run_flag) -> void;
 
-        auto pickJob() -> JobIterator;
+        auto pickJob() -> Job *;
 
-        auto getParentJob(Id parent_id) -> JobIterator;
+        auto onTaskDone(Job *job) -> void;
 
-        auto increaseParentsReferencesCount(JobIterator parent) -> void;
+        auto decreaseParentsReferencesCount(Job *parent_job) -> void;
 
-        auto onTaskDone(JobIterator job) -> void;
-
-        auto decreaseParentsReferencesCount(JobIterator parent_job) -> void;
+        auto addJobUnique(Job *job) -> void;
     };
 }// namespace isl::thread
 

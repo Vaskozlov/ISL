@@ -3,13 +3,20 @@
 
 #include <isl/coroutine/defines.hpp>
 #include <isl/thread/id_generator.hpp>
+#include <isl/thread/lockfree/stack.hpp>
 #include <thread>
-
-#define ISL_GET_CURRENT_TASK_ID (co_await isl::Task<>::get_task_id)
 
 namespace isl
 {
-    constinit thread::IdGenerator TaskIdGenerator{1};
+    struct Job : public thread::lock_free::StackNode
+    {
+        std::coroutine_handle<> handle;
+        Job *parent;
+        std::atomic<std::size_t> referencesCount{};
+        std::atomic_flag isRunning{};
+        std::atomic_flag isCompleted{};
+        std::atomic_flag isInQueue{};
+    };
 
     template<typename T = void>
     class Task
@@ -18,10 +25,6 @@ namespace isl
         class promise_type;
         friend promise_type;
         using coro_handle = coro::coroutine_handle<promise_type>;
-
-        static constexpr struct get_promise_tag
-        {
-        } get_task_id{};
 
     private:
         coro_handle handle;
@@ -88,6 +91,16 @@ namespace isl
             return get_promise().get_id();
         }
 
+        [[nodiscard]] auto get_job_ptr() -> Job *
+        {
+            return get_promise().get_job_ptr();
+        }
+
+        [[nodiscard]] auto get_job_ptr() const -> const Job *
+        {
+            return get_promise().get_job_ptr();
+        }
+
         [[nodiscard]] auto has_result() const -> bool
         {
             return get_promise().has_result();
@@ -120,7 +133,11 @@ namespace isl
     private:
         std::optional<T> value{std::nullopt};
         std::exception_ptr exceptionPtr{nullptr};
-        Id taskId{TaskIdGenerator.next()};
+
+        Job job{
+            .handle = coro_handle::from_promise(*this),
+            .parent = nullptr,
+        };
 
     public:
         [[nodiscard]] auto initial_suspend() const noexcept -> coro::suspend_always
@@ -153,9 +170,14 @@ namespace isl
             return Task<T>{coro_handle::from_promise(*this)};
         }
 
-        [[nodiscard]] auto get_id() const noexcept -> Id
+        [[nodiscard]] auto get_job_ptr() noexcept -> Job *
         {
-            return taskId;
+            return &job;
+        }
+
+        [[nodiscard]] auto get_job_ptr() const noexcept -> const Job *
+        {
+            return &job;
         }
 
         [[nodiscard]] auto get_value() const noexcept(false) ISL_LIFETIMEBOUND -> const T &
@@ -174,28 +196,6 @@ namespace isl
         [[nodiscard]] auto has_result() const noexcept -> bool
         {
             return value.has_value() || (exceptionPtr != nullptr);
-        }
-
-        template<typename U>
-        auto await_transform(U &&awaitable) noexcept -> U &&
-        {
-            return std::forward<U &&>(awaitable);
-        }
-
-        template<typename U = void>
-        [[nodiscard]] auto await_transform(Task<U>::get_promise_tag /*unused*/)
-        {
-            struct awaiter : std::suspend_never
-            {
-                promise_type &promise;
-
-                auto await_resume() -> Id
-                {
-                    return promise.get_id();
-                }
-            };
-
-            return awaiter{{}, *this};
         }
     };
 }// namespace isl

@@ -20,128 +20,96 @@ namespace isl::thread
         }
     }
 
-    auto Pool::pickJob() -> JobIterator
+    auto Pool::pickJob() -> Job *
     {
-        const auto lock = std::scoped_lock{tasksMutex};
-
-        if (readyTasks.empty()) {
-            return readyTasks.end();
-        }
-
-        for (auto job_it = readyTasks.begin(), it_end = readyTasks.end(); job_it != it_end;
-             ++job_it) {
-            if (!job_it->isRunning.test_and_set(std::memory_order_relaxed)) {
-                return job_it;
-            }
-        }
-
-        return readyTasks.end();
+        return static_cast<Job *>(tasksWithoutDependencies.pop());
     }
 
     auto Pool::doWork() -> void
     {
-        auto job = pickJob();
+        auto *job = pickJob();
 
-        if (job == readyTasks.end()) {
+        if (job == nullptr || job->handle == nullptr) {
             return;
         }
 
-        auto task_handle = job->handle;
+        while (job->isRunning.test_and_set(std::memory_order_acquire)) {}
 
-        if (!task_handle.done()) {
-            task_handle.resume();
+        job->isInQueue.clear(std::memory_order_relaxed);
+
+        if (!job->handle.done()) {
+            job->handle.resume();
         }
 
-        if (task_handle.done() && !job->isCompleted.test(std::memory_order_relaxed)) {
+        job->isRunning.clear(std::memory_order_release);
+
+        if (job->handle.done()) {
+            job->isCompleted.test_and_set(std::memory_order_relaxed);
             onTaskDone(job);
             return;
         }
 
-        job->isRunning.clear(std::memory_order_relaxed);
-    }
-
-    auto Pool::onTaskDone(JobIterator job) -> void
-    {
-        auto parent_job = job->parent;
-        const auto lock = std::scoped_lock{tasksMutex};
-
-        if (parent_job != tasks.end()) {
-            decreaseParentsReferencesCount(parent_job);
+        if (job->referencesCount.load(std::memory_order_relaxed) == 0) {
+            addJobUnique(job);
         }
-
-        handleToJob.erase(job->taskId);
-        [[maybe_unused]] const auto *_ = readyTasks.release(job).release();
-
-        job->isRunning.clear(std::memory_order_relaxed);
-        job->isCompleted.test_and_set(std::memory_order_relaxed);
     }
 
-    auto Pool::decreaseParentsReferencesCount(JobIterator parent_job) -> void
+    auto Pool::addJobUnique(isl::Job *job) -> void
     {
-        auto parent_references =
-            parent_job->referencesCount.fetch_sub(1, std::memory_order_relaxed);
+        if (!job->isInQueue.test_and_set()) {
+            tasksWithoutDependencies.push(job);
+        }
+    }
 
-        if (parent_references == 1) {
-            readyTasks.insertFront(tasks.release(parent_job));
+    auto Pool::onTaskDone(Job *job) -> void
+    {
+        if (job->parent != nullptr) {
+            decreaseParentsReferencesCount(job->parent);
+        }
+    }
+
+    auto Pool::decreaseParentsReferencesCount(Job *parent_job) -> void
+    {
+        auto references = parent_job->referencesCount.fetch_sub(1, std::memory_order_release);
+
+        if (references == 1) {
+            addJobUnique(parent_job);
         }
     }
 
     auto Pool::worker(const std::atomic<bool> *run_flag) -> void
     {
         using namespace std::chrono_literals;
+        auto had_job_recently = false;
 
-        while (run_flag->load(std::memory_order_relaxed)) {
+        while (run_flag->load(std::memory_order_relaxed) || had_job_recently) {
+            auto lock = std::unique_lock{newTasksMutex};
+
+            had_job_recently = hasNewTasks.wait_for(lock, 10ms, [this] {
+                return !tasksWithoutDependencies.wasEmpty();
+            });
+
+            lock.unlock();
             doWork();
         }
     }
 
-    auto Pool::removeFromPool(JobIterator job) -> void
+    auto Pool::await(Job *job) -> void
     {
         while (true) {
-            if (!job->isCompleted.test(std::memory_order_relaxed)) {
+            if (!job->isCompleted.test(std::memory_order_acquire)) {
                 doWork();
                 continue;
             }
 
-            delete job.getNodePtr();
             break;
         }
     }
 
-    auto Pool::submit(coro::coroutine_handle<> task_handle, Id task_id, Id parent_id) -> JobIterator
+    auto Pool::submit(Job *job) -> void
     {
-        const auto tasks_lock = std::scoped_lock{tasksMutex};
-
-        auto parent_job = getParentJob(parent_id);
-        increaseParentsReferencesCount(parent_job);
-
-        auto job_it = readyTasks.emplaceFront(task_handle, parent_job, task_id);
-        handleToJob.emplace(task_id, job_it);
-
-        return job_it;
-    }
-
-    auto Pool::getParentJob(Id parent_id) -> JobIterator
-    {
-        auto parent_job_map_it = handleToJob.find(parent_id);
-
-        if (parent_job_map_it == handleToJob.end()) {
-            return tasks.end();
-        }
-
-        return parent_job_map_it->second;
-    }
-
-    auto Pool::increaseParentsReferencesCount(JobIterator parent) -> void
-    {
-        if (parent != tasks.end()) {
-            auto parent_references =
-                parent->referencesCount.fetch_add(1, std::memory_order_relaxed);
-
-            if (parent_references == 0) {
-                tasks.insertFront(readyTasks.release(parent));
-            }
-        }
+        tasksWithoutDependencies.push(job);
+        hasNewTasks.notify_one();
     }
 
     auto Pool::stop() -> void

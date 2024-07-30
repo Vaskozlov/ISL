@@ -22,10 +22,8 @@ auto fibonacciWithThreadPool(isl::u64 n, isl::thread::Pool &pool) -> isl::Task<i
     }
 
     if (n > 20) {
-        auto task_id = (co_await isl::Task<>::get_task_id);
-
-        auto first = pool.submit(fibonacciWithThreadPool(n - 1, pool), task_id);
-        auto second = pool.submit(fibonacciWithThreadPool(n - 2, pool), task_id);
+        auto first = pool.submit(fibonacciWithThreadPool(n - 1, pool));
+        auto second = pool.submit(fibonacciWithThreadPool(n - 2, pool));
 
         auto lhs = co_await first;
         auto rhs = co_await second;
@@ -39,7 +37,7 @@ auto createTestNumbers() -> std::vector<isl::u32>
 {
     std::vector<isl::u32> v;
 
-    for (std::size_t i = 4; i != 38; ++i) {
+    for (std::size_t i = 20; i != 30; ++i) {
         v.emplace_back(i);
     }
 
@@ -67,8 +65,7 @@ void fibonacciWithThreadPoolBenchmark(benchmark::State &state)
     auto numbers = createTestNumbers();
     for (auto _ : state) {
         for (auto v : numbers) {
-            isl::TaskIdGenerator.restore();
-            auto task = ThreadPool.submit(fibonacciWithThreadPool(v, ThreadPool), 0);
+            auto task = ThreadPool.submit(fibonacciWithThreadPool(v, ThreadPool));
             benchmark::DoNotOptimize(task.runBlocking());
         }
     }
