@@ -91,12 +91,12 @@ namespace isl
             return get_promise().get_id();
         }
 
-        [[nodiscard]] auto get_job_ptr() -> Job *
+        [[nodiscard]] auto get_job_ptr() ISL_LIFETIMEBOUND -> Job *
         {
             return get_promise().get_job_ptr();
         }
 
-        [[nodiscard]] auto get_job_ptr() const -> const Job *
+        [[nodiscard]] auto get_job_ptr() const ISL_LIFETIMEBOUND -> const Job *
         {
             return get_promise().get_job_ptr();
         }
@@ -106,17 +106,17 @@ namespace isl
             return get_promise().has_result();
         }
 
-        [[nodiscard]] auto share_handle() const noexcept -> coro_handle
+        [[nodiscard]] auto share_handle() const noexcept ISL_LIFETIMEBOUND -> coro_handle
         {
             return handle;
         }
 
-        [[nodiscard]] auto get_promise() noexcept -> promise_type &
+        [[nodiscard]] auto get_promise() noexcept ISL_LIFETIMEBOUND -> promise_type &
         {
             return handle.promise();
         }
 
-        [[nodiscard]] auto get_promise() const noexcept -> const promise_type &
+        [[nodiscard]] auto get_promise() const noexcept ISL_LIFETIMEBOUND -> const promise_type &
         {
             return handle.promise();
         }
@@ -176,12 +176,12 @@ namespace isl
             return Task<void>{coro_handle::from_promise(*this)};
         }
 
-        [[nodiscard]] auto get_job_ptr() noexcept -> Job *
+        [[nodiscard]] auto get_job_ptr() noexcept ISL_LIFETIMEBOUND -> Job *
         {
             return &job;
         }
 
-        [[nodiscard]] auto get_job_ptr() const noexcept -> const Job *
+        [[nodiscard]] auto get_job_ptr() const noexcept ISL_LIFETIMEBOUND -> const Job *
         {
             return &job;
         }
@@ -225,12 +225,12 @@ namespace isl
             return Task<T>{coro_handle::from_promise(*this)};
         }
 
-        [[nodiscard]] auto get_job_ptr() noexcept -> Job *
+        [[nodiscard]] auto get_job_ptr() noexcept ISL_LIFETIMEBOUND -> Job *
         {
             return &job;
         }
 
-        [[nodiscard]] auto get_job_ptr() const noexcept -> const Job *
+        [[nodiscard]] auto get_job_ptr() const noexcept ISL_LIFETIMEBOUND -> const Job *
         {
             return &job;
         }
