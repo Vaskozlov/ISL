@@ -158,7 +158,6 @@ namespace isl
     class Task<void>::promise_type : public TaskPromiseBase
     {
     private:
-        std::exception_ptr exceptionPtr{nullptr};
         bool hasCompleted{};
 
         Job job{
@@ -209,7 +208,6 @@ namespace isl
     {
     private:
         std::optional<T> value{std::nullopt};
-        std::exception_ptr exceptionPtr{nullptr};
 
         Job job{
             .handle = coro_handle::from_promise(*this),
