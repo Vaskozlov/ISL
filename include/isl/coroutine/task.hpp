@@ -4,7 +4,6 @@
 #include <isl/coroutine/defines.hpp>
 #include <isl/thread/id_generator.hpp>
 #include <isl/thread/lockfree/stack.hpp>
-#include <thread>
 
 namespace isl
 {
@@ -86,11 +85,6 @@ namespace isl
             return handle.promise().get_value();
         }
 
-        [[nodiscard]] auto get_id() const -> Id
-        {
-            return get_promise().get_id();
-        }
-
         [[nodiscard]] auto get_job_ptr() ISL_LIFETIMEBOUND -> Job *
         {
             return get_promise().get_job_ptr();
@@ -104,11 +98,6 @@ namespace isl
         [[nodiscard]] auto has_result() const -> bool
         {
             return get_promise().has_result();
-        }
-
-        [[nodiscard]] auto share_handle() const noexcept ISL_LIFETIMEBOUND -> coro_handle
-        {
-            return handle;
         }
 
         [[nodiscard]] auto get_promise() noexcept ISL_LIFETIMEBOUND -> promise_type &
@@ -127,12 +116,23 @@ namespace isl
         }
     };
 
+    template<typename Task, typename Handle>
     class TaskPromiseBase
     {
     protected:
+        Job job{
+            .handle = Handle::from_promise(static_cast<typename Task::promise_type &>(*this)),
+            .parent = nullptr,
+        };
+
         std::exception_ptr exceptionPtr{nullptr};
 
     public:
+        [[nodiscard]] auto get_return_object() -> Task
+        {
+            return Task{Handle::from_promise(static_cast<typename Task::promise_type &>(*this))};
+        }
+
         [[nodiscard]] auto initial_suspend() const noexcept -> coro::suspend_always
         {
             return coro::suspend_always{};
@@ -152,18 +152,25 @@ namespace isl
         {
             exceptionPtr = std::current_exception();
         }
+
+        [[nodiscard]] auto get_job_ptr() noexcept ISL_LIFETIMEBOUND -> Job *
+        {
+            return std::addressof(job);
+        }
+
+        [[nodiscard]] auto get_job_ptr() const noexcept ISL_LIFETIMEBOUND -> const Job *
+        {
+            return std::addressof(job);
+        }
     };
 
     template<>
-    class Task<void>::promise_type : public TaskPromiseBase
+    class Task<void>::promise_type : public TaskPromiseBase<Task<void>, coro_handle>
     {
     private:
-        bool hasCompleted{};
+        using TaskPromiseBase<Task<void>, coro_handle>::get_exception;
 
-        Job job{
-            .handle = coro_handle::from_promise(*this),
-            .parent = nullptr,
-        };
+        bool hasCompleted{};
 
     public:
         auto return_void() noexcept -> void
@@ -171,25 +178,10 @@ namespace isl
             hasCompleted = true;
         }
 
-        [[nodiscard]] auto get_return_object() -> Task<void>
-        {
-            return Task<void>{coro_handle::from_promise(*this)};
-        }
-
-        [[nodiscard]] auto get_job_ptr() noexcept ISL_LIFETIMEBOUND -> Job *
-        {
-            return &job;
-        }
-
-        [[nodiscard]] auto get_job_ptr() const noexcept ISL_LIFETIMEBOUND -> const Job *
-        {
-            return &job;
-        }
-
         auto get_value() const noexcept(false) ISL_LIFETIMEBOUND -> void
         {
-            if (exceptionPtr != nullptr) {
-                std::rethrow_exception(exceptionPtr);
+            if (get_exception() != nullptr) {
+                std::rethrow_exception(get_exception());
             }
 
             if (!hasCompleted) {
@@ -199,20 +191,17 @@ namespace isl
 
         [[nodiscard]] auto has_result() const noexcept -> bool
         {
-            return hasCompleted || (exceptionPtr != nullptr);
+            return hasCompleted || (get_exception() != nullptr);
         }
     };
 
     template<typename T>
-    class Task<T>::promise_type : public TaskPromiseBase
+    class Task<T>::promise_type : public TaskPromiseBase<Task<T>, coro_handle>
     {
     private:
-        std::optional<T> value{std::nullopt};
+        using TaskPromiseBase<Task<T>, coro_handle>::get_exception;
 
-        Job job{
-            .handle = coro_handle::from_promise(*this),
-            .parent = nullptr,
-        };
+        std::optional<T> value{std::nullopt};
 
     public:
         auto return_value(T new_value) noexcept -> void
@@ -220,25 +209,10 @@ namespace isl
             value = std::move(new_value);
         }
 
-        [[nodiscard]] auto get_return_object() -> Task<T>
-        {
-            return Task<T>{coro_handle::from_promise(*this)};
-        }
-
-        [[nodiscard]] auto get_job_ptr() noexcept ISL_LIFETIMEBOUND -> Job *
-        {
-            return &job;
-        }
-
-        [[nodiscard]] auto get_job_ptr() const noexcept ISL_LIFETIMEBOUND -> const Job *
-        {
-            return &job;
-        }
-
         [[nodiscard]] auto get_value() const noexcept(false) ISL_LIFETIMEBOUND -> const T &
         {
-            if (exceptionPtr != nullptr) {
-                std::rethrow_exception(exceptionPtr);
+            if (get_exception() != nullptr) {
+                std::rethrow_exception(get_exception());
             }
 
             if (!value.has_value()) {
@@ -250,7 +224,7 @@ namespace isl
 
         [[nodiscard]] auto has_result() const noexcept -> bool
         {
-            return value.has_value() || (exceptionPtr != nullptr);
+            return value.has_value() || (get_exception() != nullptr);
         }
     };
 }// namespace isl

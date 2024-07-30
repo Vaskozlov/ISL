@@ -25,10 +25,8 @@ namespace isl::thread
         return static_cast<Job *>(tasksWithoutDependencies.pop());
     }
 
-    auto Pool::doWork() -> void
+    auto Pool::runJob(Job *job) -> void
     {
-        auto *job = pickJob();
-
         if (job == nullptr || job->handle == nullptr) {
             return;
         }
@@ -50,11 +48,11 @@ namespace isl::thread
         }
 
         if (job->referencesCount.load(std::memory_order_relaxed) == 0) {
-            addJobUnique(job);
+            addJobToTheQueueUnique(job);
         }
     }
 
-    auto Pool::addJobUnique(isl::Job *job) -> void
+    auto Pool::addJobToTheQueueUnique(isl::Job *job) -> void
     {
         if (!job->isInQueue.test_and_set()) {
             tasksWithoutDependencies.push(job);
@@ -73,7 +71,7 @@ namespace isl::thread
         auto references = parent_job->referencesCount.fetch_sub(1, std::memory_order_release);
 
         if (references == 1) {
-            addJobUnique(parent_job);
+            addJobToTheQueueUnique(parent_job);
         }
     }
 
@@ -90,7 +88,7 @@ namespace isl::thread
             });
 
             lock.unlock();
-            doWork();
+            runJob(pickJob());
         }
     }
 
@@ -98,7 +96,7 @@ namespace isl::thread
     {
         while (true) {
             if (!job->isCompleted.test(std::memory_order_acquire)) {
-                doWork();
+                runJob(pickJob());
                 continue;
             }
 

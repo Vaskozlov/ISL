@@ -5,6 +5,7 @@
 #include <isl/coroutine/task.hpp>
 #include <isl/thread/spin_lock.hpp>
 #include <mutex>
+#include <thread>
 
 namespace isl::thread
 {
@@ -87,7 +88,7 @@ namespace isl::thread
     private:
         auto submit(Job *job) -> void;
 
-        auto doWork() -> void;
+        auto runJob(Job *job) -> void;
 
         auto worker(const std::atomic<bool> *run_flag) -> void;
 
@@ -97,7 +98,7 @@ namespace isl::thread
 
         auto decreaseParentsReferencesCount(Job *parent_job) -> void;
 
-        auto addJobUnique(Job *job) -> void;
+        auto addJobToTheQueueUnique(Job *job) -> void;
     };
 }// namespace isl::thread
 
