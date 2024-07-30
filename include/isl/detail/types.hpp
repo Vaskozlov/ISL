@@ -52,7 +52,7 @@ namespace isl
         using std::map<Key, Value>::map;
 
         NoexceptMovableMap(NoexceptMovableMap &&other) noexcept = default;
-        auto operator=(NoexceptMovableMap &&other) noexcept -> NoexceptMovableMap &= default;
+        auto operator=(NoexceptMovableMap &&other) noexcept -> NoexceptMovableMap & = default;
     };
 }// namespace isl
 
