@@ -17,6 +17,7 @@ namespace isl::thread
         std::condition_variable hasNewTasks;
         std::atomic<bool> runFlag{true};
 
+    public:
         template<typename T>
         class TaskFuture
         {
@@ -63,7 +64,6 @@ namespace isl::thread
             }
         };
 
-    public:
         explicit Pool(std::size_t size);
 
         Pool(const Pool &) = delete;
@@ -100,5 +100,11 @@ namespace isl::thread
         auto addJobUnique(Job *job) -> void;
     };
 }// namespace isl::thread
+
+namespace isl
+{
+    template<typename T>
+    using AsyncTask = thread::Pool::TaskFuture<T>;
+}
 
 #endif /* ISL_PROJECT_POOL_HPP */
