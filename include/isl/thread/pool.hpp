@@ -37,7 +37,7 @@ namespace isl::thread
             }
 
         public:
-            auto runBlocking() const -> decltype(auto)
+            auto await() const -> decltype(auto)
             {
                 pool->await(job);
                 return task.get();
@@ -60,7 +60,7 @@ namespace isl::thread
 
             [[nodiscard]] auto await_resume() const -> decltype(auto)
             {
-                return runBlocking();
+                return await();
             }
         };
 

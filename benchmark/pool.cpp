@@ -66,7 +66,7 @@ void fibonacciWithThreadPoolBenchmark(benchmark::State &state)
     for (auto _ : state) {
         for (auto v : numbers) {
             auto task = ThreadPool.submit(fibonacciWithThreadPool(v, ThreadPool));
-            benchmark::DoNotOptimize(task.runBlocking());
+            benchmark::DoNotOptimize(task.await());
         }
     }
 }
