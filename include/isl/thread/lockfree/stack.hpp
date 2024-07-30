@@ -7,8 +7,12 @@
 
 namespace isl::thread::lock_free
 {
+    class Stack;
+
     struct StackNode
     {
+    private:
+        friend Stack;
         StackNode *next;
     };
 
@@ -19,47 +23,29 @@ namespace isl::thread::lock_free
         std::atomic<std::size_t> currentSize;
 
     public:
-        auto wasEmpty() const noexcept -> bool
+        [[nodiscard]] auto wasEmpty() const noexcept -> bool
         {
             return top.load(std::memory_order_relaxed) == nullptr;
         }
 
-        auto contained() const noexcept -> std::size_t
+        [[nodiscard]] auto contained() const noexcept -> std::size_t
         {
             return currentSize.load(std::memory_order_relaxed);
         }
 
-        auto push(StackNode *node) noexcept -> void
+        [[nodiscard]] auto wasOnTop() noexcept -> StackNode *
         {
-            StackNode *old_head;
-
-            do {
-                old_head = top.load(std::memory_order_relaxed);
-                node->next = old_head;
-            } while (!top.compare_exchange_weak(
-                old_head, node, std::memory_order_release, std::memory_order_relaxed));
-
-            currentSize.fetch_add(1);
+            return top.load(std::memory_order_relaxed);
         }
 
-        auto pop() noexcept -> StackNode *
+        [[nodiscard]] auto wasOnTop() const noexcept -> const StackNode *
         {
-            StackNode *old_head = nullptr;
-
-            do {
-                old_head = top.load(std::memory_order_relaxed);
-            } while (old_head != nullptr && !top.compare_exchange_weak(
-                                                old_head,
-                                                old_head->next,
-                                                std::memory_order_release,
-                                                std::memory_order_relaxed));
-
-            if (old_head != nullptr) {
-                currentSize.fetch_sub(1);
-            }
-
-            return old_head;
+            return top.load(std::memory_order_relaxed);
         }
+
+        auto push(StackNode *node) noexcept -> void;
+
+        auto pop() noexcept -> StackNode *;
     };
 }// namespace isl::thread::lock_free
 
