@@ -71,5 +71,5 @@ void fibonacciWithThreadPoolBenchmark(benchmark::State &state)
     }
 }
 
-BENCHMARK(fibonacciWithThreadPoolBenchmark)->Threads(1);
+BENCHMARK(fibonacciWithThreadPoolBenchmark)->Threads(1)->Iterations(100);
 BENCHMARK_MAIN();

@@ -1,13 +1,13 @@
 #include <iostream>
 #include <isl/detail/debug/debug.hpp>
-#include <isl/thread/lazy_list.hpp>
+#include <isl/thread/persistent_storage.hpp>
 
 // NOLINTBEGIN
 
 TEST_CASE("PriorityLazyListBasicTest", "[LazyList]")
 {
-    auto list = isl::thread::LazyList<int>{};
-    auto second_list = isl::thread::LazyList<int>{};
+    auto list = isl::thread::PersistentStorage<int>{};
+    auto second_list = isl::thread::PersistentStorage<int>{};
 
     list.emplaceFront(1);
     list.emplaceFront(2);
@@ -30,6 +30,9 @@ TEST_CASE("PriorityLazyListBasicTest", "[LazyList]")
 
     second_list.insertFront(std::move(released));
     REQUIRE(std::equal(second_list.begin(), second_list.end(), std::vector{100}.begin()));
+
+    list.clear();
+    REQUIRE(list.empty());
 }
 
 // NOLINTEND

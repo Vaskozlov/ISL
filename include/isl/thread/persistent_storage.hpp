@@ -1,5 +1,5 @@
-#ifndef ISL_PROJECT_LAZY_LIST_HPP
-#define ISL_PROJECT_LAZY_LIST_HPP
+#ifndef ISL_PROJECT_PERSISTENT_STORAGE_HPP
+#define ISL_PROJECT_PERSISTENT_STORAGE_HPP
 
 #include <atomic>
 #include <isl/isl.hpp>
@@ -9,9 +9,9 @@
 namespace isl::thread
 {
     template<typename T>
-    class LazyList
+    class PersistentStorage
     {
-    private:
+    public:
         struct Node
         {
             T data;
@@ -24,11 +24,13 @@ namespace isl::thread
               , next{std::move(next_node)}
               , prev{prev_node}
             {}
+
+            static auto deleteSelf(Node *node) -> void
+            {
+                delete node;
+            }
         };
 
-        isl::UniquePtr<Node> head;
-
-    public:
         using value_type = T;
         using reference = T &;
         using pointer = T *;
@@ -100,8 +102,31 @@ namespace isl::thread
                 return copy;
             }
 
+            auto deleteSelf() -> void
+            {
+                Node::deleteSelf(currentNode);
+            }
+
             [[nodiscard]] auto operator==(const iterator &other) const noexcept -> bool = default;
         };
+
+    private:
+        isl::UniquePtr<Node> head;
+        std::size_t stored;
+
+    public:
+        auto clear() -> void
+        {
+            head.~UniquePtr();
+
+            head = nullptr;
+            stored = 0;
+        }
+
+        [[nodiscard]] auto size() const noexcept -> std::size_t
+        {
+            return stored;
+        }
 
         template<typename... Ts>
         auto emplaceFront(Ts &&...args) -> iterator
@@ -114,7 +139,33 @@ namespace isl::thread
                 old_head->prev = new_node.get();
             }
 
+            ++stored;
             head = std::move(new_node);
+
+            return iterator{new_node_ptr};
+        }
+
+        template<typename... Ts>
+        auto emplaceFrontWithSelfIteratorAttached(Ts &&...args) -> iterator
+        {
+            auto *old_head = head.get();
+            auto *new_node_ptr = reinterpret_cast<Node *>(new (std::align_val_t(alignof(Node)))
+                                                              std::byte[sizeof(Node)]);
+
+            auto self_it = iterator{new_node_ptr};
+            std::construct_at(&new_node_ptr->next, std::move(head));
+            std::construct_at(&new_node_ptr->prev, nullptr);
+            std::construct_at(&new_node_ptr->data, std::forward<Ts>(args)..., self_it);
+
+            auto new_node = UniquePtr<Node>(new_node_ptr);
+
+            if (old_head != nullptr) {
+                old_head->prev = new_node.get();
+            }
+
+            ++stored;
+            head = std::move(new_node);
+
             return iterator{new_node_ptr};
         }
 
@@ -142,8 +193,10 @@ namespace isl::thread
                 next_node->prev = prev_node;
             }
 
+            --stored;
             self->next = nullptr;
             self->prev = nullptr;
+
             return self;
         }
 
@@ -153,6 +206,7 @@ namespace isl::thread
                 head->prev = new_node.get();
             }
 
+            ++stored;
             new_node->next = std::move(head);
             head = std::move(new_node);
         }
@@ -204,4 +258,4 @@ namespace isl::thread
     };
 }// namespace isl::thread
 
-#endif /* ISL_PROJECT_LAZY_LIST_HPP */
+#endif /* ISL_PROJECT_PERSISTENT_STORAGE_HPP */
