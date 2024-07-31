@@ -127,12 +127,12 @@ namespace isl
         }
     };
 
-    template<typename Task, typename Handle>
+    template<typename Task>
     class TaskPromiseBase
     {
     protected:
         Job job{
-            .handle = Handle::from_promise(static_cast<typename Task::promise_type &>(*this)),
+            .handle = Task::coro_handle::from_promise(static_cast<typename Task::promise_type &>(*this)),
             .parent = nullptr,
         };
 
@@ -141,7 +141,7 @@ namespace isl
     public:
         [[nodiscard]] auto get_return_object() -> Task
         {
-            return Task{Handle::from_promise(static_cast<typename Task::promise_type &>(*this))};
+            return Task{Task::coro_handle::from_promise(static_cast<typename Task::promise_type &>(*this))};
         }
 
         [[nodiscard]] auto initial_suspend() const noexcept -> coro::suspend_always
@@ -176,10 +176,10 @@ namespace isl
     };
 
     template<>
-    class Task<void>::promise_type : public TaskPromiseBase<Task<void>, coro_handle>
+    class Task<void>::promise_type : public TaskPromiseBase<Task<void>>
     {
     private:
-        using TaskPromiseBase<Task<void>, coro_handle>::get_exception;
+        using TaskPromiseBase<Task<void>>::get_exception;
 
         bool hasCompleted{};
 
@@ -207,10 +207,10 @@ namespace isl
     };
 
     template<typename T>
-    class Task<T>::promise_type : public TaskPromiseBase<Task<T>, coro_handle>
+    class Task<T>::promise_type : public TaskPromiseBase<Task<T>>
     {
     private:
-        using TaskPromiseBase<Task<T>, coro_handle>::get_exception;
+        using TaskPromiseBase<Task<T>>::get_exception;
 
         std::optional<T> value{std::nullopt};
 
