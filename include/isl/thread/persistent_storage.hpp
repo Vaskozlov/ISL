@@ -122,8 +122,6 @@ namespace isl::thread
     public:
         auto clear() -> void
         {
-            head.~UniquePtr();
-
             head = nullptr;
             stored = 0;
         }
