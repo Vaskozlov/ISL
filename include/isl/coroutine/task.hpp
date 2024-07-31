@@ -12,9 +12,16 @@ namespace isl
         std::coroutine_handle<> handle;
         Job *parent;
         std::atomic<std::size_t> referencesCount{};
-        std::atomic_flag isRunning{};
         std::atomic_flag isCompleted{};
-        std::atomic_flag isInQueue{};
+
+        auto run() -> void
+        {
+            if (!handle.done()) {
+                handle.resume();
+            } else {
+                throw std::runtime_error("Job has already finished");
+            }
+        }
     };
 
     template<typename T = void>
@@ -61,23 +68,32 @@ namespace isl
             return has_result();
         }
 
-        [[nodiscard]] auto await_suspend(coro::coroutine_handle<> handle) noexcept -> bool
+        [[nodiscard]] auto await_suspend(coro::coroutine_handle<> /* unused */) noexcept -> bool
         {
             return !handle.done();
         }
 
-        [[nodiscard]] auto await_resume() const noexcept -> decltype(auto)
-        {
-            while (!handle.done()) {
-                handle.resume();
-            }
-
-            return handle.promise().get_value();
-        }
-
-        auto resume() -> void
+        auto resume() const -> void
         {
             handle.resume();
+        }
+
+        [[nodiscard]] auto done() const noexcept -> bool
+        {
+            return handle.done();
+        }
+
+        auto await() const -> void
+        {
+            while (!done()) {
+                resume();
+            }
+        }
+
+        [[nodiscard]] auto await_resume() const noexcept -> decltype(auto)
+        {
+            await();
+            return handle.promise().get_value();
         }
 
         [[nodiscard]] auto get() const -> decltype(auto)
@@ -108,11 +124,6 @@ namespace isl
         [[nodiscard]] auto get_promise() const noexcept ISL_LIFETIMEBOUND -> const promise_type &
         {
             return handle.promise();
-        }
-
-        [[nodiscard]] auto done() const noexcept -> bool
-        {
-            return handle.done();
         }
     };
 
