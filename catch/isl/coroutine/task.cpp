@@ -18,7 +18,7 @@ TEST_CASE("SimpleTask", "[Task]")
     auto task = simpleTask();
     REQUIRE_THROWS(task.get());
 
-    task.resume();
+    task.await();
 
     REQUIRE(task.done());
     REQUIRE(task.get() == 0);
@@ -30,7 +30,7 @@ TEST_CASE("TaskAwaitingTask", "[Task]")
     REQUIRE_THROWS(task.get());
 
     while (!task.done()) {
-        task.resume();
+        task.await();
     }
 
     REQUIRE(task.done());
