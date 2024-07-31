@@ -139,7 +139,7 @@ namespace isl::thread
             auto *new_node_ptr = alignedNodeRowAlloc();
             std::construct_at(new_node_ptr, std::move(head), nullptr, std::forward<Ts>(args)...);
 
-            auto new_node = UniquePtr(new_node_ptr);
+            auto new_node = UniquePtr<Node>(new_node_ptr);
 
             if (old_head != nullptr) {
                 old_head->prev = new_node.get();
