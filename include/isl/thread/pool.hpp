@@ -81,8 +81,6 @@ namespace isl::thread
         auto onTaskDone(Job *job) -> void;
 
         auto decreaseParentsReferencesCount(Job *parent_job) -> void;
-
-        auto sendStopSignalToThread(ThreadInfoIterator thread_info_it) -> void;
     };
 }// namespace isl::thread
 
