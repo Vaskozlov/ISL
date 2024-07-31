@@ -24,23 +24,7 @@ namespace isl::thread
         }
 
         job->run();
-        onTaskDone(job);
-    }
-
-    auto Pool::onTaskDone(Job *job) -> void
-    {
-        if (job->parent != nullptr) {
-            decreaseParentsReferencesCount(job->parent);
-        }
-
-        job->isCompleted.test_and_set(std::memory_order_relaxed);
-    }
-
-    auto Pool::decreaseParentsReferencesCount(Job *parent_job) -> void
-    {
-        if (parent_job->referencesCount.fetch_sub(1, std::memory_order_relaxed) == 1) {
-            submit(parent_job);
-        }
+        job->isCompleted.test_and_set(std::memory_order_release);
     }
 
     auto Pool::worker(ThreadInfoIterator run_flag_it) -> void

@@ -10,17 +10,11 @@ namespace isl
     struct Job : public thread::lock_free::StackNode
     {
         std::coroutine_handle<> handle;
-        Job *parent;
-        std::atomic<std::size_t> referencesCount{};
         std::atomic_flag isCompleted{};
 
-        auto run() -> void
+        auto run() const -> void
         {
-            if (!handle.done()) {
-                handle.resume();
-            } else {
-                throw std::runtime_error("Job has already finished");
-            }
+            handle.resume();
         }
     };
 
@@ -50,6 +44,8 @@ namespace isl
 
         ~Task()
         {
+            std::atomic_thread_fence(std::memory_order_acquire);
+
             if (handle != nullptr) {
                 handle.destroy();
             }
@@ -132,16 +128,15 @@ namespace isl
     {
     protected:
         Job job{
-            .handle = Task::coro_handle::from_promise(static_cast<typename Task::promise_type &>(*this)),
-            .parent = nullptr,
-        };
-
+            .handle =
+                Task::coro_handle::from_promise(static_cast<typename Task::promise_type &>(*this))};
         std::exception_ptr exceptionPtr{nullptr};
 
     public:
         [[nodiscard]] auto get_return_object() -> Task
         {
-            return Task{Task::coro_handle::from_promise(static_cast<typename Task::promise_type &>(*this))};
+            return Task{
+                Task::coro_handle::from_promise(static_cast<typename Task::promise_type &>(*this))};
         }
 
         [[nodiscard]] auto initial_suspend() const noexcept -> coro::suspend_always
