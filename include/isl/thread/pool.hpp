@@ -26,8 +26,8 @@ namespace isl::thread
 
             template<typename... Ts>
             explicit ThreadInfo(bool flag_value, Ts &&...args)
-              : runFlag{flag_value}
-              , thread{std::forward<Ts>(args)...}
+              : thread{std::forward<Ts>(args)...}
+              , runFlag{flag_value}
             {}
         };
 
