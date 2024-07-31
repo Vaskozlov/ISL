@@ -111,15 +111,25 @@ namespace isl::thread
         };
 
     private:
-        static auto alignedNodeRowAlloc() -> Node*
+        static auto alignedNodeRowAlloc() -> Node *
         {
-            return static_cast<Node *>(::operator new(sizeof(Node), std::align_val_t(alignof(Node))));
+            return static_cast<Node *>(
+                ::operator new(sizeof(Node), std::align_val_t(alignof(Node))));
         }
 
         isl::UniquePtr<Node> head;
         std::size_t stored;
 
     public:
+        PersistentStorage() = default;
+
+        PersistentStorage(const std::initializer_list<T> &initial_data)
+        {
+            for (const auto &elem : initial_data) {
+                emplaceFront(elem);
+            }
+        }
+
         auto clear() -> void
         {
             head = nullptr;
