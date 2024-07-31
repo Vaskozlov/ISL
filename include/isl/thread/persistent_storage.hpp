@@ -111,6 +111,11 @@ namespace isl::thread
         };
 
     private:
+        static auto alignedNodeRowAlloc() -> Node*
+        {
+            return static_cast<Node *>(::operator new(sizeof(Node), std::align_val_t(alignof(Node))));
+        }
+
         isl::UniquePtr<Node> head;
         std::size_t stored;
 
@@ -132,8 +137,11 @@ namespace isl::thread
         auto emplaceFront(Ts &&...args) -> iterator
         {
             auto *old_head = head.get();
-            auto new_node = makeUnique<Node>(std::move(head), nullptr, std::forward<Ts>(args)...);
-            auto *new_node_ptr = new_node.get();
+
+            auto *new_node_ptr = alignedNodeRowAlloc();
+            std::construct_at(new_node_ptr, std::move(head), nullptr, std::forward<Ts>(args)...);
+
+            auto new_node = UniquePtr(new_node_ptr);
 
             if (old_head != nullptr) {
                 old_head->prev = new_node.get();
@@ -149,8 +157,7 @@ namespace isl::thread
         auto emplaceFrontWithSelfIteratorAttached(Ts &&...args) -> iterator
         {
             auto *old_head = head.get();
-            auto *new_node_ptr = reinterpret_cast<Node *>(new (std::align_val_t(alignof(Node)))
-                                                              std::byte[sizeof(Node)]);
+            auto *new_node_ptr = alignedNodeRowAlloc();
 
             auto self_it = iterator{new_node_ptr};
             std::construct_at(&new_node_ptr->next, std::move(head));
