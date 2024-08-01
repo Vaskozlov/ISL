@@ -3,8 +3,8 @@
 
 #include <condition_variable>
 #include <isl/coroutine/task.hpp>
-#include <isl/thread/persistent_storage.hpp>
 #include <isl/thread/spin_lock.hpp>
+#include <list>
 #include <mutex>
 #include <thread>
 
@@ -31,13 +31,11 @@ namespace isl::thread
             {}
         };
 
-        using ThreadInfoIterator = PersistentStorage<ThreadInfo>::iterator;
-
         lock_free::Stack tasksStack;
         std::mutex newTasksMutex;
         std::mutex threadsManipulationMutex;
         std::condition_variable hasNewTasks;
-        PersistentStorage<ThreadInfo> threads;
+        std::list<ThreadInfo> threads;
 
     public:
         explicit Pool(std::size_t count);
@@ -67,20 +65,18 @@ namespace isl::thread
 
         auto stopAllThreads() -> void;
 
-        auto await(Job *job) -> void;
+        auto await(const Job *job) -> void;
 
     private:
         auto submit(Job *job) -> void;
 
-        auto runJob(Job *job) -> void;
+        auto runJob(Job *job) -> bool;
 
-        auto worker(ThreadInfoIterator run_flag) -> void;
+        auto worker(const std::atomic<bool> &run_flag) -> void;
 
         auto pickJob() -> Job *;
 
-        auto onTaskDone(Job *job) -> void;
-
-        auto decreaseParentsReferencesCount(Job *parent_job) -> void;
+        auto waitForNotify() -> void;
     };
 }// namespace isl::thread
 
