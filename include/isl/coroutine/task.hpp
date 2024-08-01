@@ -97,6 +97,11 @@ namespace isl
             return handle.promise().get_value();
         }
 
+        [[nodiscard]] auto get() const -> decltype(auto)
+        {
+            return handle.promise().get_value();
+        }
+
         [[nodiscard]] auto get_job_ptr() ISL_LIFETIMEBOUND -> Job *
         {
             return get_promise().get_job_ptr();
@@ -213,6 +218,19 @@ namespace isl
         auto return_value(T new_value) noexcept -> void
         {
             value = std::move(new_value);
+        }
+
+        [[nodiscard]] auto get_value() noexcept(false) ISL_LIFETIMEBOUND -> T &
+        {
+            if (get_exception() != nullptr) {
+                std::rethrow_exception(get_exception());
+            }
+
+            if (!value.has_value()) {
+                throw std::runtime_error{"Task has not finished yet"};
+            }
+
+            return *value;
         }
 
         [[nodiscard]] auto get_value() const noexcept(false) ISL_LIFETIMEBOUND -> const T &

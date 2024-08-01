@@ -110,6 +110,12 @@ namespace isl
             return task.get();
         }
 
+        auto await() const -> decltype(auto)
+        {
+            pool->await(job);
+            return task.get();
+        }
+
         [[nodiscard]] auto await_ready() const -> bool
         {
             return task.has_result();
@@ -121,6 +127,11 @@ namespace isl
         }
 
         [[nodiscard]] auto await_resume() -> decltype(auto)
+        {
+            return await();
+        }
+
+        [[nodiscard]] auto await_resume() const -> decltype(auto)
         {
             return await();
         }
