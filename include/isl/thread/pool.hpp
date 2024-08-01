@@ -104,7 +104,7 @@ namespace isl
         }
 
     public:
-        auto await() const -> decltype(auto)
+        auto await() -> decltype(auto)
         {
             pool->await(job);
             return task.get();
@@ -120,7 +120,7 @@ namespace isl
             return false;
         }
 
-        [[nodiscard]] auto await_resume() const -> decltype(auto)
+        [[nodiscard]] auto await_resume() -> decltype(auto)
         {
             return await();
         }

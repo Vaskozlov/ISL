@@ -92,7 +92,7 @@ namespace isl
             return handle.promise().get_value();
         }
 
-        [[nodiscard]] auto get() const -> decltype(auto)
+        [[nodiscard]] auto get() -> decltype(auto)
         {
             return handle.promise().get_value();
         }
