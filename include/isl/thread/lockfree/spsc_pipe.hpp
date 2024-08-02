@@ -131,6 +131,25 @@ namespace isl::thread::lock_free
             return true;
         }
 
+        template<typename... Ts>
+        auto tryEmplace(Trait<std::is_invocable> auto &&function, Ts &&...args) -> bool
+        {
+            auto push_cursor = pushCursor.load(std::memory_order_relaxed);
+            auto next_push_cursor = (push_cursor + 1) % Size;
+
+            if (next_push_cursor == popCursorCached) {
+                popCursorCached = popCursor.load(std::memory_order_acquire);
+
+                if (next_push_cursor == popCursorCached) {
+                    return false;
+                }
+            }
+
+            ring[push_cursor].construct(function(std::forward<Ts>(args)...));
+            pushCursor.store(next_push_cursor, std::memory_order_release);
+            return true;
+        }
+
         auto tryPop(T &value) -> bool
         {
             auto pop_cursor = popCursor.load(std::memory_order_relaxed);
