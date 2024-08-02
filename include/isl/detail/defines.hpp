@@ -141,6 +141,7 @@ namespace isl
         UNSAFE
     };
 
+    // https://stackoverflow.com/questions/39680206/understanding-stdhardware-destructive-interference-size-and-stdhardware-cons
     constexpr inline std::size_t HardwareDestructiveInterferenceSize = 64;
 }// namespace isl
 
