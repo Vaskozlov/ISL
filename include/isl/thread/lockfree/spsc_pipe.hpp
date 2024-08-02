@@ -56,6 +56,8 @@ namespace isl::thread::lock_free
 
         ISL_HARDWARE_CACHE_LINE_ALIGN size_type popCursorCached;
 
+        ISL_HARDWARE_CACHE_LINE_ALIGN std::atomic_flag hasProducerFinished;
+
         ISL_HARDWARE_CACHE_LINE_PADDING(size_type);
 
         [[nodiscard]] static auto isFull(size_type push_cursor, size_t pop_cursor) noexcept -> bool
@@ -93,6 +95,16 @@ namespace isl::thread::lock_free
             auto pop_cursor = popCursor.load(std::memory_order_relaxed);
 
             return isFull(push_cursor, push_cursor);
+        }
+
+        [[nodiscard]] auto isProducerDone() const noexcept -> bool
+        {
+            return hasProducerFinished.test(std::memory_order_relaxed);
+        }
+
+        auto producerDone() noexcept -> void
+        {
+            hasProducerFinished.test_and_set(std::memory_order_relaxed);
         }
 
         template<typename... Ts>
