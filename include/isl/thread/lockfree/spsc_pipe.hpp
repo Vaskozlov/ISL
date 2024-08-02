@@ -94,7 +94,7 @@ namespace isl::thread::lock_free
             auto push_cursor = pushCursor.load(std::memory_order_relaxed);
             auto pop_cursor = popCursor.load(std::memory_order_relaxed);
 
-            return isFull(push_cursor, push_cursor);
+            return isFull(push_cursor, pop_cursor);
         }
 
         [[nodiscard]] auto isProducerDone() const noexcept -> bool
