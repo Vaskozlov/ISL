@@ -50,11 +50,11 @@ namespace isl::thread::lock_free
 
         ISL_HARDWARE_CACHE_LINE_ALIGN CursorType pushCursor;
 
-        ISL_HARDWARE_CACHE_LINE_ALIGN size_type pushCursorCached;
+        ISL_HARDWARE_CACHE_LINE_ALIGN size_type pushCursorCached{};
 
         ISL_HARDWARE_CACHE_LINE_ALIGN CursorType popCursor;
 
-        ISL_HARDWARE_CACHE_LINE_ALIGN size_type popCursorCached;
+        ISL_HARDWARE_CACHE_LINE_ALIGN size_type popCursorCached{};
 
         ISL_HARDWARE_CACHE_LINE_ALIGN std::atomic_flag hasProducerFinished;
 
