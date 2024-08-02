@@ -1,6 +1,6 @@
-#include <iostream>
 #include <isl/detail/debug/debug.hpp>
 #include <isl/thread/lockfree/stack.hpp>
+#include <latch>
 #include <mutex>
 #include <thread>
 
@@ -24,7 +24,6 @@ static auto createVector(std::size_t from, std::size_t to) -> std::vector<ValueN
     return result;
 }
 
-
 static auto waitThreads(std::vector<std::thread> &threads) -> void
 {
     for (auto &thread : threads) {
@@ -32,7 +31,7 @@ static auto waitThreads(std::vector<std::thread> &threads) -> void
     }
 }
 
-TEST_CASE("LockFreeQueue", "[LockFree]")
+TEST_CASE("LockFreeStack", "[LockFree]")
 {
     using namespace std::chrono_literals;
 
@@ -44,28 +43,35 @@ TEST_CASE("LockFreeQueue", "[LockFree]")
     auto popped_value = std::vector<std::size_t>{};
     auto popped_values_lock = std::mutex{};
     auto threads_count = std::size_t{std::thread::hardware_concurrency()};
+    auto latch = std::latch(threads_count * 2);
+    auto pushers_finished = std::atomic<std::size_t>{0};
 
     auto created_data = std::vector<std::vector<ValueNode<std::size_t>>>{};
     created_data.reserve(threads_count);
 
     for (std::size_t i = 0; i != threads_count; ++i) {
-        pushers_threads.emplace_back([&queue, i, &created_data] mutable {
+        pushers_threads.emplace_back([&queue, i, &created_data, &latch, &pushers_finished] mutable {
             auto &nodes = created_data.emplace_back(
                 createVector(i * task_multiplier, (i + 1) * task_multiplier));
+
+            latch.arrive_and_wait();
 
             for (auto &node : nodes) {
                 queue.push(&node);
             }
+
+            pushers_finished.fetch_add(1, std::memory_order_release);
         });
 
 
-        std::this_thread::sleep_for(2ms);
-
-        poppers_threads.emplace_back([&queue, &popped_value, &popped_values_lock] {
+        poppers_threads.emplace_back([&queue, &popped_value, &popped_values_lock, &latch,
+                                      &pushers_finished, threads_count] {
             auto locally_popped = std::vector<std::size_t>{};
+            latch.arrive_and_wait();
 
             while (true) {
-                if (queue.contained() == 0) {
+                if (queue.contained() == 0 &&
+                    pushers_finished.load(std::memory_order_acquire) == threads_count) {
                     break;
                 }
 
