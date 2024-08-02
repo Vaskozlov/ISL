@@ -107,6 +107,11 @@ namespace isl::thread::lock_free
             hasProducerFinished.test_and_set(std::memory_order_relaxed);
         }
 
+        auto produceResume() noexcept -> void
+        {
+            hasProducerFinished.clear(std::memory_order_relaxed);
+        }
+
         template<typename... Ts>
         auto tryEmplace(Ts &&...args) -> bool
         {
