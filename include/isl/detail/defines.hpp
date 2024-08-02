@@ -1,10 +1,10 @@
 #ifndef ISL_DEFINES_HPP
 #define ISL_DEFINES_HPP
 
-
 #include <cassert>
 #include <cinttypes>
 #include <cstddef>
+#include <new>
 #include <version>
 
 #define ISL_DECL [[nodiscard]] constexpr
@@ -28,6 +28,8 @@
 
 #define ISL_STRX(x) #x
 #define ISL_STR(x) ISL_STRX(x)
+
+#define ISL_JOIN_STR(x, y) ISL_STR(x##y)
 
 #define ISL_ASSERT(x) assert(x)
 #define ISL_ASSERT_MSG(x, message) assert((x) && message)
@@ -118,6 +120,14 @@
         using base_exception::classname;                                                           \
     }
 
+#define ISL_CONCATENATE(x, y) x##y
+#define ISL_FORCE_EXPAND(x, y) ISL_CONCATENATE(x, y)
+
+#define ISL_HARDWARE_CACHE_LINE_ALIGN alignas(isl::HardwareDestructiveInterferenceSize)
+#define ISL_HARDWARE_CACHE_LINE_PADDING(T)                                                         \
+    std::array<char, isl::HardwareDestructiveInterferenceSize - sizeof(T)> ISL_FORCE_EXPAND(       \
+        islPadding, __COUNTER__)
+
 namespace isl
 {
     [[noreturn]] ISL_INLINE auto unreachable() -> void
@@ -130,6 +140,8 @@ namespace isl
         SAFE,
         UNSAFE
     };
+
+    constexpr inline std::size_t HardwareDestructiveInterferenceSize = 64;
 }// namespace isl
 
 #endif /* ISL_DEFINES_HPP */
