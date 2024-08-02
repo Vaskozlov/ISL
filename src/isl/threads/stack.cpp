@@ -7,7 +7,6 @@ namespace isl::thread::lock_free
         StackNode *old_head = nullptr;
 
         do {
-            old_head = top.load(std::memory_order_relaxed);
             node->next = old_head;
         } while (!top.compare_exchange_weak(
             old_head, node, std::memory_order_release, std::memory_order_relaxed));
