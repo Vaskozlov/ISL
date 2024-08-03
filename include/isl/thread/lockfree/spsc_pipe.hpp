@@ -21,7 +21,7 @@ namespace isl::thread::lock_free
         class RowBuffer
         {
         private:
-            alignas(T) std::array<std::byte, sizeof(T)> rowBuffer;
+            alignas(T) CArray<char, sizeof(T)> rowBuffer;
 
         public:
             [[nodiscard]] auto getAddress() noexcept -> void *
@@ -46,7 +46,7 @@ namespace isl::thread::lock_free
             }
         };
 
-        std::array<RowBuffer, Size> ring;
+        CArray<RowBuffer, Size> ring;
 
         ISL_HARDWARE_CACHE_LINE_ALIGN CursorType pushCursor;
 
