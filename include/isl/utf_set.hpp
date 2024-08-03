@@ -14,16 +14,12 @@ namespace isl
 
     private:
         std::bitset<asciiStorageSize> asciiSymbolsStorage;
-        std::unordered_set<char32_t> nonAsciiStorage;
+        Set<char32_t> nonAsciiStorage;
 
     public:
         UtfSet() = default;
 
-        UtfSet(
-            std::bitset<asciiStorageSize>
-                ascii_symbols,
-            std::unordered_set<char32_t>
-                non_ascii_symbols);
+        UtfSet(std::bitset<asciiStorageSize> ascii_symbols, Set<char32_t> non_ascii_symbols);
 
         UtfSet(
             std::bitset<asciiStorageSize>

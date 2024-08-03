@@ -35,6 +35,7 @@ target_link_libraries(
         PUBLIC
         Threads::Threads
         fmt::fmt-header-only
+        unordered_dense::unordered_dense
 )
 
 target_include_directories(isl

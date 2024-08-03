@@ -1,15 +1,14 @@
 #ifndef ISL_PROJECT_TYPES_HPP
 #define ISL_PROJECT_TYPES_HPP
 
+#include <ankerl/unordered_dense.h>
 #include <cinttypes>
 #include <cmath>
 #include <cstddef>
 #include <isl/detail/as.hpp>
 #include <isl/detail/container_guard.hpp>
 #include <isl/detail/pair.hpp>
-#include <map>
 #include <optional>
-#include <set>
 #include <stack>
 #include <string>
 #include <unordered_map>
@@ -45,15 +44,11 @@ namespace isl
     template<typename T, std::size_t Size>
     using CArray = T[Size];
 
-    template<typename Key, typename Value>
-    class NoexceptMovableMap : public std::map<Key, Value>
-    {
-    public:
-        using std::map<Key, Value>::map;
+    template<typename Value>
+    using Set = ankerl::unordered_dense::set<Value>;
 
-        NoexceptMovableMap(NoexceptMovableMap &&other) noexcept = default;
-        auto operator=(NoexceptMovableMap &&other) noexcept -> NoexceptMovableMap & = default;
-    };
+    template<typename Key, typename Value>
+    using Map = ankerl::unordered_dense::map<Key, Value>;
 }// namespace isl
 
 #endif /* ISL_PROJECT_TYPES_HPP */
