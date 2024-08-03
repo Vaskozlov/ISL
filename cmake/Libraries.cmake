@@ -8,12 +8,6 @@ CPMAddPackage(
         GITHUB_REPOSITORY fmtlib/fmt
 )
 
-CPMAddPackage(
-        NAME unordered_dense
-        GITHUB_REPOSITORY martinus/unordered_dense
-        GIT_TAG main
-)
-
 if (ISL_INCLUDE_TESTS)
     CPMAddPackage(
             NAME Catch2
