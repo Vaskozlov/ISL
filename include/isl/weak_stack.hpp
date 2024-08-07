@@ -55,6 +55,13 @@ namespace isl
             return emplace(std::move(value));
         }
 
+        auto joinWith(std::shared_ptr<Node> other) -> void
+        {
+            for (auto &node : other->previous) {
+                tail->previous.emplace_back(std::move(node));
+            }
+        }
+
         template<typename... Ts>
         auto emplace(Ts &&...args) -> void
         {
