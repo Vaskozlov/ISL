@@ -58,7 +58,8 @@ namespace isl
         template<typename... Ts>
         auto emplace(Ts &&...args) -> void
         {
-            tail = makeShared<Node>(tail, std::forward<Ts>(args)...);
+            tail = makeShared<Node>(
+                std::vector<std::shared_ptr<Node>>(tail), std::forward<Ts>(args)...);
         }
 
         auto pop() -> void
