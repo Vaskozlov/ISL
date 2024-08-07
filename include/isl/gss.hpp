@@ -6,43 +6,37 @@
 namespace isl
 {
     template<typename T>
-    class ManualGSS
+    class GSSNode
     {
     public:
         using value_type = T;
         using reference = T &;
         using pointer = T *;
 
-        struct Node
-        {
-            std::vector<SharedPtr<Node>> parents;
-            T value;
-
-            template<typename... Ts>
-            explicit Node(Ts &&...args)
-              : value{std::forward<Ts>(args)...}
-            {}
-        };
+        std::vector<SharedPtr<GSSNode<T>>> parents;
+        T value;
 
         template<typename... Ts>
-        auto emplace(Node *stack_top, Ts &&...args) -> SharedPtr<Node>
+        explicit GSSNode(Ts &&...args)
+          : value{std::forward<Ts>(args)...}
+        {}
+
+        template<typename... Ts>
+        auto emplace(Ts &&...args) -> SharedPtr<GSSNode<T>>
         {
-            auto new_node = makeShared<Node>(std::forward<Ts>(args)...);
-            stack_top->parents.emplace_back(new_node);
+            auto new_node = makeShared<GSSNode<T>>(std::forward<Ts>(args)...);
+            parents.emplace_back(new_node);
 
             return new_node;
         }
 
-        auto pop(Node *stack_top) -> SharedPtr<Node>
+        auto pop() -> SharedPtr<GSSNode<T>>
         {
-            if (stack_top->parents.size() != 1) {
+            if (parents.size() != 1) {
                 throw std::runtime_error("Unable to pop");
             }
 
-            auto parent = std::move(stack_top->parents.front());
-            stack_top->parents.clear();
-
-            return parent;
+            return std::move(parents.front());
         }
     };
 }// namespace isl
