@@ -8,7 +8,11 @@ namespace isl
     template<typename T>
     class ManualGSS
     {
-    private:
+    public:
+        using value_type = T;
+        using reference = T &;
+        using pointer = T *;
+
         struct Node
         {
             std::vector<SharedPtr<Node>> parents;
@@ -19,11 +23,6 @@ namespace isl
               : value{std::forward<Ts>(args)...}
             {}
         };
-
-    public:
-        using value_type = T;
-        using reference = T &;
-        using pointer = T *;
 
         template<typename... Ts>
         auto emplace(Node *stack_top, Ts &&...args) -> SharedPtr<Node>
