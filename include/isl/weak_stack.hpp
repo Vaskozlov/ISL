@@ -13,7 +13,7 @@ namespace isl
     private:
         struct Node
         {
-            std::shared_ptr<Node> previous;
+            std::vector<std::shared_ptr<Node>> previous;
             T value;
         };
 
@@ -64,90 +64,12 @@ namespace isl
         auto pop() -> void
         {
             auto tmp = std::move(tail);
-            tail = tmp->previous;
-        }
 
-        [[nodiscard]] auto begin() -> iterator
-        {
-            return iterator{tail};
-        }
+            if (tmp->previous.size() != 1) {
+                throw std::runtime_error("Unable to pop");
+            }
 
-        [[nodiscard]] auto begin() const -> iterator
-        {
-            return iterator{tail};
-        }
-
-        [[nodiscard]] auto cbegin() const -> iterator
-        {
-            return iterator{tail};
-        }
-
-        [[nodiscard]] auto end() -> iterator
-        {
-            return iterator{nullptr};
-        }
-
-        [[nodiscard]] auto end() const -> iterator
-        {
-            return iterator{nullptr};
-        }
-
-        [[nodiscard]] auto cend() const -> iterator
-        {
-            return iterator{nullptr};
-        }
-    };
-
-    template<typename T>
-    class WeakStack<T>::iterator
-    {
-    private:
-        std::shared_ptr<Node> currentNode;
-
-    public:
-        using value_type = T;
-        using reference = T &;
-        using pointer = T *;
-        using difference_type = std::ptrdiff_t;
-        using iterator_category = std::input_iterator_tag;
-
-        iterator() = default;
-
-        explicit iterator(std::shared_ptr<Node> current_node)
-          : currentNode{std::move(current_node)}
-        {}
-
-        auto operator++() -> iterator &
-        {
-            currentNode = currentNode->previous;
-            return *this;
-        }
-
-        auto operator++(int) -> iterator
-        {
-            auto iterator_copy = *this;
-            this->operator++();
-            return iterator_copy;
-        }
-
-        auto operator==(const iterator &other) const -> bool
-        {
-            return currentNode.get() == other.currentNode.get();
-        }
-
-        [[nodiscard]] auto operator*() const -> const T &
-        {
-            return currentNode->value;
-        }
-
-        [[nodiscard]] auto operator->() -> T *
-        {
-            return &currentNode->value;
-        }
-
-        [[nodiscard]] auto operator->() const -> const T &
-        {
-            return &currentNode->value;
+            tail = tmp->previous.front();
         }
     };
 }// namespace isl
