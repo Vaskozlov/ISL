@@ -16,6 +16,8 @@ namespace isl
         std::vector<SharedPtr<GSSNode<T>>> parents;
         T value;
 
+        GSSNode() = default;
+
         template<typename... Ts>
         explicit GSSNode(Ts &&...args)
           : value{std::forward<Ts>(args)...}
