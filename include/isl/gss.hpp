@@ -5,7 +5,7 @@
 
 namespace isl
 {
-    template<typename T>
+    template<typename T, auto Comparator = std::equal_to<T>{}>
     class GSS
     {
     public:
@@ -69,7 +69,7 @@ namespace isl
         {
             const auto &nodes_at_level = levels.at(node->level);
             auto node_it = std::ranges::find_if(nodes_at_level, [node](auto &node_at_level) {
-                return node->value == node_at_level->value;
+                return Comparator(node->value, node_at_level->value);
             });
 
             if (node_it == nodes_at_level.end()) {
