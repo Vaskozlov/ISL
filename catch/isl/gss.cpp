@@ -19,4 +19,9 @@ TEST_CASE("GSS", "[GSS]")
 
     REQUIRE_FALSE(first_dup_inserted);
     REQUIRE(first_node == first_dup_node);
+
+    gss.erase(second_node);
+    auto [second_dup_node, second_dup_inserted] = gss.emplace(1, first_node, 2);
+
+    REQUIRE(second_dup_inserted);
 }

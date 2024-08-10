@@ -26,6 +26,12 @@ namespace isl
         std::vector<std::vector<SharedPtr<GSSNode>>> levels;
 
     public:
+        [[nodiscard]] auto
+            getLevels() const noexcept -> const std::vector<std::vector<SharedPtr<GSSNode>>> &
+        {
+            return levels;
+        }
+
         template<typename... Ts>
         auto emplace(std::size_t level, SharedPtr<GSSNode> parent, Ts &&...args)
             -> std::pair<SharedPtr<GSSNode>, bool>
@@ -55,7 +61,7 @@ namespace isl
         auto erase(SharedPtr<GSSNode> node) -> void
         {
             auto &nodes_at_level = levels.at(node->level);
-            std::ranges::remove(nodes_at_level, node);
+            std::erase(nodes_at_level, node);
         }
 
     private:
