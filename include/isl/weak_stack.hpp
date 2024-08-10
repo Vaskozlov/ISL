@@ -55,9 +55,9 @@ namespace isl
             return emplace(std::move(value));
         }
 
-        auto joinWith(WeakStack<T> &other) -> void
+        auto joinWith(std::shared_ptr<Node> other) -> void
         {
-            for (auto &node : other.tail->previous) {
+            for (auto &node : other->previous) {
                 tail->previous.emplace_back(std::move(node));
             }
         }
