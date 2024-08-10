@@ -14,11 +14,13 @@ namespace isl
             T value;
             std::vector<SharedPtr<GSSNode>> previous;
             std::size_t level{};
+            std::size_t state{};
 
             template<typename... Ts>
-            explicit GSSNode(std::size_t node_level, Ts &&...args)
+            explicit GSSNode(std::size_t node_level, std::size_t node_state, Ts &&...args)
               : value{std::forward<Ts>(args)...}
               , level{node_level}
+              , state{node_state}
             {}
         };
 
@@ -33,7 +35,7 @@ namespace isl
         }
 
         template<typename... Ts>
-        auto emplace(std::size_t level, SharedPtr<GSSNode> parent, Ts &&...args)
+        auto emplace(std::size_t level, std::size_t state, SharedPtr<GSSNode> parent, Ts &&...args)
             -> std::pair<SharedPtr<GSSNode>, bool>
         {
             if (level >= levels.size()) {
@@ -41,8 +43,8 @@ namespace isl
             }
 
             auto has_inserted = true;
-            auto new_node = makeShared<GSSNode>(level, std::forward<Ts>(args)...);
-            auto possibly_similar_node = findNodeSameNodeAtItsLevel(new_node.get());
+            auto new_node = makeShared<GSSNode>(level, state, std::forward<Ts>(args)...);
+            auto possibly_similar_node = findNodeSameNodeAtItsLevelWithSameState(new_node.get());
 
             if (possibly_similar_node != nullptr) {
                 has_inserted = false;
@@ -65,11 +67,12 @@ namespace isl
         }
 
     private:
-        auto findNodeSameNodeAtItsLevel(GSSNode *node) -> SharedPtr<GSSNode>
+        auto findNodeSameNodeAtItsLevelWithSameState(GSSNode *node) -> SharedPtr<GSSNode>
         {
             const auto &nodes_at_level = levels.at(node->level);
             auto node_it = std::ranges::find_if(nodes_at_level, [node](auto &node_at_level) {
-                return Comparator(node->value, node_at_level->value);
+                return node->state == node_at_level->state &&
+                       Comparator(node->value, node_at_level->value);
             });
 
             if (node_it == nodes_at_level.end()) {
