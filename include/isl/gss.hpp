@@ -71,8 +71,12 @@ namespace isl
             }
 
             for (auto &node : other.head) {
-                head.emplace_back(std::move(node));
+                head.emplace_back(std::move(node);
             }
+
+            other.head.clear();
+            other.level = 0;
+            other.state = 0;
 
             return *this;
         }
