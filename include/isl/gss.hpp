@@ -6,7 +6,7 @@
 
 namespace isl
 {
-    template<typename T>
+    template<Trait<std::is_copy_assignable, std::is_copy_constructible> T>
     class GSStack
     {
     public:
