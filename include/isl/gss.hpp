@@ -29,6 +29,7 @@ namespace isl
         std::vector<GSSNode> head;
         std::size_t level{};
         std::size_t state{};
+        std::size_t stackDepth{};
 
     public:
         [[nodiscard]] auto getLevel() const noexcept -> std::size_t
@@ -49,12 +50,13 @@ namespace isl
         template<typename... Ts>
         auto push(std::size_t new_level, std::size_t new_state, Ts &&...args) -> GSSNode
         {
+            level = new_level;
+            state = new_state;
+            ++stackDepth;
+
             auto new_node = makeShared<Node>(std::forward<Ts>(args)...);
             std::swap(head, new_node->previous);
             head.emplace_back(new_node);
-
-            level = new_level;
-            state = new_state;
 
             return new_node;
         }
@@ -64,9 +66,15 @@ namespace isl
             return *this;
         }
 
+        [[nodiscard]] auto canMerge(const GSStack &other) const noexcept -> bool
+        {
+            return this != std::addressof(other) && level == other.level && state == other.state &&
+                   stackDepth == other.stackDepth;
+        }
+
         auto merge(GSStack &other) ISL_LIFETIMEBOUND -> GSStack &
         {
-            if (level != other.level || state != other.state) {
+            if (!canMerge(other)) {
                 throw std::runtime_error{"Unable to merge stack"};
             }
 
@@ -77,6 +85,7 @@ namespace isl
             other.head.clear();
             other.level = 0;
             other.state = 0;
+            other.stackDepth = 0;
 
             return *this;
         }
@@ -89,6 +98,7 @@ namespace isl
         {
             level = new_level;
             state = new_state;
+            stackDepth -= number_of_elements - 1;
 
             auto reduced_alternatives = std::vector<GSSNode>{};
 
