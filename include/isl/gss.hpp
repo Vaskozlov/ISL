@@ -79,8 +79,13 @@ namespace isl
 
         template<typename F>
             requires(std::is_invocable_r_v<T, F, std::vector<T>>)
-        auto reduce(std::size_t number_of_elements, F &&function) -> void
+        auto reduce(
+            std::size_t new_level, std::size_t new_state, std::size_t number_of_elements,
+            F &&function) -> void
         {
+            level = new_level;
+            state = new_state;
+
             auto reduced_alternatives = std::vector<GSSNode>{};
 
             for (auto &node : head) {

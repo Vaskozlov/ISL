@@ -53,7 +53,7 @@ TEST_CASE("GSS", "[GSS]")
     first_stack.push(4, 0, 7);
 
     first_stack.merge(after_merge_copy);
-    first_stack.reduce(2, reducer);
+    first_stack.reduce(5, 0, 2, reducer);
 
     REQUIRE(first_stack_head.size() == 2);
     REQUIRE(first_stack_head.front()->value == 35);
