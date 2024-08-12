@@ -14,21 +14,21 @@ namespace isl::dot
 
         struct EdgeInfo
         {
-            std::string label;
+            std::string label{};
             std::string color = "black";
         };
 
         struct NodeInfo
         {
-            std::string label;
+            std::string label{};
             std::string color = "black";
         };
 
         struct TreeInformationCommon
         {
-            std::set<Edge> edges;
-            ankerl::unordered_dense::map<Edge, EdgeInfo> edgesInfo;
-            ankerl::unordered_dense::map<std::size_t, NodeInfo> nodesInfo;
+            std::set<Edge> edges{};
+            ankerl::unordered_dense::map<Edge, EdgeInfo> edgesInfo{};
+            ankerl::unordered_dense::map<std::size_t, NodeInfo> nodesInfo{};
             thread::IdGenerator idGenerator{1};
 
             auto generateDotRepr() const -> std::string;
