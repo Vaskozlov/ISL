@@ -21,7 +21,7 @@ if (ISL_INCLUDE_TESTS)
     include(catch/CMakeLists.txt)
 endif ()
 
-install(TARGETS isl
+install(TARGETS isl unordered_dense
         EXPORT islTargets
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

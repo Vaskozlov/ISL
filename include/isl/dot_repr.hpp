@@ -1,76 +1,76 @@
 #ifndef ISL_PROJECT_DOT_REPR_HPP
 #define ISL_PROJECT_DOT_REPR_HPP
 
+#include <ankerl/unordered_dense.h>
 #include <functional>
 #include <isl/gss.hpp>
+#include <isl/thread/id_generator.hpp>
 
 namespace isl::dot
 {
     namespace detail
     {
-        static constexpr std::string_view DotFileHeader = R"(
-digraph ""
-{
- fontname="Helvetica,Arial,sans-serif"
- node [fontname="Helvetica,Arial,sans-serif"]
- edge [fontname="Helvetica,Arial,sans-serif"]
-)";
-
         using Edge = std::pair<std::size_t, std::size_t>;
 
-        template<typename T>
-        struct VisualizationData
+        struct EdgeInfo
         {
-            std::map<GSSNode<T>, std::size_t> nodeToId;
-            std::function<std::string(T)> nodeTypeToString;
-            std::set<Edge> edges;
-            std::unordered_map<std::size_t, std::string> nodesLabels;
-            std::size_t idGenerator{1};
+            std::string label;
+            std::string color = "black";
+        };
 
-            auto createIdForNode(GSSNode<T> node) -> std::size_t
+        struct NodeInfo
+        {
+            std::string label;
+            std::string color = "black";
+        };
+
+        struct TreeInformationCommon
+        {
+            std::set<Edge> edges;
+            ankerl::unordered_dense::map<Edge, EdgeInfo> edgesInfo;
+            ankerl::unordered_dense::map<std::size_t, NodeInfo> nodesInfo;
+            thread::IdGenerator idGenerator{1};
+
+            auto generateDotRepr() const -> std::string;
+        };
+
+        template<typename T, typename ToStrArg>
+        struct TreeInformation : public TreeInformationCommon
+        {
+            std::map<T, std::size_t> nodeToId;
+            std::function<std::string(ToStrArg)> nodeTypeToString;
+
+            auto createIdForNode(T node) -> std::size_t
             {
                 auto it = nodeToId.find(node);
 
                 if (it == nodeToId.end()) {
-                    nodeToId.emplace(node, idGenerator);
-                    return idGenerator++;
+                    const auto node_id = idGenerator.next();
+                    nodeToId.emplace(std::move(node), node_id);
+                    return node_id;
                 }
 
                 return it->second;
             }
         };
 
-        inline auto addQuotesToEscapingSymbols(std::string_view str) -> std::string
-        {
-            auto result = std::string{};
-            result.reserve(str.size());
-
-            for (auto chr : str) {
-                if (chr == '\"') {
-                    result.append("\\\"");
-                } else {
-                    result.push_back(chr);
-                }
-            }
-
-            return result;
-        }
-
         template<typename T>
-        auto createDotRepresentation(GSSNode<T> node, VisualizationData<T> &visualization_data)
-            -> void
+        auto createDotRepresentation(
+            GSSNode<T>
+                node,
+            TreeInformation<GSSNode<T>, T> &tree_information) -> void
         {
-            auto node_id = visualization_data.createIdForNode(node);
-            visualization_data.nodesLabels.try_emplace(
-                node_id, visualization_data.nodeTypeToString(node->value));
+            auto node_id = tree_information.createIdForNode(node);
+            tree_information.nodesLabels.try_emplace(
+                node_id, tree_information.nodeTypeToString(node->value));
 
             for (auto &prev : node->previous) {
-                auto prev_id = visualization_data.createIdForNode(prev);
+                auto prev_id = tree_information.createIdForNode(prev);
                 auto edge = Edge{node_id, prev_id};
 
-                if (!visualization_data.edges.contains(edge)) {
-                    visualization_data.edges.emplace(edge);
-                    createDotRepresentation(prev, visualization_data);
+                if (!tree_information.edges.contains(edge)) {
+                    tree_information.edges.emplace(edge);
+                    createDotRepresentation(prev, tree_information);
                 }
             }
         }
@@ -78,30 +78,21 @@ digraph ""
 
     template<typename T>
     inline auto createDotRepresentation(
-        const GSStack<T> &stack, std::function<std::string(T)> to_string_function) -> std::string
+        const GSStack<T> &stack,
+        std::function<std::string(T)>
+            to_string_function) -> std::string
     {
         using namespace detail;
 
-        auto result = std::string{DotFileHeader};
-        auto visualization_data = VisualizationData{
+        auto tree_information = TreeInformation<GSSNode<T>, T>{
             .nodeTypeToString = std::move(to_string_function),
         };
 
         for (const auto &node : stack.getHead()) {
-            createDotRepresentation(node, visualization_data);
+            createDotRepresentation(node, tree_information);
         }
 
-        for (auto edge : visualization_data.edges) {
-            auto [parent, child] = edge;
-            result += fmt::format(" n{} -> n{} [color=\"{}\"];\n", parent, child, "black");
-        }
-
-        for (auto &[key, repr] : visualization_data.nodesLabels) {
-            result += fmt::format(" n{} [label=\"{}\"]\n", key, addQuotesToEscapingSymbols(repr));
-        }
-
-        result.append("}\n");
-        return result;
+        return tree_information.generateDotRepr();
     }
 }// namespace isl::dot
 

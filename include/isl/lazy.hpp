@@ -8,53 +8,52 @@
 namespace isl
 {
     template<typename T>
-    concept LazyStorable = std::is_trivially_copyable_v<T> && std::is_trivially_destructible_v<T> &&
-                           std::is_trivially_copy_assignable_v<T>;
-
-    template<LazyStorable T>
-    class Lazy : public std::variant<std::function<T()>, T>
+    class Lazy
     {
     private:
-        static constexpr bool NoexceptComputable = std::is_nothrow_invocable_v<std::function<T()>>;
+        mutable std::variant<std::function<T()>, T> storage;
 
     public:
-        using std::variant<std::function<T()>, T>::index;
-        using std::variant<std::function<T()>, T>::variant;
+        template<typename F>
+            requires std::is_invocable_r_v<T, F>
+        explicit Lazy(F &&func)
+          : storage{std::in_place_type<std::function<T()>>, std::forward<F>(func)}
+        {}
 
-        ISL_DECL auto get() const noexcept(NoexceptComputable) -> T
-        {
-            if (this->index() == 0) {
-                return std::get<0>(*this)();
-            }
+        template<typename... Ts>
+        explicit Lazy(Ts &&...args)
+          : storage{std::in_place_type<T>, std::forward<Ts>(args)...}
+        {}
 
-            return std::get<1>(*this);
-        }
-
-        ISL_DECL auto get() noexcept(NoexceptComputable) ISL_LIFETIMEBOUND -> T &
+        ISL_DECL auto get() const ISL_LIFETIMEBOUND -> const T &
         {
             compute();
-            return std::get<1>(*this);
+            return std::get<1>(storage);
+        }
+
+        ISL_DECL auto get() ISL_LIFETIMEBOUND -> T &
+        {
+            compute();
+            return std::get<1>(storage);
         }
 
     private:
-        constexpr auto compute() noexcept(NoexceptComputable) -> void
+        constexpr auto compute() const -> void
         {
-            if (index() == 0) {
-                *this = std::get<0>(*this)();
+            if (storage.index() == 0) {
+                storage.template emplace<T>(std::get<0>(storage)());
             }
         }
     };
 
     template<typename T>
     ISL_DECL auto toLazy(T &&value) -> Lazy<std::remove_cvref_t<T>>
-        requires(LazyStorable<std::remove_cvref_t<T>>)
     {
         return Lazy<T>{std::forward<T>(value)};
     }
 
     template<std::invocable Func>
     ISL_DECL auto toLazy(Func &&function) -> Lazy<decltype(function())>
-        requires(LazyStorable<std::invoke_result_t<Func>>)
     {
         return Lazy<decltype(function())>(std::forward<Func>(function));
     }
