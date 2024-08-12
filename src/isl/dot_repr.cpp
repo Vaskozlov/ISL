@@ -51,5 +51,6 @@ digraph ""
         }
 
         result.append("}\n");
+        return result;
     }
 }// namespace isl::dot::detail

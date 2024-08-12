@@ -61,8 +61,11 @@ namespace isl::dot
             TreeInformation<GSSNode<T>, T> &tree_information) -> void
         {
             auto node_id = tree_information.createIdForNode(node);
-            tree_information.nodesLabels.try_emplace(
-                node_id, tree_information.nodeTypeToString(node->value));
+            tree_information.nodesInfo.try_emplace(
+                node_id,
+                NodeInfo{
+                    .label = tree_information.nodeTypeToString(node->value),
+                });
 
             for (auto &prev : node->previous) {
                 auto prev_id = tree_information.createIdForNode(prev);
@@ -70,6 +73,7 @@ namespace isl::dot
 
                 if (!tree_information.edges.contains(edge)) {
                     tree_information.edges.emplace(edge);
+                    tree_information.edgesInfo.emplace(edge, EdgeInfo{});
                     createDotRepresentation(prev, tree_information);
                 }
             }

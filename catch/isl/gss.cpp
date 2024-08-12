@@ -1,5 +1,3 @@
-#include <algorithm>
-#include <iostream>
 #include <isl/detail/debug/debug.hpp>
 #include <isl/gss.hpp>
 
