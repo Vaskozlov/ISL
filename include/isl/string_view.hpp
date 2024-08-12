@@ -5,6 +5,7 @@
 #include <isl/isl.hpp>
 #include <isl/iterator.hpp>
 #include <numeric>
+#include <ankerl/unordered_dense.h>
 
 namespace isl
 {
@@ -441,8 +442,17 @@ namespace isl
     }// namespace string_view_literals
 }// namespace isl
 
+template<isl::CharacterLiteral CharT>
+struct ankerl::unordered_dense::hash<isl::BasicStringView<CharT>>
+{
+    using is_avalanching = void;
 
-#ifdef FMT_FORMAT_H_
+    [[nodiscard]] auto operator()(const isl::BasicStringView<CharT> &str) const noexcept -> auto
+    {
+        return ankerl::unordered_dense::detail::wyhash::hash(str.data(), sizeof(CharT) * str.size());
+    }
+};
+
 template<>
 struct fmt::formatter<isl::string_view> : public fmt::formatter<std::string_view>
 {
@@ -451,6 +461,5 @@ struct fmt::formatter<isl::string_view> : public fmt::formatter<std::string_view
         return formatter<std::string_view>::format(isl::as<std::string_view>(str), ctx);
     }
 };
-#endif /* FMT_FORMAT_H_ */
 
 #endif /* ISL_PROJECT_STRING_VIEW_HPP*/
