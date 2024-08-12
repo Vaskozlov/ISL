@@ -6,24 +6,25 @@
 
 namespace isl::thread
 {
+    template<std::unsigned_integral T = Id>
     class IdGenerator
     {
     private:
-        std::atomic<Id> id;
-        Id initialValue;
+        std::atomic<T> id;
+        T initialValue;
 
     public:
-        ISL_DECL explicit IdGenerator(Id start)
+        ISL_DECL explicit IdGenerator(T start)
           : id{start}
           , initialValue{start}
         {}
 
-        [[nodiscard]] auto next() -> Id
+        [[nodiscard]] auto next() -> T
         {
             return id.fetch_add(1, std::memory_order_relaxed);
         }
 
-        [[nodiscard]] auto current() const -> Id
+        [[nodiscard]] auto current() const -> T
         {
             return id.load(std::memory_order_relaxed);
         }

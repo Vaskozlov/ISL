@@ -28,6 +28,7 @@ namespace isl
     using u32 = std::uint32_t;
     using u64 = std::uint64_t;
 
+    using SmallId = u32;
     using Id = std::size_t;
     using ssize_t = std::intmax_t;
 

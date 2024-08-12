@@ -28,8 +28,8 @@ namespace isl::dot
         {
             std::set<Edge> edges{};
             ankerl::unordered_dense::map<Edge, EdgeInfo> edgesInfo{};
-            ankerl::unordered_dense::map<std::size_t, NodeInfo> nodesInfo{};
-            thread::IdGenerator idGenerator{1};
+            ankerl::unordered_dense::map<SmallId, NodeInfo> nodesInfo{};
+            thread::IdGenerator<> idGenerator{1};
 
             auto generateDotRepr() const -> std::string;
         };
@@ -37,10 +37,10 @@ namespace isl::dot
         template<typename T, typename ToStrArg>
         struct TreeInformation : public TreeInformationCommon
         {
-            std::map<T, std::size_t> nodeToId{};
+            std::map<T, SmallId> nodeToId{};
             std::function<std::string(ToStrArg)> nodeTypeToString;
 
-            auto createIdForNode(T node) -> std::size_t
+            auto createIdForNode(T node) -> SmallId
             {
                 auto it = nodeToId.find(node);
 
