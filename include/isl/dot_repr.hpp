@@ -37,7 +37,7 @@ namespace isl::dot
         template<typename T, typename ToStrArg>
         struct TreeInformation : public TreeInformationCommon
         {
-            std::map<T, std::size_t> nodeToId;
+            std::map<T, std::size_t> nodeToId{};
             std::function<std::string(ToStrArg)> nodeTypeToString;
 
             auto createIdForNode(T node) -> std::size_t
