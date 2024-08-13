@@ -61,6 +61,18 @@ namespace isl
             return new_node;
         }
 
+        auto pop() -> void
+        {
+            auto old_head = std::move(head);
+            head.clear();
+
+            for (auto &node : old_head) {
+                for (auto &prev : node->previous) {
+                    head.emplace_back(prev);
+                }
+            }
+        }
+
         [[nodiscard]] auto dup() const -> GSStack
         {
             return *this;
