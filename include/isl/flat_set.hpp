@@ -16,6 +16,8 @@ namespace isl
         using iterator = typename Container::iterator;
         using const_iterator = typename Container::const_iterator;
 
+        FlatSet() = default;
+
         FlatSet(const std::initializer_list<T> &initial_data)
         {
             for (const auto &elem : initial_data) {
