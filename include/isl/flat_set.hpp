@@ -49,14 +49,24 @@ namespace isl
             return tryEmplace(std::move(new_object));
         }
 
-        [[nodiscard]] auto contains(const T &value) const -> bool
-        {
-            return std::ranges::find(container, value) != container.end();
-        }
-
         auto erase(const T &value) -> void
         {
             std::erase(container, value);
+        }
+
+        [[nodiscard]] auto empty() const noexcept -> bool
+        {
+            return container.empty();
+        }
+
+        [[nodiscard]] auto size() const noexcept -> std::size_t
+        {
+            return container.size();
+        }
+
+        [[nodiscard]] auto contains(const T &value) const -> bool
+        {
+            return std::ranges::find(container, value) != container.end();
         }
 
         [[nodiscard]] auto begin() -> iterator

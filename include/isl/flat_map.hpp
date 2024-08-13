@@ -59,6 +59,16 @@ namespace isl
             return std::ranges::find_if(container, value) != container.end();
         }
 
+        [[nodiscard]] auto empty() const noexcept -> bool
+        {
+            return container.empty();
+        }
+
+        [[nodiscard]] auto size() const noexcept -> std::size_t
+        {
+            return container.size();
+        }
+
         auto at(const Key &key) -> Value &
         {
             auto it = std::ranges::find_if(container, [&key](const auto &elem) {
