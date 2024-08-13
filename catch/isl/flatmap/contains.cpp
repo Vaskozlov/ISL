@@ -1,5 +1,5 @@
 #include <isl/detail/debug/debug.hpp>
-#include <isl/flatmap.hpp>
+#include <isl/static_flat_map.hpp>
 
 TEST_CASE("FlatmapContains", "[Flatmap]")
 {
