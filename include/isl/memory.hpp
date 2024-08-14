@@ -1,17 +1,16 @@
 #ifndef ISL_PROJECT_MEMORY_HPP
 #define ISL_PROJECT_MEMORY_HPP
 
-#include <isl/detail/object_owner.hpp>
 #include <isl/isl.hpp>
 #include <memory>
 
 namespace isl
 {
     template<typename T>
-    class UniquePtr : public std::unique_ptr<T, std::default_delete<T>>
+    class UniquePtr : public std::unique_ptr<T>
     {
     public:
-        using std::unique_ptr<T, std::default_delete<T>>::unique_ptr;
+        using std::unique_ptr<T>::unique_ptr;
     };
 
     template<typename T>
@@ -40,7 +39,7 @@ namespace isl
     ISL_DECL auto makeShared(Ts &&...args) -> SharedPtr<T>
         requires std::constructible_from<T, Ts...>
     {
-        return SharedPtr<T>{::new T{std::forward<Ts>(args)...}};
+        return std::make_shared<T>(std::forward<Ts>(args)...);
     }
 
     template<typename Target, typename Constructed, typename... Ts>
@@ -48,7 +47,8 @@ namespace isl
         requires std::derived_from<Constructed, Target> &&
                  std::constructible_from<Constructed, Ts...>
     {
-        return SharedPtr<Target>{as<Target *>(::new Constructed{std::forward<Ts>(args)...})};
+        return std::static_pointer_cast<Target>(
+            std::make_shared<Constructed>(std::forward<Ts>(args)...));
     }
 }// namespace isl
 
