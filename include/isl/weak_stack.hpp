@@ -13,11 +13,11 @@ namespace isl
     private:
         struct Node
         {
-            SharedPtr<Node> previous;
+            std::shared_ptr<Node> previous;
             T value;
         };
 
-        SharedPtr<Node> tail;
+        std::shared_ptr<Node> tail;
 
     public:
         using value_type = T;
@@ -102,7 +102,7 @@ namespace isl
     class WeakStack<T>::iterator
     {
     private:
-        SharedPtr<Node> currentNode;
+        std::shared_ptr<Node> currentNode;
 
     public:
         using value_type = T;
@@ -113,7 +113,7 @@ namespace isl
 
         iterator() = default;
 
-        explicit iterator(SharedPtr<Node> current_node)
+        explicit iterator(std::shared_ptr<Node> current_node)
           : currentNode{std::move(current_node)}
         {}
 

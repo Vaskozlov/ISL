@@ -12,7 +12,7 @@ namespace isl
     public:
         struct Node;
 
-        using GSSNode = SharedPtr<Node>;
+        using GSSNode = std::shared_ptr<Node>;
 
         struct Node
         {
