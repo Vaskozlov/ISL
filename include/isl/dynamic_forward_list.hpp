@@ -26,8 +26,8 @@ namespace isl
         {
             auto *new_node = new U{std::forward<Ts>(args)...};
 
-            new_node->islDynamicForwardListNext =
-                std::exchange(islDynamicForwardListNext, new_node);
+            new_node->islDynamicForwardListNext = std::exchange(
+                islDynamicForwardListNext, static_cast<DynamicForwardListNode *>(new_node));
 
             return new_node;
         }
@@ -35,8 +35,8 @@ namespace isl
         template<std::derived_from<DynamicForwardListNode> U = DynamicForwardListNode>
         auto insertAfter(U *new_node) -> U *
         {
-            new_node->islDynamicForwardListNext =
-                std::exchange(islDynamicForwardListNext, new_node);
+            new_node->islDynamicForwardListNext = std::exchange(
+                islDynamicForwardListNext, static_cast<DynamicForwardListNode *>(new_node));
 
             return new_node;
         }
