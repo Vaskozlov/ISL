@@ -23,14 +23,22 @@ TEST_CASE("DynamicForwardList", "[ForwardList]")
         });
     };
 
-    forward_list.emplaceFront(10);
+    auto *first = forward_list.emplaceFront(10);
     forward_list.emplaceFront(20);
 
     REQUIRE(std::ranges::equal(transformer(), std::vector<int>{20, 10}));
 
+    first->emplaceAfter<DynamicForwardListNode>(30);
+
+    REQUIRE(std::ranges::equal(transformer(), std::vector<int>{20, 10, 30}));
+
     forward_list.popFront();
 
-    REQUIRE(std::ranges::equal(transformer(), std::vector<int>{10}));
+    REQUIRE(std::ranges::equal(transformer(), std::vector<int>{10, 30}));
+
+    forward_list.popFront();
+
+    REQUIRE(std::ranges::equal(transformer(), std::vector<int>{30}));
 
     forward_list.popFront();
 

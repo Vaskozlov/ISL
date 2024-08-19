@@ -17,6 +17,20 @@ namespace isl
         friend class DynamicForwardList;
 
         DynamicForwardListNode *islDynamicForwardListNext{};
+
+    public:
+        template<
+            std::derived_from<DynamicForwardListNode> U = DynamicForwardListNode, typename... Ts>
+            requires std::constructible_from<U, Ts...>
+        auto emplaceAfter(Ts &&...args) -> U *
+        {
+            auto *new_node = new U{std::forward<Ts>(args)...};
+
+            new_node->islDynamicForwardListNext =
+                std::exchange(islDynamicForwardListNext, new_node);
+
+            return new_node;
+        }
     };
 
     template<std::derived_from<DynamicForwardListNode> T>
