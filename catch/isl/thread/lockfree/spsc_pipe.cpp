@@ -13,7 +13,8 @@ static auto pipeProducer(Pipe &pipe, std::size_t count, std::latch &latch) -> vo
 
     for (std::size_t j = 0; j != 100; ++j) {
         for (std::size_t i = 0; i != count; ++i) {
-            while (!pipe.tryEmplace(i)) {}
+            auto value_to_push = i;
+            while (!pipe.tryPush(value_to_push)) {}
         }
     }
 

@@ -50,11 +50,11 @@ namespace isl::thread::lock_free
 
         ISL_HARDWARE_CACHE_LINE_ALIGN CursorType pushCursor;
 
-        ISL_HARDWARE_CACHE_LINE_ALIGN size_type pushCursorCached{};
+        ISL_HARDWARE_CACHE_LINE_ALIGN size_type popCursorCached{};
 
         ISL_HARDWARE_CACHE_LINE_ALIGN CursorType popCursor;
 
-        ISL_HARDWARE_CACHE_LINE_ALIGN size_type popCursorCached{};
+        ISL_HARDWARE_CACHE_LINE_ALIGN size_type pushCursorCached{};
 
         ISL_HARDWARE_CACHE_LINE_ALIGN std::atomic_flag hasProducerFinished;
 
@@ -110,25 +110,6 @@ namespace isl::thread::lock_free
         auto produceResume() noexcept -> void
         {
             hasProducerFinished.clear(std::memory_order_relaxed);
-        }
-
-        template<typename... Ts>
-        auto tryEmplace(Ts &&...args) -> bool
-        {
-            auto push_cursor = pushCursor.load(std::memory_order_relaxed);
-            auto next_push_cursor = (push_cursor + 1) % Size;
-
-            if (next_push_cursor == popCursorCached) {
-                popCursorCached = popCursor.load(std::memory_order_acquire);
-
-                if (next_push_cursor == popCursorCached) {
-                    return false;
-                }
-            }
-
-            ring[push_cursor].construct(std::forward<Ts>(args)...);
-            pushCursor.store(next_push_cursor, std::memory_order_release);
-            return true;
         }
 
         auto tryPush(T &value) -> bool
