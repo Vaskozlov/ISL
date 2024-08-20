@@ -142,6 +142,13 @@ namespace isl
             return new_node;
         }
 
+        template<std::derived_from<T> U = T>
+        auto insertFront(U *new_node) -> U *
+        {
+            new_node->islDynamicForwardListNext = std::exchange(front, new_node);
+            return new_node;
+        }
+
         auto popFront() -> void
         {
             if (front != nullptr) {
