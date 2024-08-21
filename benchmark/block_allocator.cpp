@@ -3,7 +3,7 @@
 
 static void blockAllocatorAllocate(benchmark::State &state)
 {
-    auto allocator = isl::alloc::BlockAllocator<std::size_t, 1024>{};
+    auto allocator = isl::alloc::BlockAllocator<1024, std::size_t>{};
 
     for (auto _ : state) {
         auto *ptr = allocator.allocate();
@@ -25,7 +25,7 @@ BENCHMARK(stdAllocatorAllocate);
 
 static void blockAllocatorAllocateAndImmediateDeallocate(benchmark::State &state)
 {
-    auto allocator = isl::alloc::BlockAllocator<std::string, 1024>{};
+    auto allocator = isl::alloc::BlockAllocator<1024, std::size_t>{};
 
     for (auto _ : state) {
         auto *ptr = allocator.allocate();
@@ -39,7 +39,7 @@ BENCHMARK(blockAllocatorAllocateAndImmediateDeallocate);
 static void stdAllocatorAllocateAndImmediateDeallocate(benchmark::State &state)
 {
     for (auto _ : state) {
-        auto *ptr = ::operator new(sizeof(std::string));
+        auto *ptr = ::operator new(sizeof(std::size_t));
         benchmark::DoNotOptimize(ptr);
         ::operator delete(ptr);
     }
@@ -49,10 +49,10 @@ BENCHMARK(stdAllocatorAllocateAndImmediateDeallocate);
 
 static void blockAllocatorAllocateAndDeallocate(benchmark::State &state)
 {
-    auto allocator = isl::alloc::BlockAllocator<std::string, 1024>{};
+    auto allocator = isl::alloc::BlockAllocator<1024, std::size_t>{};
 
     for (auto _ : state) {
-        auto pointers = std::array<std::string *, 1024 * 10>{};
+        auto pointers = std::array<void *, 1024 * 10>{};
 
         for (auto *&ptr : pointers) {
             ptr = allocator.allocate();
@@ -70,10 +70,10 @@ BENCHMARK(blockAllocatorAllocateAndDeallocate);
 static void stdAllocatorAllocateAndDeallocate(benchmark::State &state)
 {
     for (auto _ : state) {
-        auto pointers = std::array<std::string *, 1024>{};
+        auto pointers = std::array<std::size_t *, 1024 * 10>{};
 
         for (auto *ptr : pointers) {
-            ptr = static_cast<std::string *>(::operator new(sizeof(std::size_t)));
+            ptr = static_cast<std::size_t *>(::operator new(sizeof(std::size_t)));
             benchmark::DoNotOptimize(ptr);
         }
 

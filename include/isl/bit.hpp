@@ -79,10 +79,9 @@ namespace isl::bit
             bits.fill(0);
         }
 
-        ISL_INLINE auto findAndSet(std::size_t from = 0) -> std::size_t
+        auto findAndSet(std::size_t from = 0) -> std::size_t
         {
-            ISL_UNROLL_N(4)
-            for (std::size_t i = 0; i != bits.size(); ++i) {
+            for (std::size_t i = from / registerSize; i != bits.size(); ++i) {
                 auto &number = bits[i];
 
                 if (number != std::numeric_limits<std::size_t>::max()) {

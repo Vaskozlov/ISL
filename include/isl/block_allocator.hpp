@@ -5,35 +5,55 @@
 
 namespace isl::alloc
 {
-    template<typename T, std::size_t BlockSize>
+    template<std::size_t BlockSize, typename... Ts>
     class BlockAllocator
     {
     private:
-        constexpr static auto registerSize = sizeof(std::size_t) * 8;
+        static_assert(sizeof...(Ts) > 0);
+
+        constexpr static auto maxTypeSize = std::max({sizeof(Ts)...});
+        constexpr static auto maxTypeAlign = std::max({alignof(Ts)...});
         constexpr static auto notFoundValue = std::numeric_limits<std::size_t>::max();
 
-        static_assert(BlockSize % registerSize == 0);
+        struct Block;
+
+        struct StoredObject
+        {
+            alignas(maxTypeAlign) char object[maxTypeSize];
+            StoredObject *next;
+        };
 
         struct Block
         {
-            T storage[BlockSize];
-            bit::BitSet<BlockSize> freeBlocks{};
-            std::size_t firstFree{};
-            Block *next{};
+            StoredObject storage[BlockSize];
+            Block *next;
+
+            auto init() -> void
+            {
+                next = nullptr;
+
+                for (std::size_t i = 0; i != BlockSize - 1; ++i) {
+                    storage[i].next = &storage[i + 1];
+                }
+
+                storage[BlockSize - 1].next = nullptr;
+            }
         };
 
         Block *head{};
-        Block *freeBlock{};
-        std::size_t blocksCount{};
+        StoredObject *freeObject{};
 
     public:
-        BlockAllocator() = default;
+        BlockAllocator()
+          : head{allocateNewBlock()}
+          , freeObject{&head->storage[0]}
+        {}
 
         BlockAllocator(const BlockAllocator &) = delete;
 
         BlockAllocator(BlockAllocator &&other) noexcept
           : head{std::exchange(other.head, nullptr)}
-          , freeBlock{std::exchange(other.freeBlock, nullptr)}
+          , freeObject{std::exchange(other.freeObject, nullptr)}
         {}
 
         ~BlockAllocator()
@@ -48,7 +68,7 @@ namespace isl::alloc
         auto operator=(BlockAllocator &&other) noexcept -> BlockAllocator &
         {
             std::swap(head, other.head);
-            std::swap(freeBlock, other.freeBlock);
+            std::swap(freeObject, other.freeObject);
 
             return *this;
         }
@@ -58,51 +78,31 @@ namespace isl::alloc
             return head;
         }
 
+        [[nodiscard]] auto getFirstFreeObject() const noexcept -> StoredObject *
+        {
+            return freeObject;
+        }
+
         ISL_DECL auto getBlockSize() const noexcept -> std::size_t
         {
             return BlockSize;
         }
 
-        auto allocate() -> T *
+        auto allocate() -> void *
         {
-            fixNullHead();
-            auto *block = freeBlock;
-
-            do {
-                const auto index = block->freeBlocks.findAndSet(0);
-
-                if (index != notFoundValue) {
-                    // block->firstFree = index;
-                    freeBlock = block;
-                    return &block->storage[index];
-                }
-
-                if (block->next == nullptr) {
-                    block->next = allocateNewBlock();
-                    block->next->freeBlocks.set(0);
-                    // block->firstFree = 1;
-                    return &block->next->storage[0];
-                }
-
-                block = block->next;
-            } while (true);
-        }
-
-        auto deallocate(T *ptr) -> void
-        {
-            auto *block = head;
-
-            for (; block != nullptr; block = block->next) {
-                if (block->storage <= ptr && ptr < block->storage + BlockSize) {
-                    const auto index = ptr - block->storage;
-                    block->freeBlocks.reset(index);
-                    // block->firstFree = std::min<std::size_t>(block->firstFree, index);
-                    freeBlock = head;
-                    return;
-                }
+            if (freeObject == nullptr) {
+                auto *new_block = allocateNewBlock();
+                freeObject = &new_block->storage[0];
+                new_block->next = std::exchange(head, new_block);
             }
 
-            throw std::runtime_error{"Unable to deallocate pointer"};
+            return static_cast<void *>(std::exchange(freeObject, freeObject->next));
+        }
+
+        auto deallocate(void *value_ptr) -> void
+        {
+            auto *ptr = static_cast<StoredObject *>(value_ptr);
+            ptr->next = std::exchange(freeObject, ptr);
         }
 
     private:
@@ -111,28 +111,14 @@ namespace isl::alloc
             auto *new_block = static_cast<Block *>(
                 ::operator new(sizeof(Block), std::align_val_t{alignof(Block)}));
 
-            new_block->freeBlocks.clear();
-            new_block->next = nullptr;
-            // new_block->firstFree = 0;
-
-            freeBlock = new_block;
-            ++blocksCount;
+            new_block->init();
 
             return new_block;
         }
 
-        auto deallocateBlock(Block *block) -> void
+        static auto deallocateBlock(Block *block) -> void
         {
-            --blocksCount;
             ::operator delete(block, sizeof(Block), static_cast<std::align_val_t>(alignof(Block)));
-        }
-
-        auto fixNullHead() -> void
-        {
-            if (head == nullptr) {
-                head = allocateNewBlock();
-                freeBlock = head;
-            }
         }
     };
 }// namespace isl::alloc
