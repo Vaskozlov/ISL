@@ -42,7 +42,7 @@ TEST_CASE("LockFreeStack", "[LockFree]")
     auto poppers_threads = std::vector<std::thread>{};
     auto popped_value = std::vector<std::size_t>{};
     auto popped_values_lock = std::mutex{};
-    auto threads_count = std::size_t{std::thread::hardware_concurrency()};
+    auto threads_count = std::max<std::size_t>(1, std::thread::hardware_concurrency() / 2);
     auto latch = std::latch(static_cast<std::ptrdiff_t>(threads_count * 2));
     auto pushers_finished = std::atomic<std::size_t>{0};
 
