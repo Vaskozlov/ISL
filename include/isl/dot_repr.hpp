@@ -4,7 +4,7 @@
 #include <ankerl/unordered_dense.h>
 #include <functional>
 #include <isl/gss.hpp>
-#include <isl/thread/id_generator.hpp>
+#include <isl/id_generator.hpp>
 
 namespace isl::dot
 {
@@ -29,7 +29,7 @@ namespace isl::dot
             std::set<Edge> edges{};
             ankerl::unordered_dense::map<Edge, EdgeInfo> edgesInfo{};
             ankerl::unordered_dense::map<SmallId, NodeInfo> nodesInfo{};
-            thread::IdGenerator<> idGenerator{1};
+            IdGenerator<SmallId> idGenerator{1};
 
             auto generateDotRepr() const -> std::string;
         };
@@ -81,7 +81,7 @@ namespace isl::dot
     }// namespace detail
 
     template<typename T>
-    inline auto createDotRepresentation(
+    auto createDotRepresentation(
         const GSStack<T> &stack,
         std::function<std::string(T)>
             to_string_function) -> std::string

@@ -2,7 +2,7 @@
 #define ISL_PROJECT_TASK_HPP
 
 #include <isl/coroutine/defines.hpp>
-#include <isl/thread/id_generator.hpp>
+#include <isl/id_generator.hpp>
 #include <isl/thread/lockfree/stack.hpp>
 
 namespace isl

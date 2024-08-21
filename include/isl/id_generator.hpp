@@ -4,7 +4,7 @@
 #include <atomic>
 #include <isl/isl.hpp>
 
-namespace isl::thread
+namespace isl
 {
     template<std::unsigned_integral T = Id>
     class IdGenerator
