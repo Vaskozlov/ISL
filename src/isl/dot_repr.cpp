@@ -1,6 +1,6 @@
 #include <isl/dot_repr.hpp>
 
-namespace isl::dot::detail
+namespace isl::dot
 {
     static constexpr std::string_view DotFileHeader = R"(
 digraph ""
@@ -53,4 +53,4 @@ digraph ""
         result.append("}\n");
         return result;
     }
-}// namespace isl::dot::detail
+}// namespace isl::dot
