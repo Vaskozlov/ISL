@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <benchmark/benchmark.h>
-#include <isl/block_allocator.hpp>
 #include <isl/thread/pool.hpp>
 #include <random>
 #include <vector>
@@ -59,7 +58,7 @@ static void classicFibonacciBenchmark(benchmark::State &state)
     }
 }
 
-// BENCHMARK(classicFibonacciBenchmark);
+BENCHMARK(classicFibonacciBenchmark);
 
 static void fibonacciWithThreadPoolBenchmark(benchmark::State &state)
 {
@@ -72,6 +71,6 @@ static void fibonacciWithThreadPoolBenchmark(benchmark::State &state)
     }
 }
 
-// BENCHMARK(fibonacciWithThreadPoolBenchmark)->Threads(1)->Iterations(100);
+BENCHMARK(fibonacciWithThreadPoolBenchmark)->Threads(1)->Iterations(100);
 
 BENCHMARK_MAIN();

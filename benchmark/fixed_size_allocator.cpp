@@ -1,9 +1,9 @@
 #include <benchmark/benchmark.h>
-#include <isl/block_allocator.hpp>
+#include <isl/fixed_size_allocator.hpp>
 
 static void blockAllocatorAllocate(benchmark::State &state)
 {
-    auto allocator = isl::alloc::BlockAllocator<1024, std::size_t>{};
+    auto allocator = isl::alloc::FixedSizeAllocator<1024, std::size_t>{};
 
     for (auto _ : state) {
         auto *ptr = allocator.allocate();
@@ -25,7 +25,7 @@ BENCHMARK(stdAllocatorAllocate);
 
 static void blockAllocatorAllocateAndImmediateDeallocate(benchmark::State &state)
 {
-    auto allocator = isl::alloc::BlockAllocator<1024, std::size_t>{};
+    auto allocator = isl::alloc::FixedSizeAllocator<1024, std::size_t>{};
 
     for (auto _ : state) {
         auto *ptr = allocator.allocate();
@@ -49,7 +49,7 @@ BENCHMARK(stdAllocatorAllocateAndImmediateDeallocate);
 
 static void blockAllocatorAllocateAndDeallocate(benchmark::State &state)
 {
-    auto allocator = isl::alloc::BlockAllocator<1024, std::size_t>{};
+    auto allocator = isl::alloc::FixedSizeAllocator<1024, std::size_t>{};
 
     for (auto _ : state) {
         auto pointers = std::array<void *, 1024 * 10>{};

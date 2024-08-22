@@ -1,10 +1,9 @@
-#include "isl/block_allocator.hpp"
+#include "isl/fixed_size_allocator.hpp"
 #include "isl/detail/debug/debug.hpp"
-#include "isl/lifetime.hpp"
 
 TEST_CASE("BlockAllocatorSmallTest", "[Alloc]")
 {
-    auto allocator = isl::alloc::BlockAllocator<128, std::size_t>{};
+    auto allocator = isl::alloc::FixedSizeAllocator<128, std::size_t>{};
     auto *first = allocator.allocate();
     auto *second = allocator.allocate();
 
@@ -22,10 +21,10 @@ TEST_CASE("BlockAllocatorSmallTest", "[Alloc]")
 
 TEST_CASE("BlockAllocator", "[Alloc]")
 {
-    auto allocator = isl::alloc::BlockAllocator<128, std::size_t>{};
+    auto allocator = isl::alloc::FixedSizeAllocator<128, std::size_t>{};
     auto allocations = std::vector<void *>{};
 
-    allocations.reserve(allocator.getBlockSize() * 128);
+    allocations.reserve(allocator.getAllocationBlockSize() * 128);
 
     for (std::size_t i = 0; i != allocations.capacity(); ++i) {
         auto *ptr_value = allocator.allocate();
@@ -40,10 +39,9 @@ TEST_CASE("BlockAllocator", "[Alloc]")
         allocator.deallocate(ptr);
     }
 
-    auto *head = allocator.getFirstBlock();
     auto *free_object = allocator.getFirstFreeObject();
 
-    for (std::size_t i = 0; i != allocator.getBlockSize() * 128; ++i) {
+    for (std::size_t i = 0; i != allocator.getAllocationBlockSize() * 128; ++i) {
         REQUIRE(std::exchange(free_object, free_object->next) != nullptr);
     }
 
