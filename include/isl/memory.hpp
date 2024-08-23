@@ -44,14 +44,39 @@ namespace isl
             return *this;
         }
 
-        auto operator*() -> T &
+        [[nodiscard]] auto operator*() -> T &
         {
             return *ptr;
         }
 
-        auto operator*() const -> const T &
+        [[nodiscard]] auto operator*() const -> const T &
         {
             return *ptr;
+        }
+
+        auto operator->() -> T *
+        {
+            return ptr;
+        }
+
+        auto operator->() const -> const T *
+        {
+            return ptr;
+        }
+
+        [[nodiscard]] auto get() -> T *
+        {
+            return ptr;
+        }
+
+        [[nodiscard]] auto get() const -> const T *
+        {
+            return ptr;
+        }
+
+        auto release() -> T *
+        {
+            return std::exchange(ptr, nullptr);
         }
     };
 
@@ -116,12 +141,32 @@ namespace isl
             return *this;
         }
 
-        auto operator*() -> T &
+        [[nodiscard]] auto operator*() -> T &
         {
             return frame->object;
         }
 
-        auto operator*() const -> const T &
+        [[nodiscard]] auto operator*() const -> const T &
+        {
+            return frame->object;
+        }
+
+        auto operator->() -> T *
+        {
+            return frame->object;
+        }
+
+        auto operator->() const -> const T *
+        {
+            return frame->object;
+        }
+
+        [[nodiscard]] auto get() -> T *
+        {
+            return frame->object;
+        }
+
+        [[nodiscard]] auto get() const -> const T *
         {
             return frame->object;
         }
