@@ -1,8 +1,8 @@
 #include <benchmark/benchmark.h>
 #include <isl/memory.hpp>
 
-auto PublicUniqueAllocator = isl::FixedSizeAllocatorForUniquePtr<std::string>{};
-auto PublicSharedAllocator = isl::FixedSizeAllocatorForSharedPtr<std::string>{};
+auto PublicUniqueAllocator = isl::FixedSizeAllocatorForUniquePtr<128, std::string, std::size_t>{};
+auto PublicSharedAllocator = isl::FixedSizeAllocatorForSharedPtr<128, std::string, std::size_t>{};
 
 using UniquePtr = isl::UniquePtr<std::string, &PublicUniqueAllocator>;
 using SharedPtr = isl::SharedPtr<std::string, &PublicSharedAllocator>;

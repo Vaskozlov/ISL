@@ -141,12 +141,12 @@ namespace isl
         }
     };
 
-    template<typename T, std::size_t BlockSize = 128>
-    using FixedSizeAllocatorForUniquePtr = FixedSizeAllocator<128, T>;
+    template<std::size_t BlockSize = 128, typename... Ts>
+    using FixedSizeAllocatorForUniquePtr = FixedSizeAllocator<128, Ts...>;
 
-    template<typename T, std::size_t BlockSize = 128>
+    template<std::size_t BlockSize = 128, typename... Ts>
     using FixedSizeAllocatorForSharedPtr =
-        FixedSizeAllocator<128, typename SharedPtr<T, nullptr>::Frame>;
+        FixedSizeAllocator<128, typename SharedPtr<Ts, nullptr>::Frame...>;
 }// namespace isl
 
 #endif /* ISL_PROJECT_MEMORY_HPP */
