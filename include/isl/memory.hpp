@@ -26,7 +26,7 @@ namespace isl
 
         template<std::derived_from<T> U = T>
         UniquePtr(UniquePtr<U, AllocatorPtr> &&other) noexcept
-            : ptr{std::exchange(other.ptr, nullptr)}
+          : ptr{other.releae()}
         {}
 
         ~UniquePtr()
