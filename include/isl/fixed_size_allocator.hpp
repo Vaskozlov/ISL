@@ -1,9 +1,9 @@
 #ifndef ISL_PROJECT_FIXED_SIZE_ALLOCATOR_HPP
 #define ISL_PROJECT_FIXED_SIZE_ALLOCATOR_HPP
 
-#include <isl/bit.hpp>
+#include <isl/isl.hpp>
 
-namespace isl::alloc
+namespace isl
 {
     template<std::size_t BlockSize, typename... Alternatives>
     class FixedSizeAllocator
@@ -87,6 +87,16 @@ namespace isl::alloc
             return BlockSize;
         }
 
+        ISL_DECL static auto getMaxObjectSize() noexcept -> std::size_t
+        {
+            return maxObjectSize;
+        }
+
+        ISL_DECL static auto getAllocationAlignment() noexcept -> std::size_t
+        {
+            return maxObjectAlignment;
+        }
+
         [[nodiscard]] auto allocate() -> void *
         {
             if (freeObject == nullptr) {
@@ -102,6 +112,12 @@ namespace isl::alloc
         {
             auto *ptr = static_cast<ObjectFrame *>(value_ptr);
             ptr->next = std::exchange(freeObject, ptr);
+        }
+
+        template<typename T>
+        ISL_DECL static auto canAllocate() noexcept -> bool
+        {
+            return sizeof(T) <= maxObjectSize && alignof(T) <= maxObjectAlignment;
         }
 
     private:
@@ -122,6 +138,6 @@ namespace isl::alloc
                 static_cast<std::align_val_t>(alignof(AllocationBlock)));
         }
     };
-}// namespace isl::alloc
+}// namespace isl
 
 #endif /* ISL_PROJECT_FIXED_SIZE_ALLOCATOR_HPP */

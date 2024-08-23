@@ -66,7 +66,7 @@ namespace isl::lifetime
             }
         };
 
-        inline std::vector<UniquePtr<LifetimeObject>> CreatedObjects;// NOLINT
+        inline std::vector<std::unique_ptr<LifetimeObject>> CreatedObjects;// NOLINT
     }// namespace detail
 
     class LifetimeMonitor

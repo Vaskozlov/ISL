@@ -1,48 +1,152 @@
 #ifndef ISL_PROJECT_MEMORY_HPP
 #define ISL_PROJECT_MEMORY_HPP
 
-#include <isl/isl.hpp>
+#include <isl/fixed_size_allocator.hpp>
 #include <memory>
 
 namespace isl
 {
-    template<typename T>
-    class UniquePtr : public std::unique_ptr<T>
+    template<typename T, auto AllocatorPtr>
+    class UniquePtr
     {
+        T *ptr{nullptr};
+
     public:
-        using std::unique_ptr<T>::unique_ptr;
+        UniquePtr() = default;
+
+        template<typename... Ts>
+        explicit UniquePtr(Ts &&...args)
+            requires(AllocatorPtr->template canAllocate<T>())
+          : ptr{static_cast<T *>(AllocatorPtr->allocate())}
+        {
+            std::construct_at(ptr, std::forward<Ts>(args)...);
+        }
+
+        UniquePtr(const UniquePtr &other) = delete;
+
+        UniquePtr(UniquePtr &&other) noexcept
+          : ptr{std::exchange(other.ptr, nullptr)}
+        {}
+
+        ~UniquePtr()
+        {
+            if (ptr != nullptr) {
+                std::destroy_at(ptr);
+                AllocatorPtr->deallocate(static_cast<void *>(ptr));
+            }
+        }
+
+        auto operator=(const UniquePtr &other) -> UniquePtr & = delete;
+
+        auto operator=(UniquePtr &&other) noexcept -> UniquePtr &
+        {
+            std::swap(ptr, other.ptr);
+            return *this;
+        }
+
+        auto operator*() -> T &
+        {
+            return *ptr;
+        }
+
+        auto operator*() const -> const T &
+        {
+            return *ptr;
+        }
     };
 
-    template<typename T, typename... Ts>
-    ISL_DECL auto makeUnique(Ts &&...args) -> UniquePtr<T>
-        requires std::constructible_from<T, Ts...>
+    template<typename T, auto AllocatorPtr>
+    class SharedPtr
     {
-        return UniquePtr<T>{::new T{std::forward<Ts>(args)...}};
-    }
+    public:
+        struct Frame
+        {
+            mutable std::atomic<std::size_t> refCount{1};
+            T object;
 
-    template<typename Target, typename Constructed, typename... Ts>
-    ISL_DECL auto makeUnique(Ts &&...args) -> UniquePtr<Target>
-        requires std::derived_from<Constructed, Target> &&
-                 std::constructible_from<Constructed, Ts...>
-    {
-        return UniquePtr<Target>{as<Target *>(::new Constructed{std::forward<Ts>(args)...})};
-    }
+            template<typename... Ts>
+            explicit Frame(Ts &&...args)
+              : object{std::forward<Ts>(args)...}
+            {}
+        };
 
-    template<typename T, typename... Ts>
-    ISL_DECL auto makeShared(Ts &&...args) -> std::shared_ptr<T>
-        requires std::constructible_from<T, Ts...>
-    {
-        return std::make_shared<T>(std::forward<Ts>(args)...);
-    }
+    private:
+        Frame *frame{};
 
-    template<typename Target, typename Constructed, typename... Ts>
-    ISL_DECL auto makeShared(Ts &&...args) -> std::shared_ptr<Target>
-        requires std::derived_from<Constructed, Target> &&
-                 std::constructible_from<Constructed, Ts...>
-    {
-        return std::static_pointer_cast<Target>(
-            std::make_shared<Constructed>(std::forward<Ts>(args)...));
-    }
+    public:
+        SharedPtr() = default;
+
+        template<typename... Ts>
+        explicit SharedPtr(Ts &&...args)
+            requires(AllocatorPtr->template canAllocate<Frame>())
+          : frame{static_cast<Frame *>(AllocatorPtr->allocate())}
+        {
+            std::construct_at(frame, std::forward<Ts>(args)...);
+        }
+
+        SharedPtr(const SharedPtr &other)
+          : frame{other.frame}
+        {
+            increaseRefCount();
+        }
+
+        SharedPtr(SharedPtr &&other) noexcept
+          : frame{std::exchange(other.frame, nullptr)}
+        {}
+
+        ~SharedPtr()
+        {
+            decreaseRefCount();
+        }
+
+        auto operator=(const SharedPtr &other) -> SharedPtr &
+        {
+            if (this != &other) {
+                decreaseRefCount();
+                frame = other.frame;
+                increaseRefCount();
+            }
+
+            return *this;
+        }
+
+        auto operator=(SharedPtr &&other) noexcept -> SharedPtr &
+        {
+            std::swap(frame, other.frame);
+            return *this;
+        }
+
+        auto operator*() -> T &
+        {
+            return frame->object;
+        }
+
+        auto operator*() const -> const T &
+        {
+            return frame->object;
+        }
+
+    private:
+        ISL_INLINE auto increaseRefCount() const -> void
+        {
+            frame->refCount.fetch_add(1, std::memory_order_acq_rel);
+        }
+
+        auto decreaseRefCount() -> void
+        {
+            if (frame != nullptr && frame->refCount.fetch_sub(1, std::memory_order_acq_rel) == 1) {
+                std::destroy_at(frame);
+                AllocatorPtr->deallocate(static_cast<void *>(frame));
+            }
+        }
+    };
+
+    template<typename T, std::size_t BlockSize = 128>
+    using FixedSizeAllocatorForUniquePtr = FixedSizeAllocator<128, T>;
+
+    template<typename T, std::size_t BlockSize = 128>
+    using FixedSizeAllocatorForSharedPtr =
+        FixedSizeAllocator<128, typename SharedPtr<T, nullptr>::Frame>;
 }// namespace isl
 
 #endif /* ISL_PROJECT_MEMORY_HPP */

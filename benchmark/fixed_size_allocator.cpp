@@ -3,7 +3,7 @@
 
 static void blockAllocatorAllocate(benchmark::State &state)
 {
-    auto allocator = isl::alloc::FixedSizeAllocator<1024, std::size_t>{};
+    auto allocator = isl::FixedSizeAllocator<1024, std::size_t>{};
 
     for (auto _ : state) {
         auto *ptr = allocator.allocate();
@@ -21,11 +21,11 @@ void stdAllocatorAllocate(benchmark::State &state)
     }
 }
 
-BENCHMARK(stdAllocatorAllocate);
+// BENCHMARK(stdAllocatorAllocate);
 
 static void blockAllocatorAllocateAndImmediateDeallocate(benchmark::State &state)
 {
-    auto allocator = isl::alloc::FixedSizeAllocator<1024, std::size_t>{};
+    auto allocator = isl::FixedSizeAllocator<1024, std::size_t>{};
 
     for (auto _ : state) {
         auto *ptr = allocator.allocate();
@@ -49,7 +49,7 @@ BENCHMARK(stdAllocatorAllocateAndImmediateDeallocate);
 
 static void blockAllocatorAllocateAndDeallocate(benchmark::State &state)
 {
-    auto allocator = isl::alloc::FixedSizeAllocator<1024, std::size_t>{};
+    auto allocator = isl::FixedSizeAllocator<1024, std::size_t>{};
 
     for (auto _ : state) {
         auto pointers = std::array<void *, 1024 * 10>{};
