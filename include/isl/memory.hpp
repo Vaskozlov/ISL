@@ -187,11 +187,13 @@ namespace isl
     };
 
     template<std::size_t BlockSize, typename... Ts>
-    using FixedSizeAllocatorForUniquePtr = FixedSizeAllocator<BlockSize, Ts...>;
+    using FixedSizeAllocatorForUniquePtr =
+        FixedSizeAllocator<BlockSize, std::max({sizeof(Ts)...}), std::max({alignof(Ts)...})>;
 
     template<std::size_t BlockSize, typename... Ts>
-    using FixedSizeAllocatorForSharedPtr =
-        FixedSizeAllocator<BlockSize, typename SharedPtr<Ts, nullptr>::Frame...>;
+    using FixedSizeAllocatorForSharedPtr = FixedSizeAllocator<
+        BlockSize, std::max({sizeof(typename SharedPtr<Ts, nullptr>::Frame)...}),
+        std::max({alignof(typename SharedPtr<Ts, nullptr>::Frame)...})>;
 }// namespace isl
 
 #endif /* ISL_PROJECT_MEMORY_HPP */

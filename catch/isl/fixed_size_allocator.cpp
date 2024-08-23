@@ -4,7 +4,7 @@
 
 TEST_CASE("BlockAllocatorSmallTest", "[Alloc]")
 {
-    auto allocator = isl::FixedSizeAllocator<128, std::size_t>{};
+    auto allocator = isl::FixedSizeAllocator<128, sizeof(std::size_t), alignof(std::size_t)>{};
     auto *first = allocator.allocate();
     auto *second = allocator.allocate();
 
@@ -22,7 +22,7 @@ TEST_CASE("BlockAllocatorSmallTest", "[Alloc]")
 
 TEST_CASE("BlockAllocator", "[Alloc]")
 {
-    auto allocator = isl::FixedSizeAllocator<128, std::size_t>{};
+    auto allocator = isl::FixedSizeAllocator<128, sizeof(std::size_t), alignof(std::size_t)>{};
     auto allocations = std::vector<void *>{};
 
     allocations.reserve(allocator.getAllocationBlockSize() * 128);

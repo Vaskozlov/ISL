@@ -8,7 +8,7 @@ TEST_CASE("ObjectOwnerDebugString", "[ObjectOwner]")
     using namespace isl;
     using namespace isl::detail;
 
-    auto outer_reference = UniquePtr<ObjectReferenceDebug<std::string>>{};
+    auto outer_reference = std::unique_ptr<ObjectReferenceDebug<std::string>>{};
 
     {
         auto object = ObjectOwnerDebug<std::string>{"Hello, world!"};
@@ -18,7 +18,7 @@ TEST_CASE("ObjectOwnerDebugString", "[ObjectOwner]")
         auto reference_with_same_lifetime =
             inner_reference.createReferenceWithSameLifetime(object_with_the_same_lifetime);
 
-        outer_reference = makeUnique<ObjectReferenceDebug<std::string>>(inner_reference);
+        outer_reference = std::make_unique<ObjectReferenceDebug<std::string>>(inner_reference);
 
         REQUIRE(*inner_reference == "Hello, world!");
 
@@ -33,12 +33,12 @@ TEST_CASE("ObjectOwnerReleaseString", "[ObjectOwner]")
     using namespace isl;
     using namespace isl::detail;
 
-    auto outer_reference = UniquePtr<ObjectReferenceRelease<std::string>>{};
+    auto outer_reference = std::unique_ptr<ObjectReferenceRelease<std::string>>{};
 
     {
         auto object = ObjectOwnerRelease<std::string>("Hello, world!");
         auto inner_reference = object.createReference();
-        outer_reference = makeUnique<ObjectReferenceRelease<std::string>>(inner_reference);
+        outer_reference = std::make_unique<ObjectReferenceRelease<std::string>>(inner_reference);
 
         REQUIRE(*inner_reference == "Hello, world!");
     }
@@ -49,14 +49,14 @@ TEST_CASE("ObjectOwnerDebugLifetime", "[ObjectOwner]")
     using namespace isl;
     using namespace isl::detail;
 
-    auto outer_reference = UniquePtr<ObjectReferenceDebug<lifetime::LifetimeMonitor>>{};
+    auto outer_reference = std::unique_ptr<ObjectReferenceDebug<lifetime::LifetimeMonitor>>{};
 
     {
         auto object = ObjectOwnerDebug<lifetime::LifetimeMonitor>{};
         auto object_copy = object;
         auto inner_reference = object.createReference();
         outer_reference =
-            makeUnique<ObjectReferenceDebug<lifetime::LifetimeMonitor>>(inner_reference);
+            std::make_unique<ObjectReferenceDebug<lifetime::LifetimeMonitor>>(inner_reference);
 
         auto weak_id = (*outer_reference.get())->getWeakId();
         auto moved_object = ObjectOwnerDebug<lifetime::LifetimeMonitor>{std::move(object)};

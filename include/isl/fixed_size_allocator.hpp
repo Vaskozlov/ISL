@@ -5,20 +5,15 @@
 
 namespace isl
 {
-    template<std::size_t BlockSize, typename... Alternatives>
+    template<std::size_t BlockSize, std::size_t MaxObjectSize, std::size_t Align>
     class FixedSizeAllocator
     {
     private:
-        static_assert(sizeof...(Alternatives) > 0);
-
-        constexpr static auto maxObjectSize = std::max({sizeof(Alternatives)...});
-        constexpr static auto maxObjectAlignment = std::max({alignof(Alternatives)...});
-
         struct AllocationBlock;
 
         struct ObjectFrame
         {
-            alignas(maxObjectAlignment) std::array<char, maxObjectSize> object;
+            alignas(Align) std::array<char, MaxObjectSize> object;
             ObjectFrame *next;
         };
 
@@ -89,12 +84,12 @@ namespace isl
 
         ISL_DECL static auto getMaxObjectSize() noexcept -> std::size_t
         {
-            return maxObjectSize;
+            return MaxObjectSize;
         }
 
         ISL_DECL static auto getAllocationAlignment() noexcept -> std::size_t
         {
-            return maxObjectAlignment;
+            return Align;
         }
 
         [[nodiscard]] auto allocate() -> void *
@@ -117,7 +112,7 @@ namespace isl
         template<typename T>
         ISL_DECL static auto canAllocate() noexcept -> bool
         {
-            return sizeof(T) <= maxObjectSize && alignof(T) <= maxObjectAlignment;
+            return sizeof(T) <= MaxObjectSize && alignof(T) <= Align;
         }
 
     private:
