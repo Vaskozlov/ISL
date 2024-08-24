@@ -24,8 +24,12 @@ namespace isl
 
         UniquePtr(const UniquePtr &other) = delete;
 
+        UniquePtr(UniquePtr &&other) noexcept
+          : ptr{other.release()}
+        {}
+
         template<std::derived_from<T> U = T>
-        UniquePtr(UniquePtr<U, AllocatorPtr> &&other) noexcept
+        explicit UniquePtr(UniquePtr<U, AllocatorPtr> &&other) noexcept
           : ptr{other.release()}
         {}
 
@@ -118,6 +122,11 @@ namespace isl
 
         SharedPtr(SharedPtr &&other) noexcept
           : frame{std::exchange(other.frame, nullptr)}
+        {}
+
+        template<std::derived_from<T> U = T>
+        explicit SharedPtr(SharedPtr<U, AllocatorPtr> &&other) noexcept
+          : frame{reinterpret_cast<Frame *>(std::exchange(other.frame, nullptr))}
         {}
 
         ~SharedPtr()
