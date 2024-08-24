@@ -148,14 +148,14 @@ namespace isl
     private:
         Frame *frame{};
 
+    public:
+        SharedPtr() = default;
+
         explicit SharedPtr(Frame *shared_frame)
           : frame{shared_frame}
         {
             increaseRefCount();
         }
-
-    public:
-        SharedPtr() = default;
 
         template<typename... Ts>
             requires(!std::is_abstract_v<T>)
@@ -232,46 +232,14 @@ namespace isl
             return frame->template asPtr<T>();
         }
 
-        template<typename To, typename From>
-        friend auto staticPointerCast(const SharedPtr<From, Frame, AllocatorPtr> &ptr)
-            -> SharedPtr<To, Frame, AllocatorPtr>
+        [[nodiscard]] auto getFrame() -> Frame *
         {
-            return SharedPtr<To, Frame, AllocatorPtr>{ptr.frame};
+            return frame;
         }
 
-        template<typename To, typename From>
-        friend auto staticPointerCast(SharedPtr<From, Frame, AllocatorPtr> &&ptr)
-            -> SharedPtr<To, Frame, AllocatorPtr>
+        [[nodiscard]] auto releaseFrame() -> Frame *
         {
-            return SharedPtr<To, Frame, AllocatorPtr>{std::exchange(ptr.frame, nullptr)};
-        }
-
-        template<typename To, typename From>
-        friend auto dynamicPointerCast(const SharedPtr<From, Frame, AllocatorPtr> &ptr)
-            -> SharedPtr<To, Frame, AllocatorPtr>
-        {
-            auto *frame = ptr.frame;
-            auto *stored_value = frame->template asPtr<From>();
-
-            if (dynamic_cast<To *>(stored_value) != nullptr) {
-                return SharedPtr<To, Frame, AllocatorPtr>{frame};
-            }
-
-            return SharedPtr<To, Frame, AllocatorPtr>{};
-        }
-
-        template<typename To, typename From>
-        friend auto dynamicPointerCast(SharedPtr<From, Frame, AllocatorPtr> &&ptr)
-            -> SharedPtr<To, Frame, AllocatorPtr>
-        {
-            auto *frame = ptr.frame;
-            auto *stored_value = frame->template asPtr<From>();
-
-            if (dynamic_cast<To *>(stored_value) != nullptr) {
-                return SharedPtr<To, Frame, AllocatorPtr>{std::exchange(ptr.frame, nullptr)};
-            }
-
-            return SharedPtr<To, Frame, AllocatorPtr>{};
+            return std::exchange(frame, nullptr);
         }
 
     private:
@@ -288,6 +256,48 @@ namespace isl
             }
         }
     };
+
+    template<typename To, typename From, typename Frame, auto AllocatorPtr>
+    auto staticPointerCast(const SharedPtr<From, Frame, AllocatorPtr> &ptr)
+        -> SharedPtr<To, Frame, AllocatorPtr>
+    {
+        return SharedPtr<To, Frame, AllocatorPtr>{ptr.getFrame()};
+    }
+
+    template<typename To, typename From, typename Frame, auto AllocatorPtr>
+    auto staticPointerCast(SharedPtr<From, Frame, AllocatorPtr> &&ptr)
+        -> SharedPtr<To, Frame, AllocatorPtr>
+    {
+        return SharedPtr<To, Frame, AllocatorPtr>{ptr.releaseFrame()};
+    }
+
+    template<typename To, typename From, typename Frame, auto AllocatorPtr>
+    auto dynamicPointerCast(const SharedPtr<From, Frame, AllocatorPtr> &ptr)
+        -> SharedPtr<To, Frame, AllocatorPtr>
+    {
+        auto *frame = ptr.getFrame();
+        auto *stored_value = frame->template asPtr<From>();
+
+        if (dynamic_cast<To *>(stored_value) != nullptr) {
+            return SharedPtr<To, Frame, AllocatorPtr>{frame};
+        }
+
+        return SharedPtr<To, Frame, AllocatorPtr>{};
+    }
+
+    template<typename To, typename From, typename Frame, auto AllocatorPtr>
+    auto dynamicPointerCast(SharedPtr<From, Frame, AllocatorPtr> &&ptr)
+        -> SharedPtr<To, Frame, AllocatorPtr>
+    {
+        auto *frame = ptr.getFrame();
+        auto *stored_value = frame->template asPtr<From>();
+
+        if (dynamic_cast<To *>(stored_value) != nullptr) {
+            return SharedPtr<To, Frame, AllocatorPtr>{ptr.releaseFrame()};
+        }
+
+        return SharedPtr<To, Frame, AllocatorPtr>{};
+    }
 }// namespace isl
 
 #endif /* ISL_PROJECT_MEMORY_HPP */
