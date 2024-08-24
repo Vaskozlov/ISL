@@ -5,7 +5,7 @@
 
 namespace isl
 {
-    template<std::size_t BlockSize, std::size_t MaxObjectSize, std::size_t Align>
+    template<std::size_t MaxObjectSize, std::size_t Align, std::size_t BlockSize = 128>
     class FixedSizeAllocator
     {
     private:
@@ -133,6 +133,13 @@ namespace isl
                 static_cast<std::align_val_t>(alignof(AllocationBlock)));
         }
     };
+
+    template<typename... Ts>
+    constexpr inline auto MaxObjectSizeOf =
+        std::max({sizeof(std::conditional_t<std::is_abstract_v<Ts>, char, Ts>)...});
+
+    template<typename... Ts>
+    constexpr inline auto MaxObjectsAlignmentOf = std::max({alignof(Ts)...});
 }// namespace isl
 
 #endif /* ISL_PROJECT_FIXED_SIZE_ALLOCATOR_HPP */
