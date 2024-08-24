@@ -176,7 +176,7 @@ namespace isl
         {}
 
         template<std::derived_from<T> U = T>
-        explicit SharedPtr(SharedPtr<U, Frame, AllocatorPtr> &&other) noexcept
+        SharedPtr(SharedPtr<U, Frame, AllocatorPtr> &&other) noexcept
           : frame{std::exchange(other.frame, nullptr)}
         {}
 
