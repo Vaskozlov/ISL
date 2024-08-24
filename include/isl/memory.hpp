@@ -202,6 +202,15 @@ namespace isl
             return *this;
         }
 
+        auto operator==(std::nullptr_t) const -> bool
+        {
+            return frame == nullptr;
+        }
+
+        auto operator==(const SharedPtr &other) const -> bool = default;
+
+        auto operator<=>(const SharedPtr &other) const -> std::weak_ordering = default;
+
         [[nodiscard]] auto operator*() -> T &
         {
             return *frame->template asPtr<T>();
