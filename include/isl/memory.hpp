@@ -172,13 +172,20 @@ namespace isl
         }
 
         SharedPtr(SharedPtr &&other) noexcept
-          : frame{std::exchange(other.frame, nullptr)}
+          : frame{other.releaseFrame()}
         {}
 
         template<std::derived_from<T> U = T>
         SharedPtr(SharedPtr<U, Frame, AllocatorPtr> &&other) noexcept
           : frame{other.releaseFrame()}
         {}
+
+        template<std::derived_from<T> U = T>
+        SharedPtr(const SharedPtr<U, Frame, AllocatorPtr> &other) noexcept
+          : frame{other.getFrame()}
+        {
+            increaseRefCount();
+        }
 
         ~SharedPtr()
         {
@@ -242,6 +249,11 @@ namespace isl
         }
 
         [[nodiscard]] auto getFrame() -> Frame *
+        {
+            return frame;
+        }
+
+        [[nodiscard]] auto getFrame() const -> Frame *
         {
             return frame;
         }
