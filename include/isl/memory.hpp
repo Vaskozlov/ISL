@@ -161,6 +161,14 @@ namespace isl
         requires(AllocatorPtr->template canAllocate<Frame>())
     class SharedPtr;
 
+    struct FrameMovedT
+    {
+    };
+
+    struct FrameCopyT
+    {
+    };
+
     template<typename T, typename Frame, auto AllocatorPtr>
         requires(AllocatorPtr->template canAllocate<Frame>())
     class SharedPtr
@@ -175,7 +183,11 @@ namespace isl
           : SharedPtr{}
         {}
 
-        explicit SharedPtr(Frame *shared_frame)
+        explicit SharedPtr(FrameMovedT /* unused */, Frame *shared_frame)
+          : frame{shared_frame}
+        {}
+
+        explicit SharedPtr(FrameCopyT /* unused */, Frame *shared_frame)
           : frame{shared_frame}
         {
             increaseRefCount();
@@ -329,14 +341,14 @@ namespace isl
     auto staticPointerCast(const SharedPtr<From, Frame, AllocatorPtr> &ptr)
         -> SharedPtr<To, Frame, AllocatorPtr>
     {
-        return SharedPtr<To, Frame, AllocatorPtr>{ptr.getFrame()};
+        return SharedPtr<To, Frame, AllocatorPtr>{FrameCopyT{}, ptr.getFrame()};
     }
 
     template<typename To, typename From, typename Frame, auto AllocatorPtr>
     auto staticPointerCast(SharedPtr<From, Frame, AllocatorPtr> &&ptr)
         -> SharedPtr<To, Frame, AllocatorPtr>
     {
-        return SharedPtr<To, Frame, AllocatorPtr>{ptr.releaseFrame()};
+        return SharedPtr<To, Frame, AllocatorPtr>{FrameMovedT{}, ptr.releaseFrame()};
     }
 
     template<typename To, typename From, typename Frame, auto AllocatorPtr>
@@ -347,7 +359,7 @@ namespace isl
         auto *stored_value = frame->template asPtr<From>();
 
         if (dynamic_cast<To *>(stored_value) != nullptr) {
-            return SharedPtr<To, Frame, AllocatorPtr>{frame};
+            return SharedPtr<To, Frame, AllocatorPtr>{FrameCopyT{}, frame};
         }
 
         return SharedPtr<To, Frame, AllocatorPtr>{};
@@ -361,7 +373,7 @@ namespace isl
         auto *stored_value = frame->template asPtr<From>();
 
         if (dynamic_cast<To *>(stored_value) != nullptr) {
-            return SharedPtr<To, Frame, AllocatorPtr>{ptr.releaseFrame()};
+            return SharedPtr<To, Frame, AllocatorPtr>{FrameMovedT{}, ptr.releaseFrame()};
         }
 
         return SharedPtr<To, Frame, AllocatorPtr>{};
