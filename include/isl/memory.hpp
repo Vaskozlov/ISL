@@ -219,7 +219,7 @@ namespace isl
         template<std::derived_from<T> U = T>
         auto operator=(const SharedPtr<U, Frame, AllocatorPtr> &other) -> SharedPtr &
         {
-            if (static_cast<void *>(this) != static_cast<void *>(&other)) {
+            if (static_cast<const void *>(this) != static_cast<const void *>(&other)) {
                 decreaseRefCount();
                 frame = other.frame;
                 increaseRefCount();
