@@ -85,7 +85,7 @@ namespace isl
             return ptr;
         }
 
-        [[nodiscard]] auto get() const -> const T *
+        [[nodiscard]] auto get() const -> T *
         {
             return ptr;
         }
