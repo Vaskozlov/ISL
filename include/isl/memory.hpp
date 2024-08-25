@@ -308,7 +308,7 @@ namespace isl
             return frame->template asPtr<T>();
         }
 
-        [[nodiscard]] auto get() const noexcept -> const T *
+        [[nodiscard]] auto get() const noexcept -> T *
         {
             if (frame == nullptr) {
                 return nullptr;
