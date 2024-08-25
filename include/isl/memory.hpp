@@ -60,6 +60,16 @@ namespace isl
             return *this;
         }
 
+        [[nodiscard]] auto operator==(std::nullptr_t) const noexcept -> bool
+        {
+            return ptr == nullptr;
+        }
+
+        [[nodiscard]] auto operator==(const UniquePtr &other) const noexcept -> bool = default;
+
+        [[nodiscard]] auto
+            operator<=>(const UniquePtr &other) const noexcept -> std::weak_ordering = default;
+
         [[nodiscard]] auto operator*() -> T &
         {
             return *ptr;
