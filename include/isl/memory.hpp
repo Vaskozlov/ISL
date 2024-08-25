@@ -30,6 +30,10 @@ namespace isl
 
         UniquePtr(const UniquePtr &other) = delete;
 
+        UniquePtr(UniquePtr &&other) noexcept
+          : ptr{other.release()}
+        {}
+
         template<std::derived_from<T> U = T>// NOLINTNEXTLINE
         UniquePtr(UniquePtr<U, AllocatorPtr> &&other) noexcept
           : ptr{other.release()}
@@ -43,10 +47,16 @@ namespace isl
         auto operator=(const UniquePtr &other) -> UniquePtr & = delete;
 
         template<std::derived_from<T> U = T>
-        auto operator=(UniquePtr<U, AllocatorPtr> &&other) -> UniquePtr &
+        auto operator=(UniquePtr<U, AllocatorPtr> &&other) noexcept -> UniquePtr &
         {
             destroyStoredObject();
             ptr = other.release();
+            return *this;
+        }
+
+        auto operator=(UniquePtr &&other) noexcept -> UniquePtr &
+        {
+            std::swap(ptr, other.ptr);
             return *this;
         }
 
