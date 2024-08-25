@@ -15,6 +15,11 @@ namespace isl
     public:
         UniquePtr() = default;
 
+        // NOLINTNEXTLINE
+        UniquePtr(std::nullptr_t)
+          : UniquePtr{}
+        {}
+
         template<typename... Ts>
         explicit UniquePtr(Ts &&...args)
             requires(!std::is_abstract_v<T>)
@@ -25,28 +30,23 @@ namespace isl
 
         UniquePtr(const UniquePtr &other) = delete;
 
-        UniquePtr(UniquePtr &&other) noexcept
-          : ptr{other.release()}
-        {}
-
-        template<std::derived_from<T> U = T>
-        explicit UniquePtr(UniquePtr<U, AllocatorPtr> &&other) noexcept
+        template<std::derived_from<T> U = T>// NOLINTNEXTLINE
+        UniquePtr(UniquePtr<U, AllocatorPtr> &&other) noexcept
           : ptr{other.release()}
         {}
 
         ~UniquePtr()
         {
-            if (ptr != nullptr) {
-                std::destroy_at(ptr);
-                AllocatorPtr->deallocate(static_cast<void *>(ptr));
-            }
+            destroyStoredObject();
         }
 
         auto operator=(const UniquePtr &other) -> UniquePtr & = delete;
 
-        auto operator=(UniquePtr &&other) noexcept -> UniquePtr &
+        template<std::derived_from<T> U = T>
+        auto operator=(UniquePtr<U, AllocatorPtr> &&other) -> UniquePtr &
         {
-            std::swap(ptr, other.ptr);
+            destroyStoredObject();
+            ptr = other.release();
             return *this;
         }
 
@@ -83,6 +83,17 @@ namespace isl
         auto release() -> T *
         {
             return std::exchange(ptr, nullptr);
+        }
+
+    private:
+        auto destroyStoredObject() -> void
+        {
+            if (ptr != nullptr) {
+                std::destroy_at(ptr);
+                AllocatorPtr->deallocate(static_cast<void *>(ptr));
+            }
+
+            ptr = nullptr;
         }
     };
 
@@ -151,6 +162,10 @@ namespace isl
     public:
         SharedPtr() = default;
 
+        SharedPtr(std::nullptr_t)
+          : SharedPtr{}
+        {}
+
         explicit SharedPtr(Frame *shared_frame)
           : frame{shared_frame}
         {
@@ -165,39 +180,27 @@ namespace isl
             Frame::template initialize<T>(frame, std::forward<Ts>(args)...);
         }
 
-        SharedPtr(std::nullptr_t)
-        {}
-
-        SharedPtr(const SharedPtr &other)
-          : frame{other.frame}
-        {
-            increaseRefCount();
-        }
-
-        SharedPtr(SharedPtr &&other) noexcept
-          : frame{other.releaseFrame()}
-        {}
-
-        template<std::derived_from<T> U = T>
-        SharedPtr(SharedPtr<U, Frame, AllocatorPtr> &&other) noexcept
-          : frame{other.releaseFrame()}
-        {}
-
-        template<std::derived_from<T> U = T>
+        template<std::derived_from<T> U = T>// NOLINTNEXTLINE
         SharedPtr(const SharedPtr<U, Frame, AllocatorPtr> &other) noexcept
           : frame{other.getFrame()}
         {
             increaseRefCount();
         }
 
+        template<std::derived_from<T> U = T>// NOLINTNEXTLINE
+        SharedPtr(SharedPtr<U, Frame, AllocatorPtr> &&other) noexcept
+          : frame{other.releaseFrame()}
+        {}
+
         ~SharedPtr()
         {
             decreaseRefCount();
         }
 
-        auto operator=(const SharedPtr &other) -> SharedPtr &
+        template<std::derived_from<T> U = T>
+        auto operator=(const SharedPtr<U, Frame, AllocatorPtr> &other) -> SharedPtr &
         {
-            if (this != &other) {
+            if (static_cast<void *>(this) != static_cast<void *>(&other)) {
                 decreaseRefCount();
                 frame = other.frame;
                 increaseRefCount();
@@ -212,14 +215,15 @@ namespace isl
             return *this;
         }
 
-        auto operator==(std::nullptr_t) const -> bool
+        [[nodiscard]] auto operator==(std::nullptr_t) const -> bool
         {
             return frame == nullptr;
         }
 
-        auto operator==(const SharedPtr &other) const -> bool = default;
+        [[nodiscard]] auto operator==(const SharedPtr &other) const -> bool = default;
 
-        auto operator<=>(const SharedPtr &other) const -> std::weak_ordering = default;
+        [[nodiscard]] auto
+            operator<=>(const SharedPtr &other) const -> std::weak_ordering = default;
 
         [[nodiscard]] auto operator*() -> T &
         {
@@ -243,11 +247,19 @@ namespace isl
 
         [[nodiscard]] auto get() -> T *
         {
+            if (frame == nullptr) {
+                return nullptr;
+            }
+
             return frame->template asPtr<T>();
         }
 
         [[nodiscard]] auto get() const -> const T *
         {
+            if (frame == nullptr) {
+                return nullptr;
+            }
+
             return frame->template asPtr<T>();
         }
 
@@ -267,7 +279,7 @@ namespace isl
         }
 
     private:
-        ISL_INLINE auto increaseRefCount() const -> void
+        auto increaseRefCount() const -> void
         {
             frame->increaseRefCount();
         }
