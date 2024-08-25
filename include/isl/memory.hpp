@@ -221,7 +221,7 @@ namespace isl
         {
             if (static_cast<const void *>(this) != static_cast<const void *>(&other)) {
                 decreaseRefCount();
-                frame = other.frame;
+                frame = other.getFrame();
                 increaseRefCount();
             }
 
