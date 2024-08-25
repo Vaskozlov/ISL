@@ -165,7 +165,7 @@ namespace isl
             Frame::template initialize<T>(frame, std::forward<Ts>(args)...);
         }
 
-        SharedPtr(std::nullopt_t)
+        SharedPtr(std::nullptr_t)
         {}
 
         SharedPtr(const SharedPtr &other)
