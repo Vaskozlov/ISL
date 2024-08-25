@@ -218,6 +218,11 @@ namespace isl
             return *this;
         }
 
+        auto operator=(const SharedPtr &other) -> SharedPtr &
+        {
+            return operator= <T>(other);
+        }
+
         auto operator=(SharedPtr &&other) noexcept -> SharedPtr &
         {
             std::swap(frame, other.frame);
