@@ -70,15 +70,15 @@ BENCHMARK(blockAllocatorAllocateAndDeallocate);
 static void stdAllocatorAllocateAndDeallocate(benchmark::State &state)
 {
     for (auto _ : state) {
-        auto pointers = std::array<std::size_t *, 1024 * 10>{};
+        auto pointers = std::array<void *, 1024 * 10>{};
 
-        for (auto *ptr : pointers) {
-            ptr = static_cast<std::size_t *>(::operator new(sizeof(std::size_t)));
+        for (auto *&ptr : pointers) {
+            ptr = ::operator new(sizeof(std::size_t));
             benchmark::DoNotOptimize(ptr);
         }
 
         for (auto *ptr : pointers) {
-            ::operator delete(static_cast<void *>(ptr));
+            ::operator delete(ptr);
         }
     }
 }
