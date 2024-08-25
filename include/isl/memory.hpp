@@ -171,7 +171,7 @@ namespace isl
     public:
         SharedPtr() = default;
 
-        SharedPtr(std::nullptr_t)
+        SharedPtr(std::nullptr_t) noexcept
           : SharedPtr{}
         {}
 
@@ -190,7 +190,13 @@ namespace isl
         }
 
         template<std::derived_from<T> U = T>// NOLINTNEXTLINE
-        SharedPtr(const SharedPtr<U, Frame, AllocatorPtr> &other) noexcept
+        SharedPtr(const SharedPtr<U, Frame, AllocatorPtr> &other)
+          : frame{other.getFrame()}
+        {
+            increaseRefCount();
+        }
+
+        SharedPtr(const SharedPtr &other)
           : frame{other.getFrame()}
         {
             increaseRefCount();
@@ -198,6 +204,10 @@ namespace isl
 
         template<std::derived_from<T> U = T>// NOLINTNEXTLINE
         SharedPtr(SharedPtr<U, Frame, AllocatorPtr> &&other) noexcept
+          : frame{other.releaseFrame()}
+        {}
+
+        SharedPtr(SharedPtr &&other) noexcept
           : frame{other.releaseFrame()}
         {}
 
@@ -218,8 +228,10 @@ namespace isl
             return *this;
         }
 
+        // NOLINTNEXTLINE
         auto operator=(const SharedPtr &other) -> SharedPtr &
         {
+            // NOLINTNEXTLINE
             return operator= <T>(other);
         }
 
@@ -229,15 +241,15 @@ namespace isl
             return *this;
         }
 
-        [[nodiscard]] auto operator==(std::nullptr_t) const -> bool
+        [[nodiscard]] auto operator==(std::nullptr_t) const noexcept -> bool
         {
             return frame == nullptr;
         }
 
-        [[nodiscard]] auto operator==(const SharedPtr &other) const -> bool = default;
+        [[nodiscard]] auto operator==(const SharedPtr &other) const noexcept -> bool = default;
 
         [[nodiscard]] auto
-            operator<=>(const SharedPtr &other) const -> std::weak_ordering = default;
+            operator<=>(const SharedPtr &other) const noexcept -> std::weak_ordering = default;
 
         template<typename U>
         ISL_DECL static auto canStore() noexcept -> bool
@@ -265,7 +277,7 @@ namespace isl
             return frame->template asPtr<T>();
         }
 
-        [[nodiscard]] auto get() -> T *
+        [[nodiscard]] auto get() noexcept -> T *
         {
             if (frame == nullptr) {
                 return nullptr;
@@ -274,7 +286,7 @@ namespace isl
             return frame->template asPtr<T>();
         }
 
-        [[nodiscard]] auto get() const -> const T *
+        [[nodiscard]] auto get() const noexcept -> const T *
         {
             if (frame == nullptr) {
                 return nullptr;
@@ -283,17 +295,17 @@ namespace isl
             return frame->template asPtr<T>();
         }
 
-        [[nodiscard]] auto getFrame() -> Frame *
+        [[nodiscard]] auto getFrame() noexcept -> Frame *
         {
             return frame;
         }
 
-        [[nodiscard]] auto getFrame() const -> Frame *
+        [[nodiscard]] auto getFrame() const noexcept -> Frame *
         {
             return frame;
         }
 
-        [[nodiscard]] auto releaseFrame() -> Frame *
+        [[nodiscard]] auto releaseFrame() noexcept -> Frame *
         {
             return std::exchange(frame, nullptr);
         }
