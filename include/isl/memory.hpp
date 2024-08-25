@@ -104,6 +104,13 @@ namespace isl
         alignas(ObjectAlign) std::array<std::byte, MaxObjectSize> objectBuffer;
 
         template<typename T>
+        ISL_DECL static auto canStore() noexcept -> bool
+        {
+            return sizeof(T) <= MaxObjectSize && alignof(T) <= ObjectAlign;
+        }
+
+        template<typename T>
+            requires(canStore<T>())
         [[nodiscard]] auto asPtr() -> T *
         {
             // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
@@ -111,6 +118,7 @@ namespace isl
         }
 
         template<typename T>
+            requires(canStore<T>())
         [[nodiscard]] auto asPtr() const -> const T *
         {
             // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
@@ -138,6 +146,7 @@ namespace isl
         }
 
         template<typename T, typename... Ts>
+            requires(canStore<T>())
         static auto initialize(SharedPtrFrame *frame, Ts &&...args) -> void
         {
             std::construct_at(std::addressof(frame->refCount), 1U);
@@ -224,6 +233,12 @@ namespace isl
 
         [[nodiscard]] auto
             operator<=>(const SharedPtr &other) const -> std::weak_ordering = default;
+
+        template<typename U>
+        ISL_DECL static auto canStore() noexcept -> bool
+        {
+            return Frame::template canStore<U>();
+        }
 
         [[nodiscard]] auto operator*() -> T &
         {
