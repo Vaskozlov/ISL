@@ -319,7 +319,7 @@ namespace isl
         auto decreaseRefCount() -> void
         {
             if (frame != nullptr && frame->decreaseRefCount() == 1) {
-                std::destroy_at(frame);
+                std::destroy_at(frame->template asPtr<T>());
                 AllocatorPtr->deallocate(static_cast<void *>(frame));
             }
         }
