@@ -2,10 +2,9 @@
 #define ISL_PROJECT_STRING_VIEW_HPP
 
 #include <algorithm>
+#include <ankerl/unordered_dense.h>
 #include <isl/isl.hpp>
 #include <isl/iterator.hpp>
-#include <numeric>
-#include <ankerl/unordered_dense.h>
 
 namespace isl
 {
@@ -392,8 +391,11 @@ namespace isl
             auto min_size = std::min(size(), std::size(other));
 
             for (auto i = as<std::size_t>(0); i != min_size; ++i) {
-                if (this->operator[](i) != other[i]) {
-                    return this->operator[](i) <=> other[i];
+                const auto left_chr = at(i);
+                const auto right_chr = other.at(i);
+
+                if (left_chr != right_chr) {
+                    return left_chr <=> right_chr;
                 }
             }
 
@@ -449,7 +451,7 @@ struct ankerl::unordered_dense::hash<isl::BasicStringView<CharT>>
 
     [[nodiscard]] auto operator()(const isl::BasicStringView<CharT> &str) const noexcept -> auto
     {
-        return ankerl::unordered_dense::detail::wyhash::hash(str.data(), sizeof(CharT) * str.size());
+        return detail::wyhash::hash(str.data(), sizeof(CharT) * str.size());
     }
 };
 
