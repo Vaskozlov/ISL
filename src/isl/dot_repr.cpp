@@ -18,6 +18,8 @@ digraph ""
         for (auto chr : str) {
             if (chr == '\"') {
                 result.append("\\\"");
+            } else if (chr == '\\') {
+                result.append("\\\\");
             } else {
                 result.push_back(chr);
             }
