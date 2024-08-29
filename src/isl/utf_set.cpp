@@ -24,7 +24,7 @@ namespace isl
 
     auto UtfSet::at(char32_t chr) const noexcept -> bool
     {
-        if (chr < asciiStorageSize) [[likely]] {
+        if (chr < asciiStorageSize) {
             return asciiSymbolsStorage.test(chr);
         }
 
@@ -33,11 +33,12 @@ namespace isl
 
     auto UtfSet::set(char32_t chr, bool value) -> void
     {
-        if (chr < asciiStorageSize) [[likely]] {
+        if (chr < asciiStorageSize) {
             asciiSymbolsStorage.set(chr, value);
-        } else [[unlikely]] {
-            setBigChar(chr, value);
+            return;
         }
+
+        setBigChar(chr, value);
     }
 
     auto UtfSet::set(Range<char32_t> range, bool value) -> void
@@ -50,10 +51,11 @@ namespace isl
 
     auto UtfSet::setBigChar(char32_t chr, bool value) -> void
     {
-        if (value) [[likely]] {
+        if (value) {
             nonAsciiStorage.insert(chr);
-        } else [[unlikely]] {
-            nonAsciiStorage.erase(chr);
+            return;
         }
+
+        nonAsciiStorage.erase(chr);
     }
 }// namespace isl
