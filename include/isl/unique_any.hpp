@@ -41,6 +41,16 @@ namespace isl
         {}
 
         template<typename T>
+        explicit UniqueAny(std::unique_ptr<T> ptr)
+          : typeIndex{typeid(T)}
+        {
+            pointerAndDeleter.pointer = ptr.release();
+            pointerAndDeleter.deleter = [](void *p) {
+                delete static_cast<T *>(p);
+            };
+        }
+
+        template<typename T>
         [[nodiscard]] explicit UniqueAny(T &&object)
         {
             emplace<T>(std::forward<T>(object));
