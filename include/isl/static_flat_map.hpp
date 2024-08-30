@@ -3,7 +3,6 @@
 
 #include <isl/isl.hpp>
 #include <isl/iterator.hpp>
-#include <utility>
 
 namespace isl
 {

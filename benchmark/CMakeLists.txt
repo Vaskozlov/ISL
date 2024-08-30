@@ -9,7 +9,7 @@ add_executable(
         ${ISL_BENCH_OBJECTS}
 )
 
-isl_set_project_warnings(
+isl_set_target_flags(
         isl-bench
         ${ISL_STRICT_COMPILATION}
         ""

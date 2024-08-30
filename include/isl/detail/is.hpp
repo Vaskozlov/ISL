@@ -2,7 +2,6 @@
 #define ISL_IS_HPP
 
 #include <isl/detail/as.hpp>
-#include <utility>
 
 namespace isl
 {

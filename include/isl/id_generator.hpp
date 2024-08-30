@@ -11,12 +11,10 @@ namespace isl
     {
     private:
         std::atomic<T> id;
-        T initialValue;
 
     public:
         ISL_DECL explicit IdGenerator(T start)
           : id{start}
-          , initialValue{start}
         {}
 
         [[nodiscard]] auto next() -> T
@@ -28,12 +26,7 @@ namespace isl
         {
             return id.load(std::memory_order_relaxed);
         }
-
-        auto restore() -> void
-        {
-            id.store(initialValue, std::memory_order_relaxed);
-        }
     };
-}// namespace isl::thread
+}// namespace isl
 
 #endif /* ISL_PROJECT_ID_GENERATOR_HPP */

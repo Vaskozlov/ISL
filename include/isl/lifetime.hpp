@@ -2,9 +2,7 @@
 #define ISL_PROJECT_LIFETIME_HPP
 
 #include <atomic>
-#include <exception>
 #include <isl/isl.hpp>
-#include <isl/memory.hpp>
 #include <mutex>
 
 namespace isl::lifetime

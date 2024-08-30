@@ -456,11 +456,11 @@ struct ankerl::unordered_dense::hash<isl::BasicStringView<CharT>>
 };
 
 template<>
-struct fmt::formatter<isl::string_view> : public fmt::formatter<std::string_view>
+struct fmt::formatter<isl::string_view> : formatter<std::string_view>
 {
-    auto format(const isl::string_view &str, format_context &ctx) const -> decltype(ctx.out())
+    auto format(const isl::string_view &str, format_context &ctx) const -> format_context::iterator
     {
-        return formatter<std::string_view>::format(isl::as<std::string_view>(str), ctx);
+        return formatter<std::string_view>::format(static_cast<std::string_view>(str), ctx);
     }
 };
 

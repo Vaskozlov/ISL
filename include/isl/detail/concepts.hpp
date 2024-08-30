@@ -4,8 +4,6 @@
 #include <concepts>
 #include <exception>
 #include <ranges>
-#include <type_traits>
-#include <utility>
 
 #define ISL_RANGE_OVER_CONCEPT(C)                                                                  \
     []<C> {                                                                                        \

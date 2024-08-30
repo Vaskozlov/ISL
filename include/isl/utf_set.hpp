@@ -1,9 +1,9 @@
 #ifndef CCL_PROJECT_UTF_SET_HPP
 #define CCL_PROJECT_UTF_SET_HPP
 
+#include <ankerl/unordered_dense.h>
 #include <bitset>
 #include <isl/range.hpp>
-#include <unordered_set>
 
 namespace isl
 {
@@ -14,7 +14,7 @@ namespace isl
 
     private:
         std::bitset<asciiStorageSize> asciiSymbolsStorage;
-        std::unordered_set<char32_t> nonAsciiStorage;
+        ankerl::unordered_dense::set<char32_t> nonAsciiStorage;
 
     public:
         UtfSet() = default;
@@ -22,7 +22,7 @@ namespace isl
         UtfSet(
             std::bitset<asciiStorageSize>
                 ascii_symbols,
-            std::unordered_set<char32_t>
+            ankerl::unordered_dense::set<char32_t>
                 non_ascii_symbols);
 
         UtfSet(

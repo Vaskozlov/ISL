@@ -4,16 +4,9 @@
 #include <cinttypes>
 #include <cmath>
 #include <cstddef>
-#include <isl/detail/as.hpp>
-#include <isl/detail/container_guard.hpp>
 #include <isl/detail/pair.hpp>
 #include <map>
 #include <optional>
-#include <set>
-#include <stack>
-#include <string>
-#include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 namespace isl

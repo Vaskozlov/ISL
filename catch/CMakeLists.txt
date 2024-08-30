@@ -17,7 +17,7 @@ target_include_directories(isl-catch
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
 )
 
-isl_set_project_warnings(
+isl_set_target_flags(
         isl-catch
         ${ISL_STRICT_COMPILATION}
         ""
@@ -36,11 +36,11 @@ target_link_libraries(
         Catch2::Catch2WithMain
 )
 
-if (PRECOMPILED_HEADER)
+if (ISL_PRECOMPILED_HEADER)
     target_precompile_headers(
             isl-catch
             REUSE_FROM
-            isl-lexer
+            isl
     )
 endif ()
 

@@ -3,16 +3,16 @@
 namespace isl
 {
     UtfSet::UtfSet(
-        std::bitset<asciiStorageSize>
+        const std::bitset<asciiStorageSize>
             ascii_symbols,
-        std::unordered_set<char32_t>
+        ankerl::unordered_dense::set<char32_t>
             non_ascii_symbols)
       : asciiSymbolsStorage{ascii_symbols}
       , nonAsciiStorage{std::move(non_ascii_symbols)}
     {}
 
     UtfSet::UtfSet(
-        std::bitset<asciiStorageSize>
+        const std::bitset<asciiStorageSize>
             ascii_symbols,
         const std::vector<Range<char32_t>> &ranges)
       : asciiSymbolsStorage{ascii_symbols}
@@ -22,7 +22,7 @@ namespace isl
         }
     }
 
-    auto UtfSet::at(char32_t chr) const noexcept -> bool
+    auto UtfSet::at(const char32_t chr) const noexcept -> bool
     {
         if (chr < asciiStorageSize) {
             return asciiSymbolsStorage.test(chr);
@@ -41,7 +41,7 @@ namespace isl
         setBigChar(chr, value);
     }
 
-    auto UtfSet::set(Range<char32_t> range, bool value) -> void
+    auto UtfSet::set(const Range<char32_t> range, const bool value) -> void
     {
         ISL_UNROLL_N(4)
         for (const char32_t chr : range) {
@@ -49,7 +49,7 @@ namespace isl
         }
     }
 
-    auto UtfSet::setBigChar(char32_t chr, bool value) -> void
+    auto UtfSet::setBigChar(const char32_t chr, const bool value) -> void
     {
         if (value) {
             nonAsciiStorage.insert(chr);

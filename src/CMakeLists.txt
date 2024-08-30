@@ -10,7 +10,7 @@ else ()
     add_library(isl SHARED ${ISL_OBJECTS})
 endif ()
 
-isl_set_project_warnings(
+isl_set_target_flags(
         isl
         ${ISL_STRICT_COMPILATION}
         ""

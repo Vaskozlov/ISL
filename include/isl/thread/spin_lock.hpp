@@ -9,7 +9,7 @@ namespace isl::thread
     class SpinLock
     {
     private:
-        std::atomic_flag flag = ATOMIC_FLAG_INIT;
+        std::atomic_flag flag{false};
 
     public:
         auto lock() -> void

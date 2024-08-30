@@ -2,7 +2,7 @@
 #define ISL_PROJECT_UNIQUE_ANY_HPP
 
 #include <functional>
-#include <isl/memory.hpp>
+#include <isl/detail/defines.hpp>
 #include <typeindex>
 
 namespace isl
@@ -41,7 +41,7 @@ namespace isl
         }
 
         template<typename T, typename... Ts>
-        [[nodiscard]] explicit UniqueAny(std::in_place_type_t<T>, Ts &&...args)
+        [[nodiscard]] explicit UniqueAny(std::in_place_type_t<T> /*unused*/, Ts &&...args)
         {
             emplace<T>(std::forward<Ts>(args)...);
         }
@@ -159,19 +159,19 @@ namespace isl
     template<typename T>
     [[nodiscard]] auto get(UniqueAny &unique_any) -> T
     {
-        return unique_any.template get<T>();
+        return unique_any.get<T>();
     }
 
     template<typename T>
     [[nodiscard]] auto get(UniqueAny &&unique_any) -> T
     {
-        return unique_any.template get<T>();
+        return unique_any.get<T>();
     }
 
     template<typename T>
     [[nodiscard]] auto observe(UniqueAny &unique_any) -> T *
     {
-        return unique_any.template observe<T>();
+        return unique_any.observe<T>();
     }
 
     template<typename T, typename... Ts>

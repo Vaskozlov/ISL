@@ -1,17 +1,15 @@
 #ifndef ISL_PROJECT_PAIR_HPP
 #define ISL_PROJECT_PAIR_HPP
 
-#include <isl/detail/concepts.hpp>
 #include <isl/detail/defines.hpp>
 
 namespace isl::detail
 {
     template<typename T1, typename T2>
-    class ISL_TRIVIAL_ABI TrivialPair
+    struct ISL_TRIVIAL_ABI TrivialPair
     {
         static_assert(std::is_trivial_v<T1> && std::is_trivial_v<T2>);
 
-    public:
         T1 first{};
         T2 second{};
 

@@ -4,6 +4,7 @@
 #include <ankerl/unordered_dense.h>
 #include <functional>
 #include <isl/id_generator.hpp>
+#include <set>
 
 namespace isl::dot
 {

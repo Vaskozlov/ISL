@@ -1,4 +1,5 @@
 #include <isl/thread/pool.hpp>
+#include <functional>
 
 namespace isl::thread
 {

@@ -108,7 +108,7 @@ namespace isl::lifetime
                 "Copy assign: unable to move from a deleted object ({}, {})",
                 other.lifetimeObject->uniqueId, other.lifetimeObject->weakId);
         } else {
-            detail::completeCopy(*other.lifetimeObject, *lifetimeObject);
+            completeCopy(*other.lifetimeObject, *lifetimeObject);
             fmt::println(
                 "Copy assign: object ({}, {}) has been moved to ({}, {})",
                 other.lifetimeObject->uniqueId, other.lifetimeObject->weakId,

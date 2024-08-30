@@ -2,7 +2,6 @@
 #define ISL_PROJECT_HASH_HPP
 
 #include <isl/detail/defines.hpp>
-#include <string_view>
 
 namespace isl::hash
 {

@@ -70,7 +70,7 @@ namespace isl::thread
     private:
         auto submit(Job *job) -> void;
 
-        auto runJob(Job *job) -> bool;
+        static auto runJob(Job *job) -> bool;
 
         auto worker(const std::atomic<bool> &run_flag) -> void;
 

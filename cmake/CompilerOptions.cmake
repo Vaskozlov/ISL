@@ -60,7 +60,7 @@ endmacro()
 
 
 function(
-        isl_set_project_warnings
+        isl_set_target_flags
         project_name
         WARNINGS_AS_ERRORS
         MSVC_WARNINGS

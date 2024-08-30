@@ -6,6 +6,7 @@
 namespace isl
 {
     template<std::size_t MaxObjectSize, std::size_t Align, std::size_t BlockSize = 128>
+        requires(BlockSize % 16 == 0)
     class FixedSizeAllocator
     {
     private:
@@ -26,7 +27,8 @@ namespace isl
             {
                 next = nullptr;
 
-                for (std::size_t i = 0; i != BlockSize - 1; ++i) {
+                ISL_UNROLL_N(16)
+                for (std::size_t i = 0; i != BlockSize; ++i) {
                     storage[i].next = &storage[i + 1];
                 }
 
@@ -136,7 +138,7 @@ namespace isl
 
     template<typename... Ts>
     constexpr inline auto MaxObjectSizeOf =
-        std::max({sizeof(std::conditional_t<std::is_abstract_v<Ts>, char, Ts>)...});
+        std::max({sizeof(std::conditional_t<std::is_abstract_v<Ts>, std::size_t, Ts>)...});
 
     template<typename... Ts>
     constexpr inline auto MaxObjectsAlignmentOf = std::max({alignof(Ts)...});
