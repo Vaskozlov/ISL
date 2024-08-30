@@ -9,19 +9,24 @@ namespace isl
 {
     ISL_EXCEPTION(bad_unique_any_cast, std::runtime_error, runtime_error);
 
-    class UniqueAny
+    namespace detail
     {
-        using Deleter = void (*)(void *);
-
         struct PointerAndDeleter
         {
-            void *pointer{};
-            Deleter deleter{};
+            void *pointer = nullptr;
+            void (*deleter)(void *) = nullptr;
         };
 
+        template<typename T>
+        concept UniqueAnyCanStoreInside =
+            std::is_trivial_v<T> && sizeof(T) <= sizeof(PointerAndDeleter);
+    }// namespace detail
+
+    class UniqueAny
+    {
         union {
-            PointerAndDeleter pointerAndDeleter{};
-            std::array<std::byte, sizeof(PointerAndDeleter)> rowBuffer;
+            detail::PointerAndDeleter pointerAndDeleter{};
+            std::array<std::byte, sizeof(detail::PointerAndDeleter)> rowBuffer;
         };
 
         std::type_index typeIndex{typeid(std::nullopt_t)};
@@ -30,6 +35,7 @@ namespace isl
     public:
         UniqueAny() = default;
 
+        // NOLINTNEXTLINE
         UniqueAny(std::nullopt_t)
           : storesTrivialObject{true}
         {}
@@ -41,6 +47,7 @@ namespace isl
         }
 
         template<typename T, typename... Ts>
+            requires(std::constructible_from<T, Ts...>)
         [[nodiscard]] explicit UniqueAny(std::in_place_type_t<T> /*unused*/, Ts &&...args)
         {
             emplace<T>(std::forward<Ts>(args)...);
@@ -54,7 +61,8 @@ namespace isl
           , storesTrivialObject{other.storesTrivialObject}
         {
             other.pointerAndDeleter.pointer = nullptr;
-            other.clearInternalStorage();
+            other.pointerAndDeleter.deleter = nullptr;
+            other.clearTypeInfo();
         }
 
         ~UniqueAny()
@@ -83,63 +91,82 @@ namespace isl
             return typeIndex;
         }
 
-        template<typename T, typename... Ts>
+        template<detail::UniqueAnyCanStoreInside T, typename... Ts>
+            requires(std::constructible_from<T, Ts...>)
         auto emplace(Ts &&...args) -> void
         {
             deleteStoredObject();
             typeIndex = std::type_index{typeid(T)};
 
-            if constexpr (std::is_trivial_v<T> && sizeof(T) <= sizeof(PointerAndDeleter)) {
-                storesTrivialObject = true;
-                std::construct_at(
-                    reinterpret_cast<T *>(rowBuffer.data()), std::forward<Ts>(args)...);
-            } else {
-                storesTrivialObject = false;
-                pointerAndDeleter.pointer = static_cast<void *>(new T{std::forward<Ts>(args)...});
-                pointerAndDeleter.deleter = [](void *p) {
-                    delete static_cast<T *>(p);
-                };
-            }
+            storesTrivialObject = true;
+            std::construct_at(reinterpret_cast<T *>(rowBuffer.data()), std::forward<Ts>(args)...);
+        }
+
+        template<typename T, typename... Ts>
+        auto emplace(Ts &&...args) -> void
+            requires(std::constructible_from<T, Ts...>)
+        {
+            deleteStoredObject();
+            typeIndex = std::type_index{typeid(T)};
+
+            storesTrivialObject = false;
+            pointerAndDeleter.pointer = static_cast<void *>(new T{std::forward<Ts>(args)...});
+            pointerAndDeleter.deleter = [](void *p) {
+                delete static_cast<T *>(p);
+            };
+        }
+
+        template<detail::UniqueAnyCanStoreInside T>
+        [[nodiscard]] auto get() -> T
+        {
+            checkTypeMatch<T>();
+
+            auto result = T{*reinterpret_cast<T *>(rowBuffer.data())};
+            clearInternalStorage();
+
+            return result;
         }
 
         template<typename T>
         [[nodiscard]] auto get() -> T
         {
-            if (std::type_index{typeid(T)} != typeIndex) {
-                throw bad_unique_any_cast{
-                    std::string{"An attempt to get object of type "} + typeid(T).name() +
-                    ", but stored object has type {}" + typeIndex.name()};
-            }
+            checkTypeMatch<T>();
 
-            if constexpr (std::is_trivial_v<T> && sizeof(T) <= sizeof(PointerAndDeleter)) {
-                auto result = T{*reinterpret_cast<T *>(rowBuffer.data())};
-                clearInternalStorage();
-                return result;
-            } else {
-                T result = std::move(*static_cast<T *>(pointerAndDeleter.pointer));
-                clearInternalStorage();
-                return result;
-            }
+            T result = std::move(*static_cast<T *>(pointerAndDeleter.pointer));
+            clearInternalStorage();
+
+            return result;
+        }
+
+        template<detail::UniqueAnyCanStoreInside T>
+        [[nodiscard]] auto observe() -> T *
+        {
+            checkTypeMatch<T>();
+            return reinterpret_cast<T *>(rowBuffer.data());
         }
 
         template<typename T>
         [[nodiscard]] auto observe() -> T *
         {
-            if (std::type_index{typeid(T)} != typeIndex) {
-                throw bad_unique_any_cast{
-                    std::string{"An attempt to get object of type "} + typeid(T).name() +
-                    ", but stored object has type {}" + typeIndex.name()};
-            }
+            checkTypeMatch<T>();
+            return static_cast<T *>(pointerAndDeleter.pointer);
+        }
 
-            if constexpr (std::is_trivial_v<T> && sizeof(T) <= sizeof(PointerAndDeleter)) {
-                return reinterpret_cast<T *>(rowBuffer.data());
-            } else {
-                return static_cast<T *>(pointerAndDeleter.pointer);
-            }
+        template<typename T>
+            requires(!detail::UniqueAnyCanStoreInside<T>)
+        [[nodiscard]] auto release() -> std::unique_ptr<T>
+        {
+            checkTypeMatch<T>();
+
+            auto *ptr = static_cast<T *>(std::exchange(pointerAndDeleter.pointer, nullptr));
+            pointerAndDeleter.deleter = nullptr;
+            clearTypeInfo();
+
+            return std::unique_ptr<T>{ptr};
         }
 
     private:
-        auto deleteStoredObject() -> void
+        auto deleteStoredObject() const -> void
         {
             if (!storesTrivialObject && pointerAndDeleter.deleter != nullptr) {
                 pointerAndDeleter.deleter(pointerAndDeleter.pointer);
@@ -150,11 +177,25 @@ namespace isl
         {
             deleteStoredObject();
             rowBuffer.fill(std::byte{0});
+            clearTypeInfo();
+        }
+
+        auto clearTypeInfo() -> void
+        {
             typeIndex = std::type_index{typeid(std::nullopt_t)};
             storesTrivialObject = false;
         }
-    };
 
+        template<typename T>
+        auto checkTypeMatch() const -> void
+        {
+            if (std::type_index{typeid(T)} != typeIndex) {
+                throw bad_unique_any_cast{
+                    std::string{"An attempt to get object of type "} + typeid(T).name() +
+                    ", but stored object has type {}" + typeIndex.name()};
+            }
+        }
+    };
 
     template<typename T>
     [[nodiscard]] auto get(UniqueAny &unique_any) -> T
