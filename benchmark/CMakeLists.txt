@@ -18,7 +18,7 @@ isl_set_target_flags(
         ""
         ${ISL_HARDENING}
         ${ISL_LIBCPP}
-        OFF
+        ${ISL_UNITY_BUILD}
 )
 
 add_dependencies(
