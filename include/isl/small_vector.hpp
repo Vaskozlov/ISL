@@ -18,6 +18,17 @@ namespace isl
         Allocator allocator;
 
     public:
+        using value_type = T;
+        using allocator_type = Allocator;
+        using size_type = u32;
+        using difference_type = std::ptrdiff_t;
+        using reference = T &;
+        using const_reference = const T &;
+        using pointer = T *;
+        using const_pointer = const T *;
+        using iterator = T *;
+        using const_iterator = const T *;
+
         SmallVector() = default;
 
         SmallVector(const std::initializer_list<T> &initializer_list)
