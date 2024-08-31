@@ -105,9 +105,13 @@ namespace isl
             return std::exchange(ptr, nullptr);
         }
 
-        static auto createDefault() -> UniquePtr {
+        static auto createDefault() -> UniquePtr
+        {
             auto un_ptr = UniquePtr{};
-            un_ptr.ptr = static_cast<T*>(AllocatorPtr->allocate());
+
+            un_ptr.ptr = static_cast<T *>(AllocatorPtr->allocate());
+            std::construct_at(un_ptr.ptr);
+
             return un_ptr;
         }
 
