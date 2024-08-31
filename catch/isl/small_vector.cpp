@@ -149,3 +149,30 @@ TEST_CASE("SmallVectorOfIntsMove", "[SmallVector]")
         REQUIRE(small_vector_copy.empty());
     }
 }
+
+TEST_CASE("SmallVectorOfIntsErase", "[SmallVector]")
+{
+    {
+        auto vector = isl::SmallVector<int, 4>{1, 2, 3, 4};
+        vector.erase(vector.begin());
+        REQUIRE(std::ranges::equal(vector, std::vector{2, 3, 4}));
+    }
+
+    {
+        auto vector = isl::SmallVector<int, 4>{1, 2, 3, 4};
+        vector.erase(vector.begin() + 1);
+        REQUIRE(std::ranges::equal(vector, std::vector{1, 3, 4}));
+    }
+
+    {
+        auto vector = isl::SmallVector<int, 4>{1, 2, 3, 4};
+        vector.erase(vector.begin() + 2);
+        REQUIRE(std::ranges::equal(vector, std::vector{1, 2, 4}));
+    }
+
+    {
+        auto vector = isl::SmallVector<int, 4>{1, 2, 3, 4};
+        vector.erase(vector.begin() + 3);
+        REQUIRE(std::ranges::equal(vector, std::vector{1, 2, 3}));
+    }
+}

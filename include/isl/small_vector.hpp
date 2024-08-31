@@ -297,6 +297,15 @@ namespace isl
             vectorSize = 0;
         }
 
+        auto erase(iterator it) -> void
+        {
+            for (auto *current = it; current != end() - 1; ++current) {
+                *current = std::move(*(current + 1));
+            }
+
+            vectorSize -= 1;
+        }
+
         template<typename... Ts>
             requires(std::constructible_from<T, Ts...>)
         auto emplace_back(Ts &&...args) -> T &
