@@ -86,6 +86,8 @@ namespace isl
                 ++buffer;
                 ++other_buffer;
             }
+
+            other.vectorSize = 0;
         }
 
         ~SmallVector()
