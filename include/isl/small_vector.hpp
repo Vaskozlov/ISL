@@ -226,7 +226,16 @@ namespace isl
                 return false;
             }
 
-            return std::ranges::equal(*this, other);
+            const auto *buffer = data();
+            const auto *other_buffer = other.data();
+
+            for (std::size_t i = 0; i != vectorSize; ++i) {
+                if (buffer[i] != other_buffer[i]) {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         [[nodiscard]] auto operator<=>(const SmallVector &other) const -> std::weak_ordering
