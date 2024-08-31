@@ -232,6 +232,54 @@ namespace isl
             return vectorSize <=> other.vectorSize;
         }
 
+        [[nodiscard]] auto front() -> T &
+        {
+            return *data();
+        }
+
+        [[nodiscard]] auto front() const -> const T &
+        {
+            return *data();
+        }
+
+        [[nodiscard]] auto back() -> T &
+        {
+            return *(data() + vectorSize - 1);
+        }
+
+        [[nodiscard]] auto back() const -> const T &
+        {
+            return *(data() + vectorSize - 1);
+        }
+
+        auto operator[](const u32 index) -> T &
+        {
+            return data()[index];
+        }
+
+        auto operator[](const u32 index) const -> const T &
+        {
+            return data()[index];
+        }
+
+        auto at(const u32 index) -> T &
+        {
+            if (index >= vectorSize) {
+                throw std::out_of_range{"SmallVector::at"};
+            }
+
+            return operator[](index);
+        }
+
+        auto at(const u32 index) const -> const T &
+        {
+            if (index >= vectorSize) {
+                throw std::out_of_range{"SmallVector::at"};
+            }
+
+            return operator[](index);
+        }
+
         auto clean() -> void
         {
             std::ranges::destroy(*this);
