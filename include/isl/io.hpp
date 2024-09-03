@@ -11,10 +11,10 @@
 
 namespace isl::io
 {
-    auto readFile(const std::filesystem::path &path) -> std::string;
+    auto read(const std::filesystem::path &filename) -> std::string;
 
     template<StringLike<char>... Ts>
-    auto writeToFile(const std::filesystem::path &filename, Ts &&...args) -> void
+    auto write(const std::filesystem::path &filename, Ts &&...args) -> void
     {
         auto out = std::ofstream{filename};
 
