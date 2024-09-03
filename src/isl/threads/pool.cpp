@@ -1,9 +1,9 @@
-#include <isl/thread/pool.hpp>
 #include <functional>
+#include <isl/thread/pool.hpp>
 
 namespace isl::thread
 {
-    Pool::Pool(std::size_t count)
+    Pool::Pool(const std::size_t count)
     {
         startThreads(count);
     }

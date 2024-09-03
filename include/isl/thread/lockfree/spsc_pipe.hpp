@@ -60,12 +60,14 @@ namespace isl::thread::lock_free
 
         ISL_HARDWARE_CACHE_LINE_PADDING(size_type);
 
-        [[nodiscard]] static auto isFull(size_type push_cursor, size_t pop_cursor) noexcept -> bool
+        [[nodiscard]] static auto
+            isFull(const size_type push_cursor, const size_type pop_cursor) noexcept -> bool
         {
             return (push_cursor - pop_cursor) == capacity();
         }
 
-        [[nodiscard]] static auto isEmpty(size_type push_cursor, size_t pop_cursor) noexcept -> bool
+        [[nodiscard]] static auto
+            isEmpty(const size_type push_cursor, const size_type pop_cursor) noexcept -> bool
         {
             return push_cursor == pop_cursor;
         }
@@ -78,8 +80,8 @@ namespace isl::thread::lock_free
 
         [[nodiscard]] auto contained() const noexcept -> size_type
         {
-            auto push_cursor = pushCursor.load(std::memory_order_relaxed);
-            auto pop_cursor = popCursor.load(std::memory_order_relaxed);
+            const auto push_cursor = pushCursor.load(std::memory_order_relaxed);
+            const auto pop_cursor = popCursor.load(std::memory_order_relaxed);
 
             return push_cursor - pop_cursor;
         }
@@ -91,8 +93,8 @@ namespace isl::thread::lock_free
 
         [[nodiscard]] auto wasFull() const noexcept -> bool
         {
-            auto push_cursor = pushCursor.load(std::memory_order_relaxed);
-            auto pop_cursor = popCursor.load(std::memory_order_relaxed);
+            const auto push_cursor = pushCursor.load(std::memory_order_relaxed);
+            const auto pop_cursor = popCursor.load(std::memory_order_relaxed);
 
             return isFull(push_cursor, pop_cursor);
         }
@@ -115,7 +117,7 @@ namespace isl::thread::lock_free
         auto tryPush(T &value) -> bool
         {
             auto push_cursor = pushCursor.load(std::memory_order_relaxed);
-            auto next_push_cursor = (push_cursor + 1) % Size;
+            const auto next_push_cursor = (push_cursor + 1) % Size;
 
             if (next_push_cursor == popCursorCached) {
                 popCursorCached = popCursor.load(std::memory_order_acquire);
@@ -145,7 +147,7 @@ namespace isl::thread::lock_free
             value = std::move(*ring[pop_cursor].getValuePtr());
             ring[pop_cursor].destroy();
 
-            auto next_pop_cursor = (pop_cursor + 1) % Size;
+            const auto next_pop_cursor = (pop_cursor + 1) % Size;
             popCursor.store(next_pop_cursor, std::memory_order_release);
 
             return true;

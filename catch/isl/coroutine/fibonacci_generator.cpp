@@ -8,8 +8,8 @@ constexpr static std::array<std::size_t, 20> FibonacciNumbers = {
 
 static auto fibonacciGenerator() -> isl::Generator<std::size_t>
 {
-    std::size_t first = 0;
-    std::size_t second = 1;
+    auto first = std::size_t{0};
+    auto second = std::size_t{1};
 
     co_yield first;
     co_yield second;
@@ -27,7 +27,7 @@ TEST_CASE("FibonacciGenerator", "[Coroutine]")
 {
     auto gen = fibonacciGenerator();
 
-    for (std::size_t fibonacci_number : FibonacciNumbers) {
+    for (auto fibonacci_number : FibonacciNumbers) {
         REQUIRE(gen.yield() == fibonacci_number);
     }
 }

@@ -2,7 +2,6 @@
 #define ISL_PROJECT_SPIN_LOCK_HPP
 
 #include <atomic>
-#include <isl/raii.hpp>
 
 namespace isl::thread
 {
@@ -17,7 +16,7 @@ namespace isl::thread
             while (flag.test_and_set(std::memory_order_acquire)) {}
         }
 
-        auto tryLock() -> bool
+        [[nodiscard]] auto tryLock() -> bool
         {
             return !flag.test_and_set(std::memory_order_acquire);
         }

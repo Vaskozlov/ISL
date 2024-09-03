@@ -7,7 +7,7 @@
 
 #define ISL_RANGE_OVER_CONCEPT(C)                                                                  \
     []<C> {                                                                                        \
-    } >
+    }
 
 namespace isl
 {

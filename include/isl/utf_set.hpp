@@ -10,7 +10,7 @@ namespace isl
     class UtfSet
     {
     public:
-        static constexpr auto asciiStorageSize = as<size_t>(128);
+        static constexpr auto asciiStorageSize = static_cast<std::size_t>(128);
 
     private:
         std::bitset<asciiStorageSize> asciiSymbolsStorage;

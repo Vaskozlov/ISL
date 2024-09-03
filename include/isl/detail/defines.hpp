@@ -130,7 +130,11 @@ namespace isl
 {
     [[noreturn]] ISL_INLINE auto unreachable() -> void
     {
+#if defined(__cpp_lib_unreachable) && __cpp_lib_unreachable >= 202202L
+        std::unreachable();
+#else
         ISL_UNREACHABLE;
+#endif
     }
 
     enum class FunctionAPI : bool

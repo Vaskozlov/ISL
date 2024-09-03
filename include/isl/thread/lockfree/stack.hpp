@@ -25,22 +25,22 @@ namespace isl::thread::lock_free
     public:
         [[nodiscard]] auto wasEmpty() const noexcept -> bool
         {
-            return top.load(std::memory_order_relaxed) == nullptr;
+            return top.load(std::memory_order_acquire) == nullptr;
         }
 
         [[nodiscard]] auto contained() const noexcept -> std::size_t
         {
-            return currentSize.load(std::memory_order_relaxed);
+            return currentSize.load(std::memory_order_acquire);
         }
 
         [[nodiscard]] auto wasOnTop() noexcept -> StackNode *
         {
-            return top.load(std::memory_order_relaxed);
+            return top.load(std::memory_order_acquire);
         }
 
         [[nodiscard]] auto wasOnTop() const noexcept -> const StackNode *
         {
-            return top.load(std::memory_order_relaxed);
+            return top.load(std::memory_order_acquire);
         }
 
         auto push(StackNode *node) noexcept -> void;

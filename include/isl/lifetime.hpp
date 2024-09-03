@@ -2,6 +2,7 @@
 #define ISL_PROJECT_LIFETIME_HPP
 
 #include <atomic>
+#include <isl/id_generator.hpp>
 #include <isl/isl.hpp>
 #include <mutex>
 
@@ -16,10 +17,10 @@ namespace isl::lifetime
         private:
             friend LifetimeMonitor;
 
-            static inline constinit std::atomic<Id> CurrentId = 1;// NOLINT
-            static inline std::mutex LockForObjectCreation;       // NOLINT
+            static IdGenerator<> LifetimeObjectIdGenerator;// NOLINT
+            static std::mutex ObjectCreationLock;          // NOLINT
 
-            Id uniqueId{CurrentId.fetch_add(1U, std::memory_order_relaxed)};
+            Id uniqueId{LifetimeObjectIdGenerator.next()};
             Id weakId{uniqueId};
             bool moved{false};
             bool deleted{false};
@@ -64,12 +65,12 @@ namespace isl::lifetime
             }
         };
 
-        inline std::vector<std::unique_ptr<LifetimeObject>> CreatedObjects;// NOLINT
+        extern std::vector<std::unique_ptr<LifetimeObject>> CreatedObjects;// NOLINT
     }// namespace detail
 
     class LifetimeMonitor
     {
-        detail::LifetimeObject *lifetimeObject{nullptr};
+        detail::LifetimeObject *lifetimeObject{};
 
     public:
         LifetimeMonitor();
@@ -81,12 +82,12 @@ namespace isl::lifetime
         auto operator=(LifetimeMonitor &&other) noexcept -> LifetimeMonitor &;
         auto operator=(const LifetimeMonitor &other) -> LifetimeMonitor &;
 
-        ISL_DECL auto getUniqueId() const noexcept -> Id
+        [[nodiscard]] auto getUniqueId() const noexcept -> Id
         {
             return lifetimeObject->getUniqueId();
         }
 
-        ISL_DECL auto getWeakId() const noexcept -> Id
+        [[nodiscard]] auto getWeakId() const noexcept -> Id
         {
             return lifetimeObject->getWeakId();
         }

@@ -54,11 +54,11 @@ namespace isl
         }
 
         template<typename K, typename... Ts>
-        constexpr auto tryEmplace(K &&key, Ts &&...args) -> Pair<iterator, bool>
+        constexpr auto tryEmplace(K &&key, Ts &&...args) -> std::pair<iterator, bool>
             requires std::constructible_from<value_type, Key, Ts...>
         {
             if (occupied == capacity()) {
-                throw std::out_of_range("StaticFlatmap is full. Unable to emplace.");
+                throw std::out_of_range{"StaticFlatmap::tryEmplace() failed, map is full."};
             }
 
             auto result = find(key);
@@ -67,18 +67,18 @@ namespace isl
                 return {result, false};
             }
 
-            storage[occupied++] = value_type(std::forward<K>(key), std::forward<Ts>(args)...);
+            storage[occupied++] = value_type{std::forward<K>(key), std::forward<Ts>(args)...};
             return {result, true};
         }
 
         ISL_DECL auto at(const Key &key) ISL_LIFETIMEBOUND -> Value &
         {
-            return staticAt(*this, key);
+            return at(*this, key);
         }
 
         ISL_DECL auto at(const Key &key) const ISL_LIFETIMEBOUND -> const Value &
         {
-            return staticAt(*this, key);
+            return at(*this, key);
         }
 
         ISL_DECL auto operator[](const Key &key) ISL_LIFETIMEBOUND->Value &
@@ -98,12 +98,12 @@ namespace isl
 
         ISL_DECL auto find(const Key &key) noexcept -> iterator
         {
-            return staticFind(*this, key);
+            return find(*this, key);
         }
 
         ISL_DECL auto find(const Key &key) const noexcept -> const_iterator
         {
-            return staticFind(*this, key);
+            return find(*this, key);
         }
 
         StaticFlatmap() = default;
@@ -122,20 +122,20 @@ namespace isl
 
     private:
         template<typename Self>
-        ISL_DECL static auto staticFind(Self &self, const Key &key) noexcept -> auto
+        ISL_DECL static auto find(Self &self, const Key &key) noexcept -> auto
         {
-            return std::find_if(std::begin(self), std::end(self), [&key](const value_type &value) {
+            return std::ranges::find_if(self, [&key](const value_type &value) {
                 return Pred{}(key, value.first);
             });
         }
 
         template<typename Self>
-        ISL_DECL static auto staticAt(Self &self, const Key &key) -> auto &
+        ISL_DECL static auto at(Self &self, const Key &key) -> auto &
         {
             auto elem = self.find(key);
 
             if (elem == self.end()) {
-                throw std::out_of_range("Key not found in StaticFlatmap at() method.");
+                throw std::out_of_range{"Key not found in StaticFlatmap at() method."};
             }
 
             return elem->second;

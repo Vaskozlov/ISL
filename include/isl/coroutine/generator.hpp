@@ -97,9 +97,9 @@ namespace isl
         std::exception_ptr exceptionPtr{nullptr};
 
     public:
-        [[nodiscard]] auto get_return_object() -> Generator<T>
+        [[nodiscard]] auto get_return_object() -> Generator
         {
-            return Generator<T>{coro_handle::from_promise(*this)};
+            return Generator{coro_handle::from_promise(*this)};
         }
 
         [[nodiscard]] auto initial_suspend() const noexcept -> coro::suspend_always
@@ -209,17 +209,17 @@ namespace isl
     class Generator<T>::iterator
     {
     private:
-        Generator<T> *generatorPtr{nullptr};
+        Generator *generatorPtr{nullptr};
 
     public:
         using difference_type = std::ptrdiff_t;
         using value_type = T;
 
-        explicit iterator(Generator<T> &generator)
+        explicit iterator(Generator &generator)
           : generatorPtr{std::addressof(generator)}
         {}
 
-        [[nodiscard]] auto owner() const noexcept -> const Generator<T> &
+        [[nodiscard]] auto owner() const noexcept -> const Generator &
         {
             return *generatorPtr;
         }

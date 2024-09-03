@@ -38,7 +38,7 @@ namespace isl::dot
         std::map<T, SmallId> nodeToId{};
         std::function<std::string(ToStrArg)> nodeTypeToString;
 
-        auto createIdForNode(T node) -> SmallId
+        [[nodiscard]] auto createIdForNode(T node) -> SmallId
         {
             auto it = nodeToId.find(node);
 

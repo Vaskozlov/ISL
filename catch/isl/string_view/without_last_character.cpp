@@ -6,6 +6,6 @@ TEST_CASE("StringViewWithoutLastCharacter", "[StringView]")
 {
     using namespace isl::string_view_literals;
 
-    STATIC_REQUIRE("Hello, World!"_sv.removeLastCharacter() == "Hello, World"_sv);
-    STATIC_REQUIRE(""_sv.removeLastCharacter().empty());
+    STATIC_REQUIRE("Hello, World!"_sv.withoutLastSymbol() == "Hello, World"_sv);
+    STATIC_REQUIRE(""_sv.withoutLastSymbol().empty());
 }

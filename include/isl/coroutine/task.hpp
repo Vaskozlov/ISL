@@ -176,10 +176,10 @@ namespace isl
     };
 
     template<>
-    class Task<void>::promise_type : public TaskPromiseBase<Task<void>>
+    class Task<>::promise_type : public TaskPromiseBase<Task>
     {
     private:
-        using TaskPromiseBase<Task<void>>::get_exception;
+        using TaskPromiseBase::get_exception;
 
         bool hasCompleted{};
 
@@ -207,10 +207,10 @@ namespace isl
     };
 
     template<typename T>
-    class Task<T>::promise_type : public TaskPromiseBase<Task<T>>
+    class Task<T>::promise_type : public TaskPromiseBase<Task>
     {
     private:
-        using TaskPromiseBase<Task<T>>::get_exception;
+        using TaskPromiseBase<Task>::get_exception;
 
         std::optional<T> value{std::nullopt};
 

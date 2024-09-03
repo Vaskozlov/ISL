@@ -17,5 +17,5 @@ TEST_CASE("RangeOf", "[Trait]")
 TEST_CASE("RangeOver", "[Trait]")
 {
     using namespace isl;
-    STATIC_REQUIRE(isl::RangeOver < std::span<int>, ISL_RANGE_OVER_CONCEPT(std::integral));
+    STATIC_REQUIRE(isl::RangeOver<std::span<int>, ISL_RANGE_OVER_CONCEPT(std::integral)>);
 }

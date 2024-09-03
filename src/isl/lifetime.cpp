@@ -3,6 +3,11 @@
 
 namespace isl::lifetime
 {
+    constinit IdGenerator<> detail::LifetimeObject::LifetimeObjectIdGenerator{1};
+    std::mutex detail::LifetimeObject::ObjectCreationLock;
+
+    std::vector<std::unique_ptr<detail::LifetimeObject>> detail::CreatedObjects;
+
     auto detail::completeCopy(const LifetimeObject &from, LifetimeObject &to) -> void
     {
         to.moved = from.moved;
@@ -20,7 +25,7 @@ namespace isl::lifetime
 
     detail::LifetimeObject::LifetimeObject()
     {
-        const auto lock = std::scoped_lock{LockForObjectCreation};
+        const auto lock = std::scoped_lock{ObjectCreationLock};
         CreatedObjects.emplace_back(this);
     }
 
@@ -44,7 +49,7 @@ namespace isl::lifetime
                 "Copy constructor: unable to copy from a moved object ({}, {})",
                 other.lifetimeObject->uniqueId, other.lifetimeObject->weakId);
         } else {
-            detail::completeCopy(*other.lifetimeObject, *lifetimeObject);
+            completeCopy(*other.lifetimeObject, *lifetimeObject);
             fmt::println(
                 "Copy constructor: object ({}, {}) has been copied from ({}, {})",
                 lifetimeObject->uniqueId, lifetimeObject->weakId, other.lifetimeObject->uniqueId,
@@ -60,7 +65,7 @@ namespace isl::lifetime
                 "Move constructor: unable to move from a deleted object ({}, {})",
                 other.lifetimeObject->uniqueId, other.lifetimeObject->weakId);
         } else {
-            detail::completeMove(*other.lifetimeObject, *lifetimeObject);
+            completeMove(*other.lifetimeObject, *lifetimeObject);
             fmt::println(
                 "Move constructor: object ({}, {}) has been moved to ({}, {})",
                 other.lifetimeObject->uniqueId, other.lifetimeObject->weakId,
@@ -72,8 +77,8 @@ namespace isl::lifetime
     {
         if (!lifetimeObject->deleteObject()) {
             fmt::println(
-                "Destructor: doube delete on object ({}, {})", lifetimeObject->uniqueId,
-                lifetimeObject->weakId);
+                "Destructor: delete has been called twice on the same object ({}, {})",
+                lifetimeObject->uniqueId, lifetimeObject->weakId);
         } else {
             fmt::println(
                 "Destructor: object ({}, {}) deleted", lifetimeObject->uniqueId,
@@ -88,12 +93,13 @@ namespace isl::lifetime
                 "Move assign: unable to move from a deleted object ({}, {})",
                 other.lifetimeObject->uniqueId, other.lifetimeObject->weakId);
         } else {
-            detail::completeMove(*other.lifetimeObject, *lifetimeObject);
+            completeMove(*other.lifetimeObject, *lifetimeObject);
             fmt::println(
                 "Move assign: object ({}, {}) has been moved to ({}, {})",
                 other.lifetimeObject->uniqueId, other.lifetimeObject->weakId,
                 lifetimeObject->uniqueId, lifetimeObject->weakId);
         }
+
         return *this;
     }
 

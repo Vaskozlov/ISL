@@ -11,7 +11,7 @@ namespace isl::thread::lock_free
         } while (!top.compare_exchange_weak(
             old_head, node, std::memory_order_release, std::memory_order_relaxed));
 
-        currentSize.fetch_add(1);
+        currentSize.fetch_add(1, std::memory_order_release);
     }
 
     auto Stack::pop() noexcept -> StackNode *
@@ -26,7 +26,7 @@ namespace isl::thread::lock_free
                 old_head, old_head->next, std::memory_order_release, std::memory_order_relaxed));
 
         if (old_head != nullptr) {
-            currentSize.fetch_sub(1);
+            currentSize.fetch_sub(1, std::memory_order_release);
         }
 
         return old_head;
