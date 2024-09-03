@@ -11,19 +11,7 @@
 
 namespace isl::io
 {
-    inline auto readFile(const std::filesystem::path &path) -> std::string
-    {
-        auto stream = std::ifstream(path);
-
-        if (!stream.is_open()) {
-            throw std::invalid_argument("Failed to open file");
-        }
-
-        auto buffer = std::stringstream{};
-        buffer << stream.rdbuf();
-
-        return buffer.str();
-    }
+    auto readFile(const std::filesystem::path &path) -> std::string;
 
     template<StringLike<char>... Ts>
     auto writeToFile(const std::filesystem::path &filename, Ts &&...args) -> void
