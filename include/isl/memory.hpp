@@ -185,7 +185,7 @@ namespace isl
     };
 
     template<typename... Ts>
-    using SharedPtrFrameFor = SharedPtrFrame<MaxObjectSizeOf<Ts...>, MaxObjectsAlignmentOf<Ts...>>;
+    using SharedPtrFrameFor = SharedPtrFrame<ObjectsMaxSize<Ts...>, ObjectsMaxAlignment<Ts...>>;
 
     template<typename T, typename Frame, auto AllocatorPtr>
         requires(AllocatorPtr->template canAllocate<Frame>())

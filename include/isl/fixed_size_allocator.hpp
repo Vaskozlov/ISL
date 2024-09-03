@@ -137,11 +137,11 @@ namespace isl
     };
 
     template<typename... Ts>
-    constexpr inline auto MaxObjectSizeOf =
+    constexpr inline auto ObjectsMaxSize =
         std::max({sizeof(std::conditional_t<std::is_abstract_v<Ts>, std::size_t, Ts>)...});
 
     template<typename... Ts>
-    constexpr inline auto MaxObjectsAlignmentOf = std::max({alignof(Ts)...});
+    constexpr inline auto ObjectsMaxAlignment = std::max({alignof(Ts)...});
 }// namespace isl
 
 #endif /* ISL_PROJECT_FIXED_SIZE_ALLOCATOR_HPP */

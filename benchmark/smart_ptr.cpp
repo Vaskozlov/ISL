@@ -11,8 +11,8 @@ using FrameForSharedPtr = isl::SharedPtrFrameFor<std::string, std::size_t, S>;
 
 // NOLINTNEXTLINE
 static auto PublicUniqueAllocator = isl::FixedSizeAllocator<
-    isl::MaxObjectSizeOf<std::string, std::size_t, S>,
-    isl::MaxObjectsAlignmentOf<std::string, std::size_t, S>>{};
+    isl::ObjectsMaxSize<std::string, std::size_t, S>,
+    isl::ObjectsMaxAlignment<std::string, std::size_t, S>>{};
 
 // NOLINTNEXTLINE
 static auto PublicSharedAllocator =
