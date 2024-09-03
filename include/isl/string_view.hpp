@@ -122,9 +122,9 @@ namespace isl
         }
 
         ISL_DECL auto
-            substr(std::size_t first, const std::size_t length) const noexcept -> BasicStringView
+            substr(std::size_t first, const std::size_t len) const noexcept -> BasicStringView
         {
-            auto last = first + length;
+            auto last = first + len;
 
             last = std::min(size(), last);
             first = std::min(size(), first);
