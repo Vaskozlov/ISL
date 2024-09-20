@@ -322,8 +322,8 @@ namespace isl
                 const auto left_chr = at(i);
                 const auto right_chr = other.at(i);
 
-                if (left_chr != right_chr) {
-                    return left_chr <=> right_chr;
+                if (auto cmp = left_chr <=> right_chr; cmp != 0) {
+                    return cmp;
                 }
             }
 
