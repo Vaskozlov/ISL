@@ -12,7 +12,7 @@ namespace isl::lifetime
 
     namespace detail
     {
-        class LifetimeObject
+        class LifetimeObject final
         {
         private:
             friend LifetimeMonitor;

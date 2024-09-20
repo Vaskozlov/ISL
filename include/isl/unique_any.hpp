@@ -7,7 +7,7 @@
 
 namespace isl
 {
-    ISL_EXCEPTION(bad_unique_any_cast, std::runtime_error, runtime_error);
+    ISL_EXCEPTION(bad_unique_any_cast final, std::runtime_error, runtime_error);
 
     namespace detail
     {
