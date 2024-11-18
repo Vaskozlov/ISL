@@ -128,14 +128,17 @@ namespace isl
         }
     };
 
-    template<typename Task>
-    class TaskPromiseBase
+
+    template<>
+    class Task<>::promise_type
     {
-    protected:
+    private:
         Job job{
-            .handle =
-                Task::coro_handle::from_promise(static_cast<typename Task::promise_type &>(*this))};
+            .handle = coro_handle::from_promise(static_cast<promise_type &>(*this)),
+        };
+
         std::exception_ptr exceptionPtr{nullptr};
+        bool hasCompleted{};
 
     public:
         [[nodiscard]] auto get_return_object() -> Task
@@ -173,17 +176,7 @@ namespace isl
         {
             return std::addressof(job);
         }
-    };
 
-    template<>
-    class Task<>::promise_type : public TaskPromiseBase<Task>
-    {
-    private:
-        using TaskPromiseBase::get_exception;
-
-        bool hasCompleted{};
-
-    public:
         auto return_void() noexcept -> void
         {
             hasCompleted = true;
@@ -207,14 +200,53 @@ namespace isl
     };
 
     template<typename T>
-    class Task<T>::promise_type : public TaskPromiseBase<Task>
+    class Task<T>::promise_type
     {
     private:
-        using TaskPromiseBase<Task>::get_exception;
+        Job job{
+            .handle = coro_handle::from_promise(static_cast<promise_type &>(*this)),
+        };
 
+        std::exception_ptr exceptionPtr{nullptr};
         std::optional<T> value{std::nullopt};
 
     public:
+        [[nodiscard]] auto get_return_object() -> Task
+        {
+            return Task{
+                Task::coro_handle::from_promise(static_cast<typename Task::promise_type &>(*this))};
+        }
+
+        [[nodiscard]] auto initial_suspend() const noexcept -> coro::suspend_always
+        {
+            return coro::suspend_always{};
+        }
+
+        [[nodiscard]] auto final_suspend() const noexcept -> coro::suspend_always
+        {
+            return coro::suspend_always{};
+        }
+
+        [[nodiscard]] auto get_exception() const noexcept -> std::exception_ptr
+        {
+            return exceptionPtr;
+        }
+
+        auto unhandled_exception() -> void
+        {
+            exceptionPtr = std::current_exception();
+        }
+
+        [[nodiscard]] auto get_job_ptr() noexcept ISL_LIFETIMEBOUND -> Job *
+        {
+            return std::addressof(job);
+        }
+
+        [[nodiscard]] auto get_job_ptr() const noexcept ISL_LIFETIMEBOUND -> const Job *
+        {
+            return std::addressof(job);
+        }
+
         auto return_value(T new_value) noexcept -> void
         {
             value = std::move(new_value);

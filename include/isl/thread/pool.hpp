@@ -25,7 +25,7 @@ namespace isl::thread
             std::atomic<bool> runFlag;
 
             template<typename... Ts>
-            explicit ThreadInfo(bool flag_value, Ts &&...args)
+            explicit ThreadInfo(const bool flag_value, Ts &&...args)
               : thread{std::forward<Ts>(args)...}
               , runFlag{flag_value}
             {}
