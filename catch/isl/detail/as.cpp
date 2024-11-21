@@ -47,16 +47,16 @@ TEST_CASE("TestAsOnReferences", "[AsConversion]")
 {
     using namespace isl;
 
-    constexpr static auto b = B{};
+    auto b = B{};
 
-    constexpr auto &a = as<const A &>(b);
+    auto &a = as<const A &>(b);
     static_assert(std::same_as<decltype(a), const A &>);
 
     const auto &b_from_a = as<const B &>(a);
     static_assert(std::same_as<decltype(b_from_a), const B &>);
 
-    STATIC_REQUIRE(a.getId() == 20);
-    STATIC_REQUIRE(b_from_a.getId() == 20);
+    REQUIRE(a.getId() == 20);
+    REQUIRE(b_from_a.getId() == 20);
 }
 
 // NOLINTEND
