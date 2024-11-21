@@ -141,10 +141,9 @@ namespace isl
         bool hasCompleted{};
 
     public:
-        [[nodiscard]] auto get_return_object() -> Task
+        [[nodiscard]] auto get_return_object() -> Task<>
         {
-            return Task{
-                Task::coro_handle::from_promise(static_cast<typename Task::promise_type &>(*this))};
+            return Task{coro_handle::from_promise(*this)};
         }
 
         [[nodiscard]] auto initial_suspend() const noexcept -> coro::suspend_always
@@ -213,8 +212,7 @@ namespace isl
     public:
         [[nodiscard]] auto get_return_object() -> Task
         {
-            return Task{
-                Task::coro_handle::from_promise(static_cast<typename Task::promise_type &>(*this))};
+            return Task{coro_handle::from_promise(static_cast<promise_type &>(*this))};
         }
 
         [[nodiscard]] auto initial_suspend() const noexcept -> coro::suspend_always
