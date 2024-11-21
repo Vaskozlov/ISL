@@ -20,10 +20,10 @@ namespace isl
 
         struct AllocationBlock
         {
-            std::array<ObjectFrame, BlockSize> storage;
+            ObjectFrame storage[BlockSize];
             AllocationBlock *next;
 
-            auto init() -> void
+            AllocationBlock()
             {
                 next = nullptr;
 
@@ -41,7 +41,7 @@ namespace isl
 
     public:
         FixedSizeAllocator()
-          : head{allocateNewBlock()}
+          : head{new AllocationBlock()}
           , freeObject{&head->storage[0]}
         {}
 
@@ -55,7 +55,7 @@ namespace isl
         ~FixedSizeAllocator()
         {
             while (head != nullptr) {
-                deallocateBlock(std::exchange(head, head->next));
+                ::delete std::exchange(head, head->next);
             }
         }
 
@@ -97,7 +97,7 @@ namespace isl
         [[nodiscard]] auto allocate() -> void *
         {
             if (freeObject == nullptr) {
-                auto *new_block = allocateNewBlock();
+                auto *new_block = ::new AllocationBlock();
                 freeObject = &new_block->storage[0];
                 new_block->next = std::exchange(head, new_block);
             }
@@ -118,21 +118,9 @@ namespace isl
         }
 
     private:
-        [[nodiscard]] auto allocateNewBlock() -> AllocationBlock *
+        static auto deallocateBlock(const AllocationBlock *block) -> void
         {
-            auto *new_block = static_cast<AllocationBlock *>(::operator new(
-                sizeof(AllocationBlock), std::align_val_t{alignof(AllocationBlock)}));
-
-            new_block->init();
-
-            return new_block;
-        }
-
-        static auto deallocateBlock(AllocationBlock *block) -> void
-        {
-            ::operator delete(
-                block, sizeof(AllocationBlock),
-                static_cast<std::align_val_t>(alignof(AllocationBlock)));
+            ::delete block;
         }
     };
 
