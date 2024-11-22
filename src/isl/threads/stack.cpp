@@ -16,14 +16,12 @@ namespace isl::thread::lock_free
 
     auto Stack::pop() noexcept -> StackNode *
     {
-        StackNode *old_head = nullptr;
+        StackNode *old_head = top.load(std::memory_order_relaxed);
 
-        do {
-            old_head = top.load(std::memory_order_relaxed);
-        } while (
+        while (
             old_head != nullptr &&
             !top.compare_exchange_weak(
-                old_head, old_head->next, std::memory_order_release, std::memory_order_relaxed));
+                old_head, old_head->next, std::memory_order_release, std::memory_order_relaxed)) {}
 
         if (old_head != nullptr) {
             currentSize.fetch_sub(1, std::memory_order_release);
