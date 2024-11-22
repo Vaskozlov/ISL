@@ -14,7 +14,7 @@ namespace isl
 
         struct ObjectFrame
         {
-            alignas(Align) std::array<char, MaxObjectSize> object;
+            alignas(Align) std::byte object[MaxObjectSize];
             ObjectFrame *next;
         };
 
@@ -114,7 +114,7 @@ namespace isl
         template<typename T>
         ISL_DECL static auto canAllocate() noexcept -> bool
         {
-            return sizeof(T) <= MaxObjectSize && alignof(T) <= Align;
+            return std::is_abstract_v<T> || (sizeof(T) <= MaxObjectSize && alignof(T) <= Align);
         }
 
     private:

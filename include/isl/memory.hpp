@@ -67,8 +67,8 @@ namespace isl
 
         [[nodiscard]] auto operator==(const UniquePtr &other) const noexcept -> bool = default;
 
-        [[nodiscard]] auto
-            operator<=>(const UniquePtr &other) const noexcept -> std::weak_ordering = default;
+        [[nodiscard]] auto operator<=>(const UniquePtr &other) const noexcept
+            -> std::weak_ordering = default;
 
         [[nodiscard]] auto operator*() -> T &
         {
@@ -131,7 +131,7 @@ namespace isl
     struct SharedPtrFrame
     {
         mutable std::atomic<std::size_t> refCount{1};
-        alignas(ObjectAlign) std::array<std::byte, MaxObjectSize> objectBuffer;
+        alignas(ObjectAlign) std::byte objectBuffer[MaxObjectSize];
 
         template<typename T>
         ISL_DECL static auto canStore() noexcept -> bool
@@ -290,8 +290,8 @@ namespace isl
 
         [[nodiscard]] auto operator==(const SharedPtr &other) const noexcept -> bool = default;
 
-        [[nodiscard]] auto
-            operator<=>(const SharedPtr &other) const noexcept -> std::weak_ordering = default;
+        [[nodiscard]] auto operator<=>(const SharedPtr &other) const noexcept
+            -> std::weak_ordering = default;
 
         template<typename U>
         ISL_DECL static auto canStore() noexcept -> bool

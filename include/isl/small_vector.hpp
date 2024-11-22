@@ -10,8 +10,8 @@ namespace isl
     {
     private:
         union {
-            T *largeStorage{nullptr};
-            T smallStorage[N];
+            T *largeStorage = nullptr;
+            std::array<T, N> smallStorage;
         };
         u32 vectorSize{};
         u32 vectorCapacity{N};
