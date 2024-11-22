@@ -32,9 +32,9 @@ endif ()
 
 target_link_libraries(
         isl
-        PUBLIC
+        PRIVATE
         Threads::Threads
-        fmt::fmt-header-only
+        fmt::fmt
         unordered_dense::unordered_dense
 )
 

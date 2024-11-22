@@ -31,8 +31,9 @@ isl_set_target_flags(
 
 target_link_libraries(
         isl-catch
+        PRIVATE
         isl
-        fmt::fmt-header-only
+        fmt::fmt
         Catch2::Catch2WithMain
 )
 

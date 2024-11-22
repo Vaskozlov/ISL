@@ -21,18 +21,12 @@ isl_set_target_flags(
         ${ISL_UNITY_BUILD}
 )
 
-add_dependencies(
-        isl-bench
-        isl
-        benchmark
-        fmt::fmt
-)
-
 target_link_libraries(
         isl-bench
+        PRIVATE
         benchmark
         isl
-        fmt::fmt-header-only
+        fmt::fmt
 )
 
 target_include_directories(isl-bench
