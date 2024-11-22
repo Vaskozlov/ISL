@@ -118,3 +118,16 @@ static void islSharedPtrMove(benchmark::State &state)
 }
 
 BENCHMARK(islSharedPtrMove);
+
+static void stdSharedPtrMove(benchmark::State &state)
+{
+    for (auto _ : state) {
+        auto ptr = std::make_shared<std::string>("Hello, World!");
+        benchmark::DoNotOptimize(ptr);
+
+        auto moved = std::move(ptr);
+        benchmark::DoNotOptimize(moved);
+    }
+}
+
+BENCHMARK(stdSharedPtrMove);
