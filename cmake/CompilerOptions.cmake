@@ -78,10 +78,10 @@ function(
                 /w14254 # 'operator': conversion from 'type1:field_bits' to 'type2:field_bits', possible loss of data
                 /w14263 # 'function': member function does not override any base class virtual member function
                 /w14265 # 'classname': class has virtual functions, but destructor is not virtual instances of this class may not
-#be destructed correctly
+                #be destructed correctly
                 /w14287 # 'operator': unsigned/negative constant mismatch
                 /we4289 # nonstandard extension used: 'variable': loop control variable declared in the for-loop is used outside
-#the for - loop scope
+                #the for - loop scope
                 /w14296 # 'operator': expression is always 'boolean_value'
                 /w14311 # 'variable': pointer truncation from 'type1' to 'type2'
                 /w14545 # expression before comma evaluates to a function which is missing an argument list
@@ -125,14 +125,19 @@ function(
         )
 
         if (ISL_ADDRESS_SANITIZER)
-            target_link_options(${project_name} INTERFACE -fsanitize=address,undefined,leak)
-            list(APPEND CLANG_WARNINGS -fsanitize=address,undefined,leak)
-        endif()
+            if (NOT APPLE)
+                target_link_options(${project_name} INTERFACE -fsanitize=leak)
+                list(APPEND CLANG_WARNINGS -fsanitize=leak)
+            endif ()
+
+            target_link_options(${project_name} INTERFACE -fsanitize=address,undefined)
+            list(APPEND CLANG_WARNINGS -fsanitize=address,undefined)
+        endif ()
 
         if (ISL_THREAD_SANITIZER)
             target_link_options(${project_name} INTERFACE -fsanitize=thread)
             list(APPEND CLANG_WARNINGS -fsanitize=thread)
-        endif()
+        endif ()
     endif ()
 
     if ("${GCC_WARNINGS}" STREQUAL "")
@@ -178,7 +183,7 @@ function(
         message(AUTHOR_WARNING "No compiler warnings set for CXX compiler: '${CMAKE_CXX_COMPILER_ID}'")
     endif ()
 
-#use the same warning flags for C
+    #use the same warning flags for C
     set(PROJECT_WARNINGS_C "${PROJECT_WARNINGS_CXX}")
 
     set(PROJECT_WARNINGS_CUDA "${CUDA_WARNINGS}")
@@ -187,9 +192,9 @@ function(
             ${project_name}
             INTERFACE # C++ warnings
             $<$<COMPILE_LANGUAGE:CXX>:${PROJECT_WARNINGS_CXX}>
-#C warnings
+            #C warnings
             $<$<COMPILE_LANGUAGE:C>:${PROJECT_WARNINGS_C}>
-#Cuda warnings
+            #Cuda warnings
             $<$<COMPILE_LANGUAGE:CUDA>:${PROJECT_WARNINGS_CUDA}>)
 
     add_compile_options(${PROJECT_WARNINGS_CXX})

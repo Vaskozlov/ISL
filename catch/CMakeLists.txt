@@ -33,7 +33,7 @@ target_link_libraries(
         isl-catch
         PRIVATE
         isl
-        fmt::fmt
+        fmt::fmt-header-only
         Catch2::Catch2WithMain
 )
 

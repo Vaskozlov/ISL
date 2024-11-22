@@ -26,7 +26,7 @@ target_link_libraries(
         PRIVATE
         benchmark
         isl
-        fmt::fmt
+        fmt::fmt-header-only
 )
 
 target_include_directories(isl-bench

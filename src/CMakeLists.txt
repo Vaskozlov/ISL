@@ -34,7 +34,7 @@ target_link_libraries(
         isl
         PRIVATE
         Threads::Threads
-        fmt::fmt
+        fmt::fmt-header-only
 )
 
 target_link_libraries(
