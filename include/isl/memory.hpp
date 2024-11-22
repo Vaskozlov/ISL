@@ -271,7 +271,7 @@ namespace isl
         }
 
         template<typename U = T>
-        requires(std::convertible_to<U *, T *>)
+            requires(std::convertible_to<U *, T *>)
         auto operator=(const SharedPtr<U, Frame, AllocatorPtr> &other) -> SharedPtr &
         {
             if (static_cast<const void *>(this) != static_cast<const void *>(&other)) {
@@ -367,6 +367,14 @@ namespace isl
         [[nodiscard]] auto releaseFrame() noexcept -> Frame *
         {
             return std::exchange(frame, nullptr);
+        }
+
+        template<typename U>
+        auto updateDeleter() -> void
+        {
+            frame->deleter = [](void *ptr) {
+                std::destroy_at(static_cast<U *>(ptr));
+            };
         }
 
     private:
