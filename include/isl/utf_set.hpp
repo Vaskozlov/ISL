@@ -38,6 +38,7 @@ namespace isl
         [[nodiscard]] auto at(char32_t chr) const noexcept -> bool;
 
         auto set(char32_t chr, bool value = true) -> void;
+        
         auto set(Range<char32_t> range, bool value = true) -> void;
 
     private:
