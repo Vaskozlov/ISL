@@ -35,6 +35,11 @@ target_link_libraries(
         PRIVATE
         Threads::Threads
         fmt::fmt
+)
+
+target_link_libraries(
+        isl
+        PUBLIC
         unordered_dense::unordered_dense
 )
 

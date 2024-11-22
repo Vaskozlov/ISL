@@ -34,7 +34,6 @@ if (ISL_INCLUDE_BENCHMARK)
     )
 
     if (benchmark_ADDED)
-        # patch benchmark target
         set_target_properties(benchmark PROPERTIES CXX_STANDARD 23)
     endif ()
 endif ()

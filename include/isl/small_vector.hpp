@@ -5,12 +5,12 @@
 
 namespace isl
 {
-    template<typename T, std::size_t N, typename Allocator = std::allocator<T>>
+    template<typename T, u32 N, typename Allocator = std::allocator<T>>
     class SmallVector
     {
     private:
         union {
-            T *largeStorage{};
+            T *largeStorage{nullptr};
             T smallStorage[N];
         };
         u32 vectorSize{};
