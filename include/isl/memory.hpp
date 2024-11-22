@@ -132,11 +132,16 @@ namespace isl
     {
         mutable std::atomic<std::size_t> refCount{1};
         alignas(ObjectAlign) std::byte objectBuffer[MaxObjectSize];
+        void (*deleter)(void *) = nullptr;
 
         template<typename T>
         ISL_DECL static auto canStore() noexcept -> bool
         {
-            return sizeof(T) <= MaxObjectSize && alignof(T) <= ObjectAlign;
+            if constexpr (std::same_as<T, void>) {
+                return true;
+            } else {
+                return sizeof(T) <= MaxObjectSize && alignof(T) <= ObjectAlign;
+            }
         }
 
         template<typename T>
@@ -181,6 +186,9 @@ namespace isl
         {
             std::construct_at(std::addressof(frame->refCount), 1U);
             std::construct_at(frame->asPtr<T>(), std::forward<Ts>(args)...);
+            frame->deleter = [](void *ptr) {
+                std::destroy_at(static_cast<T *>(ptr));
+            };
         }
     };
 
@@ -231,7 +239,8 @@ namespace isl
             Frame::template initialize<T>(frame, std::forward<Ts>(args)...);
         }
 
-        template<std::derived_from<T> U = T>// NOLINTNEXTLINE
+        template<typename U = T>// NOLINTNEXTLINE
+            requires(std::derived_from<T, U> || std::same_as<T, void>)
         SharedPtr(const SharedPtr<U, Frame, AllocatorPtr> &other)
           : frame{other.getFrame()}
         {
@@ -299,14 +308,18 @@ namespace isl
             return Frame::template canStore<U>();
         }
 
-        [[nodiscard]] auto operator*() -> T &
+        template<typename U = T>
+            requires(std::same_as<T, U>)
+        [[nodiscard]] auto operator*() -> U &
         {
-            return *frame->template asPtr<T>();
+            return *frame->template asPtr<U>();
         }
 
-        [[nodiscard]] auto operator*() const -> const T &
+        template<typename U = T>
+            requires(std::same_as<T, U>)
+        [[nodiscard]] auto operator*() const -> const U &
         {
-            return *frame->template asPtr<T>();
+            return *frame->template asPtr<U>();
         }
 
         auto operator->() -> T *
@@ -361,7 +374,7 @@ namespace isl
         auto decreaseRefCount() -> void
         {
             if (frame != nullptr && frame->decreaseRefCount() == 1) {
-                std::destroy_at(frame->template asPtr<T>());
+                frame->deleter(frame->template asPtr<T>());
                 AllocatorPtr->deallocate(static_cast<void *>(frame));
             }
         }

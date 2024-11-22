@@ -71,11 +71,11 @@ BENCHMARK(islSharedPtrConstruct);
 static void stdSharedPtrConstruct(benchmark::State &state)
 {
     for (auto _ : state) {
-        auto pointers = std::array<std::shared_ptr<std::string>, 1024>{};
+        auto pointers = std::array<std::shared_ptr<void>, 1024>{};
 
         for (auto &ptr : pointers) {
             ptr = std::make_shared<std::string>("Hello, World!");
-            benchmark::DoNotOptimize(*ptr);
+            benchmark::DoNotOptimize(ptr.get());
         }
     }
 }
@@ -87,7 +87,7 @@ static void islSharedPtrCopy(benchmark::State &state)
     const auto ptr = SharedPtr<std::string>{"Hello, World!"};
 
     for (auto _ : state) {
-        auto copy = ptr;
+        SharedPtr<void> copy = ptr;
         benchmark::DoNotOptimize(copy);
     }
 }
@@ -99,7 +99,7 @@ static void stdSharedPtrCopy(benchmark::State &state)
     const auto ptr = std::make_shared<std::string>("Hello, World!");
 
     for (auto _ : state) {
-        auto copy = ptr;
+        std::shared_ptr<void> copy = ptr;
         benchmark::DoNotOptimize(copy);
     }
 }
@@ -109,7 +109,7 @@ BENCHMARK(stdSharedPtrCopy);
 static void islSharedPtrMove(benchmark::State &state)
 {
     for (auto _ : state) {
-        auto ptr = SharedPtr<std::string>{"Hello, World!"};
+        SharedPtr<void> ptr = SharedPtr<std::string>{"Hello, World!"};
         benchmark::DoNotOptimize(ptr);
 
         auto moved = std::move(ptr);
@@ -122,7 +122,7 @@ BENCHMARK(islSharedPtrMove);
 static void stdSharedPtrMove(benchmark::State &state)
 {
     for (auto _ : state) {
-        auto ptr = std::make_shared<std::string>("Hello, World!");
+        std::shared_ptr<void> ptr = std::make_shared<std::string>("Hello, World!");
         benchmark::DoNotOptimize(ptr);
 
         auto moved = std::move(ptr);
