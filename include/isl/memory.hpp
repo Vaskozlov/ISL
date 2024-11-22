@@ -144,7 +144,7 @@ namespace isl
         [[nodiscard]] auto asPtr() -> T *
         {
             // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-            return reinterpret_cast<T *>(objectBuffer.data());
+            return reinterpret_cast<T *>(&objectBuffer[0]);
         }
 
         template<typename T>
@@ -152,7 +152,7 @@ namespace isl
         [[nodiscard]] auto asPtr() const -> const T *
         {
             // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-            return reinterpret_cast<T *>(objectBuffer.data());
+            return reinterpret_cast<T *>(&objectBuffer[0]);
         }
 
         ISL_DECL static auto getMaxObjectSize() noexcept -> std::size_t
