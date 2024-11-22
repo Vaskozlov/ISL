@@ -124,8 +124,8 @@
 
 #define ISL_HARDWARE_CACHE_LINE_ALIGN alignas(isl::HardwareDestructiveInterferenceSize)
 #define ISL_HARDWARE_CACHE_LINE_PADDING(T)                                                         \
-    std::array<char, isl::HardwareDestructiveInterferenceSize - sizeof(T)> ISL_FORCE_EXPAND(       \
-        islPadding, __COUNTER__)
+   char ISL_FORCE_EXPAND(       \
+        islPadding, __COUNTER__)[isl::HardwareDestructiveInterferenceSize - sizeof(T)]
 
 namespace isl
 {

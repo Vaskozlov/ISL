@@ -50,18 +50,19 @@ TEST_CASE("LockFreeStack", "[LockFree]")
     created_data.reserve(threads_count);
 
     for (std::size_t i = 0; i != threads_count; ++i) {
-        pushers_threads.emplace_back([&queue, i, &created_data, &latch, &pushers_finished] mutable {
-            auto &nodes = created_data.emplace_back(
-                createVector(i * task_multiplier, (i + 1) * task_multiplier));
+        pushers_threads.emplace_back(
+            [&queue, i, &created_data, &latch, &pushers_finished]() mutable {
+                auto &nodes = created_data.emplace_back(
+                    createVector(i * task_multiplier, (i + 1) * task_multiplier));
 
-            latch.arrive_and_wait();
+                latch.arrive_and_wait();
 
-            for (auto &node : nodes) {
-                queue.push(&node);
-            }
+                for (auto &node : nodes) {
+                    queue.push(&node);
+                }
 
-            pushers_finished.fetch_add(1, std::memory_order_release);
-        });
+                pushers_finished.fetch_add(1, std::memory_order_release);
+            });
 
 
         poppers_threads.emplace_back([&queue, &popped_value, &popped_values_lock, &latch,
