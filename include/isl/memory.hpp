@@ -34,7 +34,8 @@ namespace isl
           : ptr{other.release()}
         {}
 
-        template<std::convertible_to<T> U = T>// NOLINTNEXTLINE
+        template<typename U = T>// NOLINTNEXTLINE
+            requires(std::convertible_to<U *, T *>)
         UniquePtr(UniquePtr<U, AllocatorPtr> &&other) noexcept
           : ptr{other.release()}
         {}
@@ -46,7 +47,8 @@ namespace isl
 
         auto operator=(const UniquePtr &other) -> UniquePtr & = delete;
 
-        template<std::convertible_to<T> U = T>
+        template<typename U = T>
+            requires(std::convertible_to<U *, T *>)
         auto operator=(UniquePtr<U, AllocatorPtr> &&other) noexcept -> UniquePtr &
         {
             destroyStoredObject();
@@ -240,7 +242,7 @@ namespace isl
         }
 
         template<typename U = T>// NOLINTNEXTLINE
-            requires(std::convertible_to<T, U> || std::same_as<T, void>)
+            requires(std::convertible_to<U *, T *>)
         SharedPtr(const SharedPtr<U, Frame, AllocatorPtr> &other)
           : frame{other.getFrame()}
         {
@@ -253,7 +255,8 @@ namespace isl
             increaseRefCount();
         }
 
-        template<std::convertible_to<T> U = T>// NOLINTNEXTLINE
+        template<typename U = T>// NOLINTNEXTLINE
+            requires(std::convertible_to<U *, T *>)
         SharedPtr(SharedPtr<U, Frame, AllocatorPtr> &&other) noexcept
           : frame{other.releaseFrame()}
         {}
@@ -267,7 +270,8 @@ namespace isl
             decreaseRefCount();
         }
 
-        template<std::convertible_to<T> U = T>
+        template<typename U = T>
+        requires(std::convertible_to<U *, T *>)
         auto operator=(const SharedPtr<U, Frame, AllocatorPtr> &other) -> SharedPtr &
         {
             if (static_cast<const void *>(this) != static_cast<const void *>(&other)) {
