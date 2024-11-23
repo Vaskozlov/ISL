@@ -377,6 +377,14 @@ namespace isl
             };
         }
 
+        template<typename U>
+            requires(canStore<U>())
+        auto inMemoryCastTo(std::invocable<void *> auto &&function) -> void
+        {
+            function(frame->template asPtr<U>());
+            updateDeleter<U>();
+        }
+
     private:
         auto increaseRefCount() const -> void
         {
