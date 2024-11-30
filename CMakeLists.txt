@@ -64,5 +64,4 @@ install(FILES cmake/CompilerOptions.cmake
 
 export(EXPORT islTargets
         FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/islTargets.cmake"
-        NAMESPACE isl::
 )
