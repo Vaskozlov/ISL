@@ -64,9 +64,9 @@ namespace isl
             requires std::invocable<F, Args...>
         // NOLINTNEXTLINE (cppcoreguidelines-pro-type-member-init)
         ISL_DECL explicit SmallFunction(F &&function)
-            requires(sizeof(Invoker<F>) <= sizeof(smallStorage))
+            requires(sizeof(Invoker<std::remove_cvref_t<F>>) <= sizeof(smallStorage))
         {
-            new (smallStorage) Invoker<F>{std::forward<F>(function)};
+            new (smallStorage) Invoker<std::remove_cvref_t<F>>{std::forward<F>(function)};
         }
 
         // NOLINTNEXTLINE (cppcoreguidelines-pro-type-member-init)

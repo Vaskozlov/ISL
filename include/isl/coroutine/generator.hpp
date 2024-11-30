@@ -236,8 +236,8 @@ namespace isl
             return promise.getValue();
         }
 
-        [[nodiscard]] auto
-            operator==([[maybe_unused]] std::default_sentinel_t _) const noexcept -> bool
+        [[nodiscard]] auto operator==([[maybe_unused]] std::default_sentinel_t _) const noexcept
+            -> bool
         {
             const auto &promise = generatorPtr->getPromise();
             return promise.getValuePtr() == nullptr;
