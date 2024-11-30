@@ -11,6 +11,7 @@ include(cmake/Libraries.cmake)
 include(cmake/InterproceduralOptimization.cmake)
 include(cmake/ProjectOptions.cmake)
 include(cmake/CompilerOptions.cmake)
+
 include(src/CMakeLists.txt)
 
 if (ISL_INCLUDE_BENCHMARK)
@@ -57,6 +58,9 @@ install(FILES
         "${CMAKE_CURRENT_BINARY_DIR}/islConfigVersion.cmake"
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/isl
 )
+
+install(FILES cmake/CompilerOptions.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/isl/cmake)
 
 export(EXPORT islTargets
         FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/islTargets.cmake"
