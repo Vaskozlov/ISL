@@ -1,7 +1,7 @@
 #ifndef ISL_PROJECT_MEMORY_HPP
 #define ISL_PROJECT_MEMORY_HPP
 
-#include <isl/fixed_size_allocator.hpp>
+#include <isl/pool_allocator.hpp>
 #include <memory>
 
 namespace isl
@@ -34,8 +34,8 @@ namespace isl
           : ptr{other.release()}
         {}
 
-        template<typename U = T>// NOLINTNEXTLINE
-            requires(std::convertible_to<U *, T *>)
+        template<typename U = T>
+            requires(std::convertible_to<U *, T *>) // NOLINTNEXTLINE
         UniquePtr(UniquePtr<U, AllocatorPtr> &&other) noexcept
           : ptr{other.release()}
         {}
@@ -129,11 +129,11 @@ namespace isl
         }
     };
 
-    template<std::size_t MaxObjectSize, std::size_t ObjectAlign>
+    template<std::size_t Capacity, std::size_t Alignment>
     struct SharedPtrFrame
     {
         mutable std::atomic<std::size_t> refCount{1};
-        alignas(ObjectAlign) std::byte objectBuffer[MaxObjectSize];
+        alignas(Alignment) std::byte objectBuffer[Capacity];
         void (*deleter)(void *) = nullptr;
 
         template<typename T>
@@ -142,7 +142,7 @@ namespace isl
             if constexpr (std::same_as<T, void>) {
                 return true;
             } else {
-                return sizeof(T) <= MaxObjectSize && alignof(T) <= ObjectAlign;
+                return sizeof(T) <= Capacity && alignof(T) <= Alignment;
             }
         }
 
@@ -151,7 +151,7 @@ namespace isl
         [[nodiscard]] auto asPtr() -> T *
         {
             // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-            return reinterpret_cast<T *>(&objectBuffer[0]);
+            return reinterpret_cast<T *>(std::addressof(objectBuffer[0]));
         }
 
         template<typename T>
@@ -159,17 +159,17 @@ namespace isl
         [[nodiscard]] auto asPtr() const -> const T *
         {
             // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-            return reinterpret_cast<T *>(&objectBuffer[0]);
+            return reinterpret_cast<T *>(std::addressof(objectBuffer[0]));
         }
 
-        ISL_DECL static auto getMaxObjectSize() noexcept -> std::size_t
+        ISL_DECL static auto getCapacity() noexcept -> std::size_t
         {
-            return MaxObjectSize;
+            return Capacity;
         }
 
-        ISL_DECL static auto getObjectAlignment() noexcept -> std::size_t
+        ISL_DECL static auto getAlignment() noexcept -> std::size_t
         {
-            return ObjectAlign;
+            return Alignment;
         }
 
         auto increaseRefCount() const -> std::size_t
@@ -188,6 +188,7 @@ namespace isl
         {
             std::construct_at(std::addressof(frame->refCount), 1U);
             std::construct_at(frame->asPtr<T>(), std::forward<Ts>(args)...);
+
             frame->deleter = [](void *ptr) {
                 std::destroy_at(static_cast<T *>(ptr));
             };
@@ -241,8 +242,8 @@ namespace isl
             Frame::template initialize<T>(frame, std::forward<Ts>(args)...);
         }
 
-        template<typename U = T>// NOLINTNEXTLINE
-            requires(std::convertible_to<U *, T *>)
+        template<typename U = T>
+            requires(std::convertible_to<U *, T *>)// NOLINTNEXTLINE
         SharedPtr(const SharedPtr<U, Frame, AllocatorPtr> &other)
           : frame{other.getFrame()}
         {
@@ -274,7 +275,8 @@ namespace isl
             requires(std::convertible_to<U *, T *>)
         auto operator=(const SharedPtr<U, Frame, AllocatorPtr> &other) -> SharedPtr &
         {
-            if (static_cast<const void *>(this) != static_cast<const void *>(&other)) {
+            if (static_cast<const void *>(this) !=
+                static_cast<const void *>(std::addressof(other))) {
                 decreaseRefCount();
                 frame = other.getFrame();
                 increaseRefCount();
@@ -379,9 +381,9 @@ namespace isl
 
         template<typename U>
             requires(canStore<U>())
-        auto inMemoryCastTo(std::invocable<void *> auto &&function) -> void
+        auto inMemoryCastTo(std::invocable<void *> auto &&cast_function) -> void
         {
-            function(frame->template asPtr<U>());
+            cast_function(frame->template asPtr<U>());
             updateDeleter<U>();
         }
 

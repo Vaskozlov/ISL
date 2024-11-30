@@ -17,8 +17,8 @@ namespace isl::lifetime
         private:
             friend LifetimeMonitor;
 
-            static IdGenerator<> LifetimeObjectIdGenerator;// NOLINT
-            static std::mutex ObjectCreationLock;          // NOLINT
+            static IdGenerator<Id> LifetimeObjectIdGenerator;// NOLINT
+            static std::mutex ObjectCreationLock;            // NOLINT
 
             Id uniqueId{LifetimeObjectIdGenerator.next()};
             Id weakId{uniqueId};

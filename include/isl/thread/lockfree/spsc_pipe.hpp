@@ -1,7 +1,6 @@
 #ifndef ISL_PROJECT_SPSC_PIPE_HPP
 #define ISL_PROJECT_SPSC_PIPE_HPP
 
-#include <array>
 #include <atomic>
 #include <isl/isl.hpp>
 

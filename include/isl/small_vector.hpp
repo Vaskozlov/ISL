@@ -44,7 +44,7 @@ namespace isl
           : vectorSize{other.vectorSize}
           , allocator{other.allocator}
         {
-            auto *buffer = std::add_pointer_t<T>{};
+            T *buffer = nullptr;
 
             if (vectorSize <= N) {
                 vectorCapacity = N;
@@ -92,8 +92,8 @@ namespace isl
 
         ~SmallVector()
         {
-            auto [buffer, is_small] = dataWithBufferInfo();
-            cleanBuffer(buffer, buffer + vectorSize, is_small);
+            auto [buffer, is_internal] = dataWithBufferInfo();
+            cleanBuffer(buffer, buffer + vectorSize, is_internal);
         }
 
         auto operator=(const SmallVector &other) -> SmallVector &
@@ -321,7 +321,7 @@ namespace isl
             requires(std::constructible_from<T, Ts...>)
         auto emplace_back(Ts &&...args) -> T &
         {
-            auto *buffer = std::add_pointer_t<T>{};
+            T *buffer = nullptr;
 
             if (vectorSize == vectorCapacity) {
                 reserveNoCheck(vectorCapacity * 2);
@@ -330,9 +330,10 @@ namespace isl
                 buffer = data();
             }
 
-            auto *construction_place = buffer + vectorSize;
+            T *construction_place = buffer + vectorSize;
             std::construct_at(construction_place, std::forward<Ts>(args)...);
-            vectorSize += 1;
+
+            ++vectorSize;
 
             return *construction_place;
         }
@@ -343,10 +344,7 @@ namespace isl
                 return;
             }
 
-            vectorSize -= 1;
-
-            auto *element = data() + vectorSize;
-            std::destroy_at(element);
+            std::destroy_at(data() + --vectorSize);
         }
 
         auto reserve(const u32 new_capacity) -> void
@@ -422,11 +420,11 @@ namespace isl
         }
 
     private:
-        auto cleanBuffer(T *buffer_begin, T *buffer_end, bool is_small) -> void
+        auto cleanBuffer(T *buffer_begin, T *buffer_end, const bool is_internal) -> void
         {
             std::ranges::destroy(buffer_begin, buffer_end);
 
-            if (!is_small) {
+            if (!is_internal) {
                 std::allocator_traits<Allocator>::deallocate(
                     allocator, buffer_begin, vectorCapacity);
             }
@@ -435,29 +433,26 @@ namespace isl
         auto reserveNoCheck(const u32 new_capacity) -> void
         {
             auto *new_memory = std::allocator_traits<Allocator>::allocate(allocator, new_capacity);
-            auto [buffer, is_small] = dataWithBufferInfo();
+            auto [buffer, is_internal] = dataWithBufferInfo();
 
-            auto *buffer_it = buffer;
-            auto *buffer_end = buffer + vectorSize;
-            auto *new_memory_copy = new_memory;
+            T *buffer_end = buffer + vectorSize;
+            T *new_memory_copy = new_memory;
 
-            while (buffer_it != buffer_end) {
+            for (T *buffer_it = buffer; buffer_it != buffer_end; ++buffer_it, ++new_memory_copy) {
                 std::construct_at(new_memory_copy, std::move(*buffer_it));
-                ++buffer_it;
-                ++new_memory_copy;
             }
 
-            cleanBuffer(buffer, buffer_end, is_small);
+            cleanBuffer(buffer, buffer_end, is_internal);
             largeStorage = new_memory;
             vectorCapacity = new_capacity;
         }
 
-        auto dataWithBufferInfo() -> std::pair<T *, bool>
+        auto dataWithBufferInfo() -> detail::TrivialPair<T *, bool>
         {
-            const auto is_small = vectorCapacity <= N;
-            auto *buffer_ptr = is_small ? std::addressof(smallStorage[0]) : largeStorage;
+            const auto is_internal = vectorCapacity <= N;
+            T *buffer_ptr = is_internal ? std::addressof(smallStorage[0]) : largeStorage;
 
-            return {buffer_ptr, is_small};
+            return {buffer_ptr, is_internal};
         }
     };
 }// namespace isl

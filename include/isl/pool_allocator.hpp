@@ -1,5 +1,5 @@
-#ifndef ISL_PROJECT_FIXED_SIZE_ALLOCATOR_HPP
-#define ISL_PROJECT_FIXED_SIZE_ALLOCATOR_HPP
+#ifndef ISL_PROJECT_POOL_ALLOCATOR_HPP
+#define ISL_PROJECT_POOL_ALLOCATOR_HPP
 
 #include <isl/isl.hpp>
 
@@ -7,7 +7,7 @@ namespace isl
 {
     template<std::size_t MaxObjectSize, std::size_t Align, std::size_t BlockSize = 128>
         requires(BlockSize % 16 == 0)
-    class FixedSizeAllocator
+    class PoolAllocator
     {
     private:
         struct AllocationBlock;
@@ -40,28 +40,28 @@ namespace isl
         ObjectFrame *freeObject{};
 
     public:
-        FixedSizeAllocator()
+        PoolAllocator()
           : head{new AllocationBlock()}
           , freeObject{&head->storage[0]}
         {}
 
-        FixedSizeAllocator(const FixedSizeAllocator &) = delete;
+        PoolAllocator(const PoolAllocator &) = delete;
 
-        FixedSizeAllocator(FixedSizeAllocator &&other) noexcept
+        PoolAllocator(PoolAllocator &&other) noexcept
           : head{std::exchange(other.head, nullptr)}
           , freeObject{std::exchange(other.freeObject, nullptr)}
         {}
 
-        ~FixedSizeAllocator()
+        ~PoolAllocator()
         {
             while (head != nullptr) {
                 ::delete std::exchange(head, head->next);
             }
         }
 
-        auto operator=(const FixedSizeAllocator &other) -> FixedSizeAllocator & = delete;
+        auto operator=(const PoolAllocator &other) -> PoolAllocator & = delete;
 
-        auto operator=(FixedSizeAllocator &&other) noexcept -> FixedSizeAllocator &
+        auto operator=(PoolAllocator &&other) noexcept -> PoolAllocator &
         {
             std::swap(head, other.head);
             std::swap(freeObject, other.freeObject);
@@ -132,4 +132,4 @@ namespace isl
     constexpr inline auto ObjectsMaxAlignment = std::max({alignof(Ts)...});
 }// namespace isl
 
-#endif /* ISL_PROJECT_FIXED_SIZE_ALLOCATOR_HPP */
+#endif /* ISL_PROJECT_POOL_ALLOCATOR_HPP */

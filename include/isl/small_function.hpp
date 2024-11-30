@@ -37,7 +37,7 @@ namespace isl
         {
             mutable T function;
 
-            explicit Invoker(T function)
+            explicit constexpr Invoker(T function)
               : function{std::move(function)}
             {}
 
@@ -110,8 +110,11 @@ namespace isl
             return *this;
         }
 
-        template<typename... InvokeArgs>
+        template<typename... InvokeArgs>// NOLINTNEXTLINE (cppcoreguidelines-missing-std-forward)
         ISL_DECL auto operator()(InvokeArgs &&...args) const -> Ret
+            requires(
+                sizeof...(InvokeArgs) == sizeof...(Args) &&
+                std::invocable<Ret(Args...), decltype(static_cast<Args>(args))...>)
         {
             return getInvokerBase()->invoke(static_cast<Args>(args)...);
         }

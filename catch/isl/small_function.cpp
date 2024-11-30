@@ -56,9 +56,9 @@ TEST_CASE("SmallFunctionWithDifferentReturnType", "[SmallFunction]")
 
 TEST_CASE("SmallFunctionWithComplexCapture", "[SmallFunction]")
 {
-    const isl::SmallFunction<int(int)> a{[vec = std::vector<int>{}](int i) mutable {
+    const isl::SmallFunction<int(int)> a{[vec = std::vector<int>{}](const int i) mutable {
         vec.push_back(i);
-        return vec.size();
+        return static_cast<int>(vec.size());
     }};
 
     auto b = a;
@@ -78,7 +78,7 @@ TEST_CASE("SmallFunctionWithComplexCapture", "[SmallFunction]")
 TEST_CASE("SmallFunctionWithVoidReturnType", "[SmallFunction]")
 {
     int x = 0;
-    const isl::SmallFunction<void(int)> a{[&x](int i) {
+    const isl::SmallFunction<void(int)> a{[&x](const int i) {
         x += i;
     }};
 
