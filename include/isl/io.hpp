@@ -13,7 +13,7 @@ namespace isl::io
 {
     auto read(const std::filesystem::path &filename) -> std::string;
 
-    template<StringLike<char>... Ts> // NOLINTNEXTLINE (cppcoreguidelines-missing-std-forward)
+    template<StringLike<char>... Ts>// NOLINTNEXTLINE (cppcoreguidelines-missing-std-forward)
     auto write(const std::filesystem::path &filename, Ts &&...args) -> void
     {
         auto out = std::ofstream{filename};

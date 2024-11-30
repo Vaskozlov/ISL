@@ -35,7 +35,7 @@ namespace isl
         {}
 
         template<typename U = T>
-            requires(std::convertible_to<U *, T *>) // NOLINTNEXTLINE
+            requires(std::convertible_to<U *, T *>)// NOLINTNEXTLINE
         UniquePtr(UniquePtr<U, AllocatorPtr> &&other) noexcept
           : ptr{other.release()}
         {}

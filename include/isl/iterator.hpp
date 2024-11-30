@@ -14,14 +14,14 @@ namespace isl
             return static_cast<const T &>(*this);
         }
 
-        ISL_DECL auto begin() const
-            noexcept(noexcept(std::declval<const T>().begin())) -> decltype(auto)
+        ISL_DECL auto begin() const noexcept(noexcept(std::declval<const T>().begin()))
+            -> decltype(auto)
         {
             return std::begin(toParent());
         }
 
-        ISL_DECL auto end() const
-            noexcept(noexcept(std::declval<const T>().end())) -> decltype(auto)
+        ISL_DECL auto end() const noexcept(noexcept(std::declval<const T>().end()))
+            -> decltype(auto)
         {
             return std::end(toParent());
         }

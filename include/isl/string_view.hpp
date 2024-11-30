@@ -121,8 +121,8 @@ namespace isl
             return {begin() + first, end()};
         }
 
-        ISL_DECL auto
-            substr(std::size_t first, const std::size_t len) const noexcept -> BasicStringView
+        ISL_DECL auto substr(std::size_t first, const std::size_t len) const noexcept
+            -> BasicStringView
         {
             auto last = first + len;
 
@@ -307,14 +307,14 @@ namespace isl
             return std::equal(begin(), end(), std::begin(other), std::end(other));
         }
 
-        ISL_DECL auto
-            operator<=>(const BasicStringView &other) const noexcept -> std::strong_ordering
+        ISL_DECL auto operator<=>(const BasicStringView &other) const noexcept
+            -> std::strong_ordering
         {
             return this->operator<=>(as<std::string_view>(other));
         }
 
-        ISL_DECL auto
-            operator<=>(const StringLike<CharT> auto &other) const noexcept -> std::strong_ordering
+        ISL_DECL auto operator<=>(const StringLike<CharT> auto &other) const noexcept
+            -> std::strong_ordering
         {
             auto min_size = std::min(size(), std::size(other));
 
@@ -340,32 +340,32 @@ namespace isl
 
     namespace string_view_literals
     {
-        [[nodiscard]] consteval auto
-            operator""_sv(const char *string, std::size_t length) -> BasicStringView<char>
+        [[nodiscard]] consteval auto operator""_sv(const char *string, std::size_t length)
+            -> BasicStringView<char>
         {
             return {string, length};
         }
 
-        [[nodiscard]] consteval auto
-            operator""_sv(const char8_t *string, std::size_t length) -> BasicStringView<char8_t>
+        [[nodiscard]] consteval auto operator""_sv(const char8_t *string, std::size_t length)
+            -> BasicStringView<char8_t>
         {
             return {string, length};
         }
 
-        [[nodiscard]] consteval auto
-            operator""_sv(const char16_t *string, std::size_t length) -> BasicStringView<char16_t>
+        [[nodiscard]] consteval auto operator""_sv(const char16_t *string, std::size_t length)
+            -> BasicStringView<char16_t>
         {
             return {string, length};
         }
 
-        [[nodiscard]] consteval auto
-            operator""_sv(const char32_t *string, std::size_t length) -> BasicStringView<char32_t>
+        [[nodiscard]] consteval auto operator""_sv(const char32_t *string, std::size_t length)
+            -> BasicStringView<char32_t>
         {
             return {string, length};
         }
 
-        [[nodiscard]] consteval auto
-            operator""_sv(const wchar_t *string, std::size_t length) -> BasicStringView<wchar_t>
+        [[nodiscard]] consteval auto operator""_sv(const wchar_t *string, std::size_t length)
+            -> BasicStringView<wchar_t>
         {
             return {string, length};
         }
