@@ -10,12 +10,12 @@ struct S
 using FrameForSharedPtr = isl::SharedPtrFrameFor<std::string, std::size_t, S>;
 
 // NOLINTNEXTLINE
-static auto PublicUniqueAllocator = isl::PoolAllocator<
+static constinit auto PublicUniqueAllocator = isl::PoolAllocator<
     isl::ObjectsMaxSize<std::string, std::size_t, S>,
     isl::ObjectsMaxAlignment<std::string, std::size_t, S>>{};
 
 // NOLINTNEXTLINE
-static auto PublicSharedAllocator =
+static constinit auto PublicSharedAllocator =
     isl::PoolAllocator<sizeof(FrameForSharedPtr), alignof(FrameForSharedPtr)>{};
 
 template<typename T>

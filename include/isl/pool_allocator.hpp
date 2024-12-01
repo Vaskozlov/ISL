@@ -40,10 +40,7 @@ namespace isl
         ObjectFrame *freeObject{};
 
     public:
-        PoolAllocator()
-          : head{new AllocationBlock()}
-          , freeObject{&head->storage[0]}
-        {}
+        PoolAllocator() = default;
 
         PoolAllocator(const PoolAllocator &) = delete;
 
