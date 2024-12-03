@@ -25,15 +25,16 @@ static auto fibonacciWithThreadPool(isl::u64 n, isl::thread::Pool *pool) -> isl:
         auto first = pool->submit(fibonacciWithThreadPool(n - 1, pool));
         auto second = pool->submit(fibonacciWithThreadPool(n - 2, pool));
 
-        auto lhs = co_await first;
-        auto rhs = co_await second;
+        const auto lhs = co_await first;
+        const auto rhs = co_await second;
+
         co_return lhs + rhs;
     }
 
     co_return classicFibonacci(n - 1) + classicFibonacci(n - 2);
 }
 
-static auto createTestNumbers() -> std::vector<isl::u32>
+static auto createTestRange() -> std::vector<isl::u32>
 {
     std::vector<isl::u32> v;
 
@@ -50,9 +51,10 @@ static auto createTestNumbers() -> std::vector<isl::u32>
 
 static void classicFibonacciBenchmark(benchmark::State &state)
 {
-    auto numbers = createTestNumbers();
+    const auto numbers = createTestRange();
+
     for (auto _ : state) {
-        for (auto v : numbers) {
+        for (const auto v : numbers) {
             benchmark::DoNotOptimize(classicFibonacci(v));
         }
     }
@@ -62,15 +64,16 @@ BENCHMARK(classicFibonacciBenchmark);
 
 static void fibonacciWithThreadPoolBenchmark(benchmark::State &state)
 {
-    auto numbers = createTestNumbers();
+    const auto numbers = createTestRange();
+
     for (auto _ : state) {
-        for (auto v : numbers) {
+        for (const auto v : numbers) {
             auto task = ThreadPool.submit(fibonacciWithThreadPool(v, std::addressof(ThreadPool)));
             benchmark::DoNotOptimize(task.await());
         }
     }
 }
 
-BENCHMARK(fibonacciWithThreadPoolBenchmark)->Threads(1)->Iterations(100);
+BENCHMARK(fibonacciWithThreadPoolBenchmark)->Iterations(100);
 
 BENCHMARK_MAIN();
