@@ -10,7 +10,7 @@ namespace isl
     struct Job : public thread::lock_free::StackNode
     {
         std::coroutine_handle<> handle;
-        std::atomic_flag isCompleted{};
+        std::atomic_flag isCompleted;
 
         auto run() const -> void
         {
@@ -138,10 +138,10 @@ namespace isl
         };
 
         std::exception_ptr exceptionPtr{nullptr};
-        std::atomic<bool> hasCompleted{};
+        std::atomic<bool> hasCompleted;
 
     public:
-        [[nodiscard]] auto get_return_object() -> Task<>
+        [[nodiscard]] auto get_return_object() -> Task
         {
             return Task{coro_handle::from_promise(*this)};
         }
@@ -194,7 +194,7 @@ namespace isl
 
         [[nodiscard]] auto has_result() const noexcept -> bool
         {
-            return hasCompleted.load(std::memory_order_acquire) || (get_exception() != nullptr);
+            return hasCompleted.load(std::memory_order_acquire) || get_exception() != nullptr;
         }
     };
 
@@ -280,7 +280,7 @@ namespace isl
 
         [[nodiscard]] auto has_result() const noexcept -> bool
         {
-            return value.has_value() || (get_exception() != nullptr);
+            return value.has_value() || get_exception() != nullptr;
         }
     };
 }// namespace isl

@@ -95,7 +95,7 @@ namespace isl
 
         explicit AsyncTask(Task<T> created_task, thread::Pool &p)
           : task{std::move(created_task)}
-          , pool{&p}
+          , pool{std::addressof(p)}
         {}
 
         [[nodiscard]] auto getJobPtr() const noexcept -> Job *
