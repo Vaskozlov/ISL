@@ -98,7 +98,7 @@ namespace isl
           , pool{&p}
         {}
 
-        [[nodiscard]] auto getJobPtr() -> Job *
+        [[nodiscard]] auto getJobPtr() const noexcept -> Job *
         {
             return job;
         }
@@ -121,7 +121,8 @@ namespace isl
             return task.has_result();
         }
 
-        [[nodiscard]] auto await_suspend(coro::coroutine_handle<> /* unused */) -> bool
+        [[nodiscard]] auto await_suspend(coro::coroutine_handle<> /* unused */) const noexcept
+            -> bool
         {
             return false;
         }
