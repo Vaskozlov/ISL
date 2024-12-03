@@ -138,7 +138,7 @@ namespace isl
         };
 
         std::exception_ptr exceptionPtr{nullptr};
-        bool hasCompleted{};
+        std::atomic<bool> hasCompleted{};
 
     public:
         [[nodiscard]] auto get_return_object() -> Task<>
@@ -178,7 +178,7 @@ namespace isl
 
         auto return_void() noexcept -> void
         {
-            hasCompleted = true;
+            hasCompleted.store(true, std::memory_order_release);
         }
 
         auto get_value() const noexcept(false) ISL_LIFETIMEBOUND -> void
@@ -187,14 +187,14 @@ namespace isl
                 std::rethrow_exception(get_exception());
             }
 
-            if (!hasCompleted) {
+            if (!hasCompleted.load(std::memory_order_acquire)) {
                 throw std::runtime_error{"Task has not finished yet"};
             }
         }
 
         [[nodiscard]] auto has_result() const noexcept -> bool
         {
-            return hasCompleted || (get_exception() != nullptr);
+            return hasCompleted.load(std::memory_order_acquire) || (get_exception() != nullptr);
         }
     };
 
@@ -255,6 +255,8 @@ namespace isl
             if (get_exception() != nullptr) {
                 std::rethrow_exception(get_exception());
             }
+
+            std::atomic_thread_fence(std::memory_order_acquire);
 
             if (!value.has_value()) {
                 throw std::runtime_error{"Task has not finished yet"};
