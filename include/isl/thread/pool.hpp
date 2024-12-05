@@ -19,13 +19,13 @@ namespace isl::thread
     class Pool
     {
     private:
-        struct ThreadInfo
+        struct Thread
         {
             std::thread thread;
             std::atomic<bool> runFlag;
 
             template<typename... Ts>
-            explicit ThreadInfo(const bool flag_value, Ts &&...args)
+            explicit Thread(const bool flag_value, Ts &&...args)
               : thread{std::forward<Ts>(args)...}
               , runFlag{flag_value}
             {}
@@ -35,7 +35,7 @@ namespace isl::thread
         std::mutex newTasksMutex;
         std::mutex threadsManipulationMutex;
         std::condition_variable hasNewTasks;
-        std::list<ThreadInfo> threads;
+        std::list<Thread> threads;
 
     public:
         explicit Pool(std::size_t count);
