@@ -24,9 +24,8 @@ namespace isl
             AllocationBlock *next;
 
             AllocationBlock()
+              : next{nullptr}
             {
-                next = nullptr;
-
                 ISL_UNROLL_N(16)
                 for (std::size_t i = 0; i != BlockSize; ++i) {
                     storage[i].next = &storage[i + 1];
