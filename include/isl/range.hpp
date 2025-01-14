@@ -6,10 +6,9 @@
 
 namespace isl
 {
-    template<std::unsigned_integral T = std::size_t>
-    class Range
-      : public AutoImplementedIteratorMethods<Range<T>>
-      , public detail::TrivialPair<T, T>
+    template <std::unsigned_integral T = std::size_t>
+    class Range : public AutoImplementedIteratorMethods<Range<T>>,
+                  public detail::TrivialPair<T, T>
     {
     public:
         class iterator;
@@ -42,7 +41,7 @@ namespace isl
         }
     };
 
-    template<std::unsigned_integral T>
+    template <std::unsigned_integral T>
     class Range<T>::iterator
     {
     private:
@@ -73,6 +72,6 @@ namespace isl
 
         ISL_DECL auto operator<=>(const iterator &) const noexcept -> std::weak_ordering = default;
     };
-}// namespace isl
+} // namespace isl
 
 #endif /* ISL_PROJECT_RANGE_HPP */

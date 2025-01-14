@@ -1,5 +1,6 @@
 #include <functional>
 #include <isl/thread/pool.hpp>
+#include <isl/thread/scope.hpp>
 
 namespace isl::thread
 {
@@ -27,6 +28,14 @@ namespace isl::thread
         job->run();
         job->isCompleted.test_and_set(std::memory_order_release);
 
+        if (job->scope != nullptr) {
+            job->scope->onJobCompleted();
+        }
+
+        if (job->shouldBeDestroyedByPool) {
+            job->handle.destroy();
+        }
+
         return true;
     }
 
@@ -36,9 +45,7 @@ namespace isl::thread
 
         auto lock = std::unique_lock{newTasksMutex};
 
-        hasNewTasks.wait_for(lock, 10ms, [this] {
-            return !tasksStack.wasEmpty();
-        });
+        hasNewTasks.wait_for(lock, 10ms, [this] { return !tasksStack.wasEmpty(); });
 
         lock.unlock();
     }
@@ -118,4 +125,4 @@ namespace isl::thread
 
         threads.clear();
     }
-}// namespace isl::thread
+} // namespace isl::thread

@@ -11,17 +11,17 @@
 // NOLINTBEGIN
 
 #define ISL_PERFECT_FORWARDING(Repr, Type)                                                         \
-    template<typename Repr>                                                                        \
-        requires std::is_convertible_v<Repr, Type>
+    template <typename Repr>                                                                       \
+    requires std::is_convertible_v<Repr, Type>
 
 #define ISL_PERFECT_FORWARDING_2(Repr1, Type1, Repr2, Type2)                                       \
-    template<typename Repr1, typename Repr2>                                                       \
-        requires std::is_convertible_v<Repr1, Type1> && std::is_convertible_v<Repr2, Type2>
+    template <typename Repr1, typename Repr2>                                                      \
+    requires std::is_convertible_v<Repr1, Type1> && std::is_convertible_v<Repr2, Type2>
 
 #define ISL_PERFECT_FORWARDING_3(Repr1, Type1, Repr2, Type2, Repr3, Type3)                         \
-    template<typename Repr1, typename Repr2, typename Repr3>                                       \
-        requires std::is_convertible_v<Repr1, Type1> && std::is_convertible_v<Repr2, Type2> &&     \
-                 std::is_convertible_v<Repr3, Type3>
+    template <typename Repr1, typename Repr2, typename Repr3>                                      \
+    requires std::is_convertible_v<Repr1, Type1> && std::is_convertible_v<Repr2, Type2>            \
+             && std::is_convertible_v<Repr3, Type3>
 
 // NOLINTEND
 
@@ -106,12 +106,12 @@
 #endif
 
 #define ISL_SAFE_VERSION                                                                           \
-    template<FunctionAPI Mode = FunctionAPI::SAFE>                                                 \
-        requires(Mode == FunctionAPI::SAFE)
+    template <FunctionAPI Mode = FunctionAPI::SAFE>                                                \
+    requires(Mode == FunctionAPI::SAFE)
 
 #define ISL_UNSAFE_VERSION                                                                         \
-    template<FunctionAPI Mode>                                                                     \
-        requires(Mode == FunctionAPI::UNSAFE)
+    template <FunctionAPI Mode>                                                                    \
+    requires(Mode == FunctionAPI::UNSAFE)
 
 #define ISL_EXCEPTION(name, base_exception, classname)                                             \
     struct name : public base_exception                                                            \
@@ -124,7 +124,7 @@
 
 #define ISL_HARDWARE_CACHE_LINE_ALIGN alignas(isl::HardwareDestructiveInterferenceSize)
 #define ISL_HARDWARE_CACHE_LINE_PADDING(T)                                                         \
-   char ISL_FORCE_EXPAND(       \
+    char ISL_FORCE_EXPAND(                                                                         \
         islPadding, __COUNTER__)[isl::HardwareDestructiveInterferenceSize - sizeof(T)]
 
 namespace isl
@@ -146,6 +146,6 @@ namespace isl
 
     // https://stackoverflow.com/questions/39680206/understanding-stdhardware-destructive-interference-size-and-stdhardware-cons
     constexpr inline std::size_t HardwareDestructiveInterferenceSize = 64;
-}// namespace isl
+} // namespace isl
 
 #endif /* ISL_DEFINES_HPP */

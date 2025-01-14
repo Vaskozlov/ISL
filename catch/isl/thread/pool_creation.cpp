@@ -1,5 +1,6 @@
 #include <isl/detail/debug/debug.hpp>
 #include <isl/thread/pool.hpp>
+#include <isl/thread/scope.hpp>
 
 TEST_CASE("PoolCreation", "[Pool]")
 {
@@ -14,4 +15,19 @@ TEST_CASE("PoolCreation", "[Pool]")
 
     pool.stopAllThreads();
     REQUIRE(pool.wereRunning() == 0);
+}
+
+
+TEST_CASE("PoolLaunch", "[Pool]")
+{
+    auto pool = isl::thread::Pool{2};
+    auto scope = isl::Scope(&pool);
+
+    scope.launch([]() -> isl::Task<> {
+        for (int i = 0; i != 100; ++i) {
+            fmt::println("{}", i);
+        }
+        co_return;
+    }());
+
 }

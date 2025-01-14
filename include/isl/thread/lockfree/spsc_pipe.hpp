@@ -6,7 +6,7 @@
 
 namespace isl::thread::lock_free
 {
-    template<typename T, std::size_t Size>
+    template <typename T, std::size_t Size>
     class SpscPipe
     {
     public:
@@ -33,7 +33,7 @@ namespace isl::thread::lock_free
                 return static_cast<T *>(getAddress());
             }
 
-            template<typename... Ts>
+            template <typename... Ts>
             auto construct(Ts &&...args) -> void
             {
                 std::construct_at(getValuePtr(), std::forward<Ts>(args)...);
@@ -152,6 +152,6 @@ namespace isl::thread::lock_free
             return true;
         }
     };
-}// namespace isl::thread::lock_free
+} // namespace isl::thread::lock_free
 
 #endif /* ISL_PROJECT_SPSC_PIPE_HPP */

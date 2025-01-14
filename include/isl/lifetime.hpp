@@ -17,8 +17,8 @@ namespace isl::lifetime
         private:
             friend LifetimeMonitor;
 
-            static IdGenerator<Id> LifetimeObjectIdGenerator;// NOLINT
-            static std::mutex ObjectCreationLock;            // NOLINT
+            static IdGenerator<Id> LifetimeObjectIdGenerator; // NOLINT
+            static std::mutex ObjectCreationLock;             // NOLINT
 
             Id uniqueId{LifetimeObjectIdGenerator.next()};
             Id weakId{uniqueId};
@@ -65,8 +65,8 @@ namespace isl::lifetime
             }
         };
 
-        extern std::vector<std::unique_ptr<LifetimeObject>> CreatedObjects;// NOLINT
-    }// namespace detail
+        extern std::vector<std::unique_ptr<LifetimeObject>> CreatedObjects; // NOLINT
+    } // namespace detail
 
     class LifetimeMonitor
     {
@@ -92,6 +92,6 @@ namespace isl::lifetime
             return lifetimeObject->getWeakId();
         }
     };
-}// namespace isl::lifetime
+} // namespace isl::lifetime
 
 #endif /* ISL_PROJECT_LIFETIME_HPP */

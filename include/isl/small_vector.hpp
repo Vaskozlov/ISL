@@ -5,7 +5,7 @@
 
 namespace isl
 {
-    template<typename T, u32 N, typename Allocator = std::allocator<T>>
+    template <typename T, u32 N, typename Allocator = std::allocator<T>>
     class SmallVector
     {
     private:
@@ -13,6 +13,7 @@ namespace isl
             T *largeStorage = nullptr;
             std::array<T, N> smallStorage;
         };
+
         u32 vectorSize{};
         u32 vectorCapacity{N};
         Allocator allocator;
@@ -317,8 +318,8 @@ namespace isl
             vectorSize -= 1;
         }
 
-        template<typename... Ts>
-            requires(std::constructible_from<T, Ts...>)
+        template <typename... Ts>
+        requires(std::constructible_from<T, Ts...>)
         auto emplace_back(Ts &&...args) -> T &
         {
             T *buffer = nullptr;
@@ -455,6 +456,6 @@ namespace isl
             return {buffer_ptr, is_internal};
         }
     };
-}// namespace isl
+} // namespace isl
 
 #endif /* ISL_PROJECT_SMALL_VECTOR_HPP */

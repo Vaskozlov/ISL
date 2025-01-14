@@ -6,8 +6,8 @@
 
 namespace isl
 {
-    template<typename T, auto AllocatorPtr>
-        requires(AllocatorPtr->template canAllocate<T>())
+    template <typename T, auto AllocatorPtr>
+    requires(AllocatorPtr->template canAllocate<T>())
     class UniquePtr
     {
         T *ptr{nullptr};
@@ -20,9 +20,8 @@ namespace isl
           : UniquePtr{}
         {}
 
-        template<typename... Ts>
-        explicit UniquePtr(Ts &&...args)
-            requires(!std::is_abstract_v<T>)
+        template <typename... Ts>
+        explicit UniquePtr(Ts &&...args) requires(!std::is_abstract_v<T>)
           : ptr{static_cast<T *>(AllocatorPtr->allocate())}
         {
             std::construct_at(ptr, std::forward<Ts>(args)...);
@@ -34,8 +33,8 @@ namespace isl
           : ptr{other.release()}
         {}
 
-        template<typename U = T>
-            requires(std::convertible_to<U *, T *>)// NOLINTNEXTLINE
+        template <typename U = T>
+        requires(std::convertible_to<U *, T *>) // NOLINTNEXTLINE
         UniquePtr(UniquePtr<U, AllocatorPtr> &&other) noexcept
           : ptr{other.release()}
         {}
@@ -47,8 +46,8 @@ namespace isl
 
         auto operator=(const UniquePtr &other) -> UniquePtr & = delete;
 
-        template<typename U = T>
-            requires(std::convertible_to<U *, T *>)
+        template <typename U = T>
+        requires(std::convertible_to<U *, T *>)
         auto operator=(UniquePtr<U, AllocatorPtr> &&other) noexcept -> UniquePtr &
         {
             destroyStoredObject();
@@ -129,14 +128,14 @@ namespace isl
         }
     };
 
-    template<std::size_t Capacity, std::size_t Alignment>
+    template <std::size_t Capacity, std::size_t Alignment>
     struct SharedPtrFrame
     {
         mutable std::atomic<std::size_t> refCount{1};
         alignas(Alignment) std::byte objectBuffer[Capacity];
         void (*deleter)(void *) = nullptr;
 
-        template<typename T>
+        template <typename T>
         ISL_DECL static auto canStore() noexcept -> bool
         {
             if constexpr (std::same_as<T, void>) {
@@ -146,16 +145,16 @@ namespace isl
             }
         }
 
-        template<typename T>
-            requires(canStore<T>())
+        template <typename T>
+        requires(canStore<T>())
         [[nodiscard]] auto asPtr() -> T *
         {
             // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
             return reinterpret_cast<T *>(std::addressof(objectBuffer[0]));
         }
 
-        template<typename T>
-            requires(canStore<T>())
+        template <typename T>
+        requires(canStore<T>())
         [[nodiscard]] auto asPtr() const -> const T *
         {
             // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
@@ -182,24 +181,22 @@ namespace isl
             return refCount.fetch_sub(1, std::memory_order_acq_rel);
         }
 
-        template<typename T, typename... Ts>
-            requires(canStore<T>())
+        template <typename T, typename... Ts>
+        requires(canStore<T>())
         static auto initialize(SharedPtrFrame *frame, Ts &&...args) -> void
         {
             std::construct_at(std::addressof(frame->refCount), 1U);
             std::construct_at(frame->asPtr<T>(), std::forward<Ts>(args)...);
 
-            frame->deleter = [](void *ptr) {
-                std::destroy_at(static_cast<T *>(ptr));
-            };
+            frame->deleter = [](void *ptr) { std::destroy_at(static_cast<T *>(ptr)); };
         }
     };
 
-    template<typename... Ts>
+    template <typename... Ts>
     using SharedPtrFrameFor = SharedPtrFrame<ObjectsMaxSize<Ts...>, ObjectsMaxAlignment<Ts...>>;
 
-    template<typename T, typename Frame, auto AllocatorPtr>
-        requires(AllocatorPtr->template canAllocate<Frame>())
+    template <typename T, typename Frame, auto AllocatorPtr>
+    requires(AllocatorPtr->template canAllocate<Frame>())
     class SharedPtr;
 
     struct FrameMovedT
@@ -210,8 +207,8 @@ namespace isl
     {
     };
 
-    template<typename T, typename Frame, auto AllocatorPtr>
-        requires(AllocatorPtr->template canAllocate<Frame>())
+    template <typename T, typename Frame, auto AllocatorPtr>
+    requires(AllocatorPtr->template canAllocate<Frame>())
     class SharedPtr
     {
     private:
@@ -234,16 +231,16 @@ namespace isl
             increaseRefCount();
         }
 
-        template<typename... Ts>
-            requires(!std::is_abstract_v<T>)
+        template <typename... Ts>
+        requires(!std::is_abstract_v<T>)
         explicit SharedPtr(Ts &&...args)
           : frame{static_cast<Frame *>(AllocatorPtr->allocate())}
         {
             Frame::template initialize<T>(frame, std::forward<Ts>(args)...);
         }
 
-        template<typename U = T>
-            requires(std::convertible_to<U *, T *>)// NOLINTNEXTLINE
+        template <typename U = T>
+        requires(std::convertible_to<U *, T *>) // NOLINTNEXTLINE
         SharedPtr(const SharedPtr<U, Frame, AllocatorPtr> &other)
           : frame{other.getFrame()}
         {
@@ -256,8 +253,8 @@ namespace isl
             increaseRefCount();
         }
 
-        template<typename U = T>// NOLINTNEXTLINE
-            requires(std::convertible_to<U *, T *>)
+        template <typename U = T> // NOLINTNEXTLINE
+        requires(std::convertible_to<U *, T *>)
         SharedPtr(SharedPtr<U, Frame, AllocatorPtr> &&other) noexcept
           : frame{other.releaseFrame()}
         {}
@@ -271,12 +268,12 @@ namespace isl
             decreaseRefCount();
         }
 
-        template<typename U = T>
-            requires(std::convertible_to<U *, T *>)
+        template <typename U = T>
+        requires(std::convertible_to<U *, T *>)
         auto operator=(const SharedPtr<U, Frame, AllocatorPtr> &other) -> SharedPtr &
         {
-            if (static_cast<const void *>(this) !=
-                static_cast<const void *>(std::addressof(other))) {
+            if (static_cast<const void *>(this)
+                != static_cast<const void *>(std::addressof(other))) {
                 decreaseRefCount();
                 frame = other.getFrame();
                 increaseRefCount();
@@ -308,21 +305,21 @@ namespace isl
         [[nodiscard]] auto operator<=>(const SharedPtr &other) const noexcept
             -> std::weak_ordering = default;
 
-        template<typename U>
+        template <typename U>
         ISL_DECL static auto canStore() noexcept -> bool
         {
             return Frame::template canStore<U>();
         }
 
-        template<typename U = T>
-            requires(std::same_as<T, U>)
+        template <typename U = T>
+        requires(std::same_as<T, U>)
         [[nodiscard]] auto operator*() -> U &
         {
             return *frame->template asPtr<U>();
         }
 
-        template<typename U = T>
-            requires(std::same_as<T, U>)
+        template <typename U = T>
+        requires(std::same_as<T, U>)
         [[nodiscard]] auto operator*() const -> const U &
         {
             return *frame->template asPtr<U>();
@@ -371,16 +368,14 @@ namespace isl
             return std::exchange(frame, nullptr);
         }
 
-        template<typename U>
+        template <typename U>
         auto updateDeleter() -> void
         {
-            frame->deleter = [](void *ptr) {
-                std::destroy_at(static_cast<U *>(ptr));
-            };
+            frame->deleter = [](void *ptr) { std::destroy_at(static_cast<U *>(ptr)); };
         }
 
-        template<typename U>
-            requires(canStore<U>())
+        template <typename U>
+        requires(canStore<U>())
         auto inMemoryCastTo(std::invocable<void *> auto &&cast_function) -> void
         {
             cast_function(frame->template asPtr<U>());
@@ -402,21 +397,21 @@ namespace isl
         }
     };
 
-    template<typename To, typename From, typename Frame, auto AllocatorPtr>
+    template <typename To, typename From, typename Frame, auto AllocatorPtr>
     auto staticPointerCast(const SharedPtr<From, Frame, AllocatorPtr> &ptr)
         -> SharedPtr<To, Frame, AllocatorPtr>
     {
         return SharedPtr<To, Frame, AllocatorPtr>{FrameCopyT{}, ptr.getFrame()};
     }
 
-    template<typename To, typename From, typename Frame, auto AllocatorPtr>
+    template <typename To, typename From, typename Frame, auto AllocatorPtr>
     auto staticPointerCast(SharedPtr<From, Frame, AllocatorPtr> &&ptr)
         -> SharedPtr<To, Frame, AllocatorPtr>
     {
         return SharedPtr<To, Frame, AllocatorPtr>{FrameMovedT{}, ptr.releaseFrame()};
     }
 
-    template<typename To, typename From, typename Frame, auto AllocatorPtr>
+    template <typename To, typename From, typename Frame, auto AllocatorPtr>
     auto dynamicPointerCast(const SharedPtr<From, Frame, AllocatorPtr> &ptr)
         -> SharedPtr<To, Frame, AllocatorPtr>
     {
@@ -430,7 +425,7 @@ namespace isl
         return SharedPtr<To, Frame, AllocatorPtr>{};
     }
 
-    template<typename To, typename From, typename Frame, auto AllocatorPtr>
+    template <typename To, typename From, typename Frame, auto AllocatorPtr>
     auto dynamicPointerCast(SharedPtr<From, Frame, AllocatorPtr> &&ptr)
         -> SharedPtr<To, Frame, AllocatorPtr>
     {
@@ -443,6 +438,6 @@ namespace isl
 
         return SharedPtr<To, Frame, AllocatorPtr>{};
     }
-}// namespace isl
+} // namespace isl
 
 #endif /* ISL_PROJECT_MEMORY_HPP */

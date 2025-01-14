@@ -6,7 +6,7 @@
 
 namespace isl
 {
-    template<typename T>
+    template <typename T>
     class AutoImplementedIteratorMethods
     {
         ISL_DECL auto toParent() const noexcept ISL_LIFETIMEBOUND -> const T &
@@ -67,6 +67,6 @@ namespace isl
             return rend();
         }
     };
-}// namespace isl
+} // namespace isl
 
 #endif /* ISL_PROJECT_ITERATOR_HPP */

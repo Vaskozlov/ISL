@@ -7,20 +7,20 @@
 
 namespace isl
 {
-    template<typename T>
+    template <typename T>
     class Lazy
     {
     private:
         mutable std::variant<std::function<T()>, T> storage;
 
     public:
-        template<typename F>
-            requires std::is_invocable_r_v<T, F>
+        template <typename F>
+        requires std::is_invocable_r_v<T, F>
         explicit Lazy(F &&func)
           : storage{std::in_place_type<std::function<T()>>, std::forward<F>(func)}
         {}
 
-        template<typename... Ts>
+        template <typename... Ts>
         explicit Lazy(Ts &&...args)
           : storage{std::in_place_type<T>, std::forward<Ts>(args)...}
         {}
@@ -46,17 +46,17 @@ namespace isl
         }
     };
 
-    template<typename T>
+    template <typename T>
     ISL_DECL auto toLazy(T &&value) -> Lazy<std::remove_cvref_t<T>>
     {
         return Lazy<T>{std::forward<T>(value)};
     }
 
-    template<std::invocable Func>
+    template <std::invocable Func>
     ISL_DECL auto toLazy(Func &&function) -> Lazy<decltype(function())>
     {
         return Lazy<decltype(function())>(std::forward<Func>(function));
     }
-}// namespace isl
+} // namespace isl
 
 #endif /* CCL_PROJECT_LAZY_HPP */

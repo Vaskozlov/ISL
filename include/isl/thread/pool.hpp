@@ -3,9 +3,7 @@
 
 #include <condition_variable>
 #include <isl/coroutine/task.hpp>
-#include <isl/thread/spin_lock.hpp>
 #include <list>
-#include <mutex>
 #include <thread>
 
 namespace isl

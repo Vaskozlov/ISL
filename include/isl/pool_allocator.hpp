@@ -5,8 +5,8 @@
 
 namespace isl
 {
-    template<std::size_t MaxObjectSize, std::size_t Align, std::size_t BlockSize = 128>
-        requires(BlockSize % 16 == 0)
+    template <std::size_t MaxObjectSize, std::size_t Align, std::size_t BlockSize = 128>
+    requires(BlockSize % 16 == 0)
     class PoolAllocator
     {
     private:
@@ -107,7 +107,7 @@ namespace isl
             ptr->next = std::exchange(freeObject, ptr);
         }
 
-        template<typename T>
+        template <typename T>
         ISL_DECL static auto canAllocate() noexcept -> bool
         {
             return std::is_abstract_v<T> || (sizeof(T) <= MaxObjectSize && alignof(T) <= Align);
@@ -120,12 +120,12 @@ namespace isl
         }
     };
 
-    template<typename... Ts>
+    template <typename... Ts>
     constexpr inline auto ObjectsMaxSize =
         std::max({sizeof(std::conditional_t<std::is_abstract_v<Ts>, std::size_t, Ts>)...});
 
-    template<typename... Ts>
+    template <typename... Ts>
     constexpr inline auto ObjectsMaxAlignment = std::max({alignof(Ts)...});
-}// namespace isl
+} // namespace isl
 
 #endif /* ISL_PROJECT_POOL_ALLOCATOR_HPP */

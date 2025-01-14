@@ -7,10 +7,14 @@
 
 namespace isl
 {
+    class Scope;
+
     struct Job : public thread::lock_free::StackNode
     {
         std::coroutine_handle<> handle;
+        Scope *scope{nullptr};
         std::atomic_flag isCompleted;
+        bool shouldBeDestroyedByPool{false};
 
         auto run() const -> void
         {
@@ -18,7 +22,7 @@ namespace isl
         }
     };
 
-    template<typename T = void>
+    template <typename T = void>
     class Task
     {
     public:
@@ -126,17 +130,20 @@ namespace isl
         {
             return handle.promise();
         }
+
+        [[nodiscard]] auto release() -> Job *
+        {
+            Job *job = get_promise().get_job_ptr();
+            handle = nullptr;
+            return job;
+        }
     };
 
-
-    template<>
+    template <>
     class Task<>::promise_type
     {
     private:
-        Job job{
-            .handle = coro_handle::from_promise(static_cast<promise_type &>(*this)),
-        };
-
+        Job job{.handle = coro_handle::from_promise(static_cast<promise_type &>(*this))};
         std::exception_ptr exceptionPtr{nullptr};
         std::atomic<bool> hasCompleted;
 
@@ -198,14 +205,11 @@ namespace isl
         }
     };
 
-    template<typename T>
+    template <typename T>
     class Task<T>::promise_type
     {
     private:
-        Job job{
-            .handle = coro_handle::from_promise(static_cast<promise_type &>(*this)),
-        };
-
+        Job job{.handle = coro_handle::from_promise(static_cast<promise_type &>(*this))};
         std::exception_ptr exceptionPtr{nullptr};
         std::optional<T> value{std::nullopt};
 
@@ -283,6 +287,6 @@ namespace isl
             return value.has_value() || get_exception() != nullptr;
         }
     };
-}// namespace isl
+} // namespace isl
 
 #endif /* ISL_PROJECT_TASK_HPP */
