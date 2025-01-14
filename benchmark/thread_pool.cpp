@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <benchmark/benchmark.h>
 #include <isl/thread/pool.hpp>
+#include <isl/thread/async_task.hpp>
 #include <random>
 #include <vector>
 
@@ -22,8 +23,8 @@ static auto fibonacciWithThreadPool(isl::u64 n, isl::thread::Pool *pool) -> isl:
     }
 
     if (n > 20) {
-        auto first = pool->submit(fibonacciWithThreadPool(n - 1, pool));
-        auto second = pool->submit(fibonacciWithThreadPool(n - 2, pool));
+        auto first = pool->async(fibonacciWithThreadPool(n - 1, pool));
+        auto second = pool->async(fibonacciWithThreadPool(n - 2, pool));
 
         const auto lhs = co_await first;
         const auto rhs = co_await second;
@@ -68,7 +69,7 @@ static void fibonacciWithThreadPoolBenchmark(benchmark::State &state)
 
     for (auto _ : state) {
         for (const auto v : numbers) {
-            auto task = ThreadPool.submit(fibonacciWithThreadPool(v, std::addressof(ThreadPool)));
+            auto task = ThreadPool.async(fibonacciWithThreadPool(v, std::addressof(ThreadPool)));
             benchmark::DoNotOptimize(task.await());
         }
     }
