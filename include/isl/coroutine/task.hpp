@@ -148,9 +148,9 @@ namespace isl
         std::atomic<bool> hasCompleted;
 
     public:
-        [[nodiscard]] auto get_return_object() -> Task
+        [[nodiscard]] auto get_return_object() -> Task<>
         {
-            return Task{coro_handle::from_promise(*this)};
+            return Task<>{coro_handle::from_promise(*this)};
         }
 
         [[nodiscard]] auto initial_suspend() const noexcept -> coro::suspend_always
