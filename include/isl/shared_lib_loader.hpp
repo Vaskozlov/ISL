@@ -45,13 +45,13 @@ namespace isl
 
         auto close() -> void
         {
-            if (handler != nullptr) {
+            if (hasLibrary()) {
                 dlclose(handler);
                 handler = nullptr;
             }
         }
 
-        static auto load_library(const std::filesystem::path &path)
+        static auto loadLibrary(const std::filesystem::path &path)
             -> std::expected<SharedLibLoader, std::string>
         {
             void *handle = dlopen(path.c_str(), RTLD_LOCAL | RTLD_NOW);
@@ -86,6 +86,11 @@ namespace isl
             handler = new_handler;
 
             return {};
+        }
+
+        auto hasLibrary() const -> bool
+        {
+            return handler != nullptr;
         }
     };
 } // namespace isl
