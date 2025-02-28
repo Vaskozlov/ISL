@@ -78,14 +78,13 @@ namespace isl
 
         auto reload() -> std::expected<void, std::string>
         {
-            auto *new_handler = dlopen(path.c_str(), RTLD_LOCAL | RTLD_NOW);
+            close();
 
-            if (new_handler == nullptr) {
+            handler = dlopen(path.c_str(), RTLD_LOCAL | RTLD_NOW);
+
+            if (handler == nullptr) {
                 return std::unexpected(fmt::format("Failed to load shared library: {}", dlerror()));
             }
-
-            close();
-            handler = new_handler;
 
             return {};
         }
