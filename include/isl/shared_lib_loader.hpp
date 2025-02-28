@@ -22,12 +22,28 @@ namespace isl
         {}
 
     public:
+        SharedLibLoader(const SharedLibLoader &) = delete;
+
+        SharedLibLoader(SharedLibLoader &&other) noexcept
+          : path{std::move(other.path)}
+          , handler{std::exchange(other.handler, nullptr)}
+        {}
+
+        auto operator=(SharedLibLoader &&other) noexcept -> SharedLibLoader &
+        {
+            std::swap(path, other.path);
+            std::swap(handler, other.handler);
+            return *this;
+        }
+
+        auto operator=(const SharedLibLoader &) -> SharedLibLoader & = delete;
+
         ~SharedLibLoader()
         {
             close();
         }
 
-        void close()
+        auto close() -> void
         {
             if (handler != nullptr) {
                 dlclose(handler);
@@ -35,8 +51,8 @@ namespace isl
             }
         }
 
-        static std::expected<SharedLibLoader, std::string>
-            load_library(const std::filesystem::path &path)
+        static auto load_library(const std::filesystem::path &path)
+            -> std::expected<SharedLibLoader, std::string>
         {
             void *handle = dlopen(path.c_str(), RTLD_LOCAL | RTLD_NOW);
 
@@ -47,7 +63,7 @@ namespace isl
             return SharedLibLoader(path, handle);
         }
 
-        std::expected<void *, std::string> getSymbol(const std::string &symbol) const
+        auto getSymbol(const std::string &symbol) const -> std::expected<void *, std::string>
         {
             auto *pointer = dlsym(handler, symbol.c_str());
 
@@ -58,7 +74,7 @@ namespace isl
             return pointer;
         }
 
-        std::expected<void, std::string> reload()
+        auto reload() -> std::expected<void, std::string>
         {
             auto *new_handler = dlopen(path.c_str(), RTLD_LOCAL | RTLD_NOW);
 
