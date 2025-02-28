@@ -22,6 +22,8 @@ namespace isl
         {}
 
     public:
+        SharedLibLoader() = default;
+
         SharedLibLoader(const SharedLibLoader &) = delete;
 
         SharedLibLoader(SharedLibLoader &&other) noexcept
