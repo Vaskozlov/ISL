@@ -31,7 +31,7 @@ namespace isl::lifetime
             LifetimeObject(LifetimeObject &&) = delete;
             LifetimeObject(const LifetimeObject &) = delete;
 
-            virtual ~LifetimeObject() = default;
+            ~LifetimeObject() = default;
 
             auto operator=(LifetimeObject &&) -> void = delete;
             auto operator=(const LifetimeObject &) -> void = delete;
