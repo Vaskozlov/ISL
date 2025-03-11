@@ -5,10 +5,10 @@
 
 namespace isl
 {
-    template<typename T, std::size_t N = sizeof(std::size_t) * 4>
+    template <typename T, std::size_t N = sizeof(std::size_t) * 4>
     class SmallFunction;
 
-    template<typename Ret, typename... Args, std::size_t N>
+    template <typename Ret, typename... Args, std::size_t N>
     class SmallFunction<Ret(Args...), N>
     {
         struct InvokerBase
@@ -32,7 +32,7 @@ namespace isl
             constexpr virtual auto copyConstruct(void *destination) const -> void = 0;
         };
 
-        template<typename T>
+        template <typename T>
         struct Invoker final : InvokerBase
         {
             mutable T function;
@@ -57,13 +57,13 @@ namespace isl
             }
         };
 
-        std::byte smallStorage[N];// NOLINT (modernize-avoid-c-arrays)
+        std::byte smallStorage[N]; // NOLINT (modernize-avoid-c-arrays)
 
     public:
-        template<typename F>
-            requires std::invocable<F, Args...>
-        // NOLINTNEXTLINE (cppcoreguidelines-pro-type-member-init)
-        ISL_DECL explicit SmallFunction(F &&function)
+        template <typename F>
+        requires std::invocable<F, Args...>
+        // NOLINTNEXTLINE (cppcoreguidelines-pro-type-member-init && implicit constructor)
+        ISL_DECL SmallFunction(F &&function)
             requires(sizeof(Invoker<std::remove_cvref_t<F>>) <= sizeof(smallStorage))
         {
             new (smallStorage) Invoker<std::remove_cvref_t<F>>{std::forward<F>(function)};
@@ -110,11 +110,10 @@ namespace isl
             return *this;
         }
 
-        template<typename... InvokeArgs>// NOLINTNEXTLINE (cppcoreguidelines-missing-std-forward)
-        ISL_DECL auto operator()(InvokeArgs &&...args) const -> Ret
-            requires(
-                sizeof...(InvokeArgs) == sizeof...(Args) &&
-                std::invocable<Ret(Args...), decltype(static_cast<Args>(args))...>)
+        template <typename... InvokeArgs> // NOLINTNEXTLINE (cppcoreguidelines-missing-std-forward)
+        ISL_DECL auto operator()(InvokeArgs &&...args) const -> Ret requires(
+            sizeof...(InvokeArgs) == sizeof...(Args)
+            && std::invocable<Ret(Args...), decltype(static_cast<Args>(args))...>)
         {
             return getInvokerBase()->invoke(static_cast<Args>(args)...);
         }
@@ -132,6 +131,6 @@ namespace isl
             return reinterpret_cast<const InvokerBase *>(&smallStorage[0]);
         }
     };
-}// namespace isl
+} // namespace isl
 
 #endif /* ISL_SMALL_FUNCTION_HPP */
