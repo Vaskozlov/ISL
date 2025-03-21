@@ -26,7 +26,6 @@ AlwaysBreakAfterReturnType: None
 AlwaysBreakBeforeMultilineStrings: false
 AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: false
-BinPackParameters: OnePerLine
 BitFieldColonSpacing: Both
 BraceWrapping:
   AfterCaseLabel: false
@@ -48,11 +47,9 @@ BraceWrapping:
   SplitEmptyRecord: true
 BreakBeforeBraces: Custom
 BreakBeforeTernaryOperators: true
-BreakBinaryOperations: Never
 BreakConstructorInitializers: BeforeComma
 BreakInheritanceList: AfterComma
 BreakStringLiterals: true
-BreakTemplateDeclarations: Yes
 ColumnLimit: 100
 CommentPragmas: '^ IWYU pragma:'
 CompactNamespaces: false
