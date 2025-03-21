@@ -2,6 +2,7 @@
 #define ISL_SMALL_FUNCTION_HPP
 
 #include <isl/isl.hpp>
+#include <type_traits>
 
 namespace isl
 {
@@ -61,8 +62,8 @@ namespace isl
 
     public:
         template <typename F>
-        requires std::invocable<F, Args...>
-        // NOLINTNEXTLINE (cppcoreguidelines-pro-type-member-init && implicit constructor)
+        requires(
+            std::invocable<F, Args...> && !std::is_same_v<std::remove_cvref_t<F>, SmallFunction>)
         ISL_DECL SmallFunction(F &&function)
             requires(sizeof(Invoker<std::remove_cvref_t<F>>) <= sizeof(smallStorage))
         {
@@ -110,10 +111,12 @@ namespace isl
             return *this;
         }
 
-        template <typename... InvokeArgs> // NOLINTNEXTLINE (cppcoreguidelines-missing-std-forward)
-        ISL_DECL auto operator()(InvokeArgs &&...args) const -> Ret requires(
-            sizeof...(InvokeArgs) == sizeof...(Args)
-            && std::invocable<Ret(Args...), decltype(static_cast<Args>(args))...>)
+        template <typename... InvokeArgs> // NOLINTNEXTLINE
+                                          // (cppcoreguidelines-missing-std-forward)
+        ISL_DECL auto operator()(InvokeArgs &&...args) const -> Ret
+            requires(
+                sizeof...(InvokeArgs) == sizeof...(Args)
+                && std::invocable<Ret(Args...), decltype(static_cast<Args>(args))...>)
         {
             return getInvokerBase()->invoke(static_cast<Args>(args)...);
         }

@@ -19,8 +19,8 @@ namespace isl::coro
     using namespace std;
 #endif /* ISL_EXPERIMENTAL_COROUTINE */
 
-    template<typename T>
+    template <typename T>
     using ValueStorageType = std::conditional_t<std::is_trivial_v<T>, std::optional<T>, T *>;
-}// namespace isl::coro
+} // namespace isl::coro
 
 #endif /* ISL_PROJECT_COROUTINE_DEFINES_HPP */

@@ -1,8 +1,13 @@
 #ifndef ISL_PROJECT_UNIQUE_ANY_HPP
 #define ISL_PROJECT_UNIQUE_ANY_HPP
 
-#include <functional>
+#include <array>
 #include <isl/detail/defines.hpp>
+#include <memory>
+#include <optional>
+#include <stdexcept>
+#include <string>
+#include <type_traits>
 #include <typeindex>
 
 namespace isl
@@ -17,10 +22,10 @@ namespace isl
             void (*deleter)(void *) = nullptr;
         };
 
-        template<typename T>
+        template <typename T>
         concept UniqueAnyCanStoreInside =
             std::is_trivial_v<T> && sizeof(T) <= sizeof(PointerAndDeleter);
-    }// namespace detail
+    } // namespace detail
 
     class UniqueAny
     {
@@ -40,24 +45,22 @@ namespace isl
           : storesTrivialObject{true}
         {}
 
-        template<typename T>
+        template <typename T>
         explicit UniqueAny(std::unique_ptr<T> ptr)
           : typeIndex{typeid(T)}
         {
             pointerAndDeleter.pointer = ptr.release();
-            pointerAndDeleter.deleter = [](void *p) {
-                delete static_cast<T *>(p);
-            };
+            pointerAndDeleter.deleter = [](void *p) { delete static_cast<T *>(p); };
         }
 
-        template<typename T>
+        template <typename T>
         [[nodiscard]] explicit UniqueAny(T &&object)
         {
             emplace<T>(std::forward<T>(object));
         }
 
-        template<typename T, typename... Ts>
-            requires(std::constructible_from<T, Ts...>)
+        template <typename T, typename... Ts>
+        requires(std::constructible_from<T, Ts...>)
         [[nodiscard]] explicit UniqueAny(std::in_place_type_t<T> /*unused*/, Ts &&...args)
         {
             emplace<T>(std::forward<Ts>(args)...);
@@ -101,8 +104,8 @@ namespace isl
             return typeIndex;
         }
 
-        template<detail::UniqueAnyCanStoreInside T, typename... Ts>
-            requires(std::constructible_from<T, Ts...>)
+        template <detail::UniqueAnyCanStoreInside T, typename... Ts>
+        requires(std::constructible_from<T, Ts...>)
         auto emplace(Ts &&...args) -> void
         {
             deleteStoredObject();
@@ -112,21 +115,18 @@ namespace isl
             std::construct_at(reinterpret_cast<T *>(rowBuffer.data()), std::forward<Ts>(args)...);
         }
 
-        template<typename T, typename... Ts>
-        auto emplace(Ts &&...args) -> void
-            requires(std::constructible_from<T, Ts...>)
+        template <typename T, typename... Ts>
+        auto emplace(Ts &&...args) -> void requires(std::constructible_from<T, Ts...>)
         {
             deleteStoredObject();
             typeIndex = std::type_index{typeid(T)};
 
             storesTrivialObject = false;
             pointerAndDeleter.pointer = static_cast<void *>(new T{std::forward<Ts>(args)...});
-            pointerAndDeleter.deleter = [](void *p) {
-                delete static_cast<T *>(p);
-            };
+            pointerAndDeleter.deleter = [](void *p) { delete static_cast<T *>(p); };
         }
 
-        template<detail::UniqueAnyCanStoreInside T>
+        template <detail::UniqueAnyCanStoreInside T>
         [[nodiscard]] auto get() -> T
         {
             checkTypeMatch<T>();
@@ -137,7 +137,7 @@ namespace isl
             return result;
         }
 
-        template<typename T>
+        template <typename T>
         [[nodiscard]] auto get() -> T
         {
             checkTypeMatch<T>();
@@ -148,22 +148,22 @@ namespace isl
             return result;
         }
 
-        template<detail::UniqueAnyCanStoreInside T>
+        template <detail::UniqueAnyCanStoreInside T>
         [[nodiscard]] auto observe() -> T *
         {
             checkTypeMatch<T>();
             return reinterpret_cast<T *>(rowBuffer.data());
         }
 
-        template<typename T>
+        template <typename T>
         [[nodiscard]] auto observe() -> T *
         {
             checkTypeMatch<T>();
             return static_cast<T *>(pointerAndDeleter.pointer);
         }
 
-        template<typename T>
-            requires(!detail::UniqueAnyCanStoreInside<T>)
+        template <typename T>
+        requires(!detail::UniqueAnyCanStoreInside<T>)
         [[nodiscard]] auto release() -> std::unique_ptr<T>
         {
             checkTypeMatch<T>();
@@ -196,40 +196,40 @@ namespace isl
             storesTrivialObject = false;
         }
 
-        template<typename T>
+        template <typename T>
         auto checkTypeMatch() const -> void
         {
             if (std::type_index{typeid(T)} != typeIndex) {
                 throw bad_unique_any_cast{
-                    std::string{"An attempt to get object of type "} + typeid(T).name() +
-                    ", but stored object has type {}" + typeIndex.name()};
+                    std::string{"An attempt to get object of type "} + typeid(T).name()
+                    + ", but stored object has type {}" + typeIndex.name()};
             }
         }
     };
 
-    template<typename T>
+    template <typename T>
     [[nodiscard]] auto get(UniqueAny &unique_any) -> T
     {
         return unique_any.get<T>();
     }
 
-    template<typename T>
+    template <typename T>
     [[nodiscard]] auto get(UniqueAny &&unique_any) -> T
     {
         return unique_any.get<T>();
     }
 
-    template<typename T>
+    template <typename T>
     [[nodiscard]] auto observe(UniqueAny &unique_any) -> T *
     {
         return unique_any.observe<T>();
     }
 
-    template<typename T, typename... Ts>
+    template <typename T, typename... Ts>
     [[nodiscard]] auto makeAny(Ts &&...args) -> UniqueAny
     {
         return UniqueAny{std::in_place_type<T>, std::forward<Ts>(args)...};
     }
-}// namespace isl
+} // namespace isl
 
 #endif /* ISL_PROJECT_UNIQUE_ANY_HPP */

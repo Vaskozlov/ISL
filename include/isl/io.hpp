@@ -3,6 +3,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <ios>
 #include <isl/isl.hpp>
 #include <isl/raii.hpp>
 #include <isl/string_view.hpp>
@@ -13,17 +14,15 @@ namespace isl::io
 {
     auto read(const std::filesystem::path &filename) -> std::string;
 
-    template<StringLike<char>... Ts>// NOLINTNEXTLINE (cppcoreguidelines-missing-std-forward)
+    template <StringLike<char>... Ts> // NOLINTNEXTLINE (cppcoreguidelines-missing-std-forward)
     auto write(const std::filesystem::path &filename, Ts &&...args) -> void
     {
         auto out = std::ofstream{filename};
 
-        const auto file_closer = Raii([&out]() {
-            out.close();
-        });
+        const auto file_closer = Raii([&out]() { out.close(); });
 
-        (out.write(std::data(args), as<long>(std::size(args))), ...);
+        (out.write(std::data(args), as<std::streamsize>(std::size(args))), ...);
     }
-}// namespace isl::io
+} // namespace isl::io
 
 #endif /* ISL_PROJECT_IO_HPP */

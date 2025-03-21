@@ -68,8 +68,8 @@ namespace isl
 
         [[nodiscard]] auto operator==(const UniquePtr &other) const noexcept -> bool = default;
 
-        [[nodiscard]] auto operator<=>(const UniquePtr &other) const noexcept
-            -> std::weak_ordering = default;
+        [[nodiscard]] auto
+            operator<=>(const UniquePtr &other) const noexcept -> std::weak_ordering = default;
 
         [[nodiscard]] auto operator*() -> T &
         {
@@ -302,8 +302,8 @@ namespace isl
 
         [[nodiscard]] auto operator==(const SharedPtr &other) const noexcept -> bool = default;
 
-        [[nodiscard]] auto operator<=>(const SharedPtr &other) const noexcept
-            -> std::weak_ordering = default;
+        [[nodiscard]] auto
+            operator<=>(const SharedPtr &other) const noexcept -> std::weak_ordering = default;
 
         template <typename U>
         ISL_DECL static auto canStore() noexcept -> bool

@@ -1,10 +1,9 @@
-#include <iostream>
 #include <isl/coroutine/generator.hpp>
 #include <isl/detail/debug/debug.hpp>
 
-
 constexpr static std::array<std::size_t, 20> FibonacciNumbers = {
-    0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181};
+    0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181,
+};
 
 static auto fibonacciGenerator() -> isl::Generator<std::size_t>
 {

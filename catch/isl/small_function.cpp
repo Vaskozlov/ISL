@@ -1,12 +1,9 @@
-#include <functional>
 #include <isl/detail/debug/debug.hpp>
 #include <isl/small_function.hpp>
 
 TEST_CASE("SmallFunctionNoArgs", "[SmallFunction]")
 {
-    isl::SmallFunction<int()> a{[i = 0]() mutable {
-        return i++;
-    }};
+    isl::SmallFunction<int()> a{[i = 0]() mutable { return i++; }};
 
     auto b = a;
 
@@ -19,9 +16,7 @@ TEST_CASE("SmallFunctionNoArgs", "[SmallFunction]")
 TEST_CASE("SmallFunctionWithLambdaCapture", "[SmallFunction]")
 {
     int x = 10;
-    isl::SmallFunction<int()> a{[&x]() {
-        return x * 2;
-    }};
+    isl::SmallFunction<int()> a{[&x]() { return x * 2; }};
 
     REQUIRE(a() == 20);
 
@@ -31,9 +26,8 @@ TEST_CASE("SmallFunctionWithLambdaCapture", "[SmallFunction]")
 
 TEST_CASE("SmallFunctionWithArgsNoArgs", "[SmallFunction]")
 {
-    const isl::SmallFunction<int(int, int)> a{[i = 0](const int a, const int b) mutable {
-        return a * b + i++;
-    }};
+    const isl::SmallFunction<int(int, int)> a{
+        [i = 0](const int a, const int b) mutable { return a * b + i++; }};
 
     const isl::SmallFunction<int(int, int)> b = a;
 
@@ -45,9 +39,7 @@ TEST_CASE("SmallFunctionWithArgsNoArgs", "[SmallFunction]")
 
 TEST_CASE("SmallFunctionWithDifferentReturnType", "[SmallFunction]")
 {
-    isl::SmallFunction<std::string(int)> a{[](int i) {
-        return std::to_string(i);
-    }};
+    isl::SmallFunction<std::string(int)> a{[](int i) { return std::to_string(i); }};
 
     for (int i = 0; i != 100; ++i) {
         REQUIRE(a(i) == std::to_string(i));
@@ -78,9 +70,7 @@ TEST_CASE("SmallFunctionWithComplexCapture", "[SmallFunction]")
 TEST_CASE("SmallFunctionWithVoidReturnType", "[SmallFunction]")
 {
     int x = 0;
-    const isl::SmallFunction<void(int)> a{[&x](const int i) {
-        x += i;
-    }};
+    const isl::SmallFunction<void(int)> a{[&x](const int i) { x += i; }};
 
     for (int i = 0; i != 100; ++i) {
         a(i);
@@ -90,9 +80,7 @@ TEST_CASE("SmallFunctionWithVoidReturnType", "[SmallFunction]")
 
 TEST_CASE("SmallFunctionWithExceptionHandling", "[SmallFunction]")
 {
-    const isl::SmallFunction<int()> a{[]() -> int {
-        throw std::runtime_error("Test exception");
-    }};
+    const isl::SmallFunction<int()> a{[]() -> int { throw std::runtime_error("Test exception"); }};
 
     REQUIRE_THROWS_AS(a(), std::runtime_error);
 }

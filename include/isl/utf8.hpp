@@ -21,24 +21,25 @@ namespace isl::utf8
 
     namespace detail
     {
-        constexpr u32 OneByteMax = 127;
-        constexpr u32 TwoBytesMax = 2047;
-        constexpr u32 TreeBytesMax = 65'535;
-        constexpr u32 FourBytesMax = 1'114'111;
+        constexpr inline u32 OneByteMax = 127;
+        constexpr inline u32 TwoBytesMax = 2047;
+        constexpr inline u32 TreeBytesMax = 65'535;
+        constexpr inline u32 FourBytesMax = 1'114'111;
 
-        constexpr auto OneByteMask = 0b1000'0000_B;
-        constexpr auto TwoBytesMask = 0b1110'0000_B;
-        constexpr auto TwoBytesSignature = 0b1100'0000_B;
-        constexpr auto TreeBytesMask = 0b1111'0000_B;
-        constexpr auto TreeBytesSignature = 0b1110'0000_B;
-        constexpr auto FourBytesMask = 0b1111'1000_B;
-        constexpr auto FourBytesSignature = 0b1111'0000_B;
-        constexpr auto ContinuationMask = 0b1100'0000_B;
-        constexpr auto ContinuationSignature = 0b1000'0000_B;
-        constexpr u8 TrailingSize = 6;
+        constexpr inline auto OneByteMask = 0b1000'0000_B;
+        constexpr inline auto TwoBytesMask = 0b1110'0000_B;
+        constexpr inline auto TwoBytesSignature = 0b1100'0000_B;
+        constexpr inline auto TreeBytesMask = 0b1111'0000_B;
+        constexpr inline auto TreeBytesSignature = 0b1110'0000_B;
+        constexpr inline auto FourBytesMask = 0b1111'1000_B;
+        constexpr inline auto FourBytesSignature = 0b1111'0000_B;
+        constexpr inline auto ContinuationMask = 0b1100'0000_B;
+        constexpr inline auto ContinuationSignature = 0b1000'0000_B;
+        constexpr inline u8 TrailingSize = 6;
 
-        constexpr std::array UtfMasks{0_B, OneByteMask, TwoBytesMask, TreeBytesMask, FourBytesMask};
-    }// namespace detail
+        constexpr inline std::array UtfMasks{
+            0_B, OneByteMask, TwoBytesMask, TreeBytesMask, FourBytesMask};
+    } // namespace detail
 
     ISL_DECL auto isTrailingCharacter(char chr) noexcept -> bool
     {
@@ -91,7 +92,7 @@ namespace isl::utf8
         return 0;
     }
 
-    template<typename T>
+    template <typename T>
     constexpr auto
         appendUtf32ToUtf8Container(std::back_insert_iterator<T> back_inserter, char32_t chr) -> void
     {
@@ -136,6 +137,6 @@ namespace isl::utf8
         throw std::invalid_argument{"unable to convert symbol to utf8"};
         // NOLINTEND
     }
-}// namespace isl::utf8
+} // namespace isl::utf8
 
 #endif /* CCL_PROJECT_UTF8_HPP */

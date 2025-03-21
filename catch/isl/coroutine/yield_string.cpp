@@ -1,4 +1,3 @@
-#include <iostream>
 #include <isl/coroutine/generator.hpp>
 #include <isl/detail/debug/debug.hpp>
 
