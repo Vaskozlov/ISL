@@ -56,6 +56,21 @@
       }
     },
     {
+      "name": "Debug-with-sanitizer",
+      "displayName": "Debug-with-sanitizer",
+      "description": "Sets build and install directories",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "generator": "Ninja",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "ISL_ADDRESS_SANITIZER": "ON",
+        "ISL_INCLUDE_TESTS": "ON",
+        "ISL_INCLUDE_BENCHMARK": "ON",
+        "ISL_UNITY_BUILD": "ON",
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
       "name": "Debug",
       "displayName": "Debug",
       "description": "Sets build and install directories",
@@ -63,7 +78,7 @@
       "generator": "Ninja",
       "cacheVariables": {
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-        "ISL_ADDRESS_SANITIZER": "ON",
+        "ISL_ADDRESS_SANITIZER": "OFF",
         "ISL_INCLUDE_TESTS": "ON",
         "ISL_INCLUDE_BENCHMARK": "ON",
         "ISL_UNITY_BUILD": "ON",
