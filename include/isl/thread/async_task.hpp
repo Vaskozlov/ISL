@@ -22,6 +22,14 @@ namespace isl
           , pool{std::addressof(p)}
         {}
 
+        AsyncTask(AsyncTask &&other) noexcept
+          : task{std::exchange(other.task, nullptr)}
+          , job{std::exchange(other.job, nullptr)}
+          , pool{std::exchange(other.pool, nullptr)}
+        {}
+
+        AsyncTask(const AsyncTask &) = delete;
+
         ~AsyncTask()
         {
             if (job == nullptr) {
@@ -30,6 +38,16 @@ namespace isl
 
             if (job->scope != nullptr) {
             }
+        }
+
+        auto operator=(const AsyncTask &) -> AsyncTask & = delete;
+
+        auto operator=(AsyncTask &&other) noexcept -> AsyncTask &
+        {
+            std::swap(task, other.task);
+            std::swap(job, other.job);
+            std::swap(pool, other.pool);
+            return *this;
         }
 
         [[nodiscard]] auto getJobPtr() const noexcept -> Job *
