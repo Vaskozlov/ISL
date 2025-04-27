@@ -23,7 +23,7 @@ namespace isl
         {}
 
         AsyncTask(AsyncTask &&other) noexcept
-          : task{std::exchange(other.task, nullptr)}
+          : task{std::move(other.task)}
           , job{std::exchange(other.job, nullptr)}
           , pool{std::exchange(other.pool, nullptr)}
         {}
