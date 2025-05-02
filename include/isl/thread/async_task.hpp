@@ -17,6 +17,8 @@ namespace isl
         thread::Pool *pool;
 
     public:
+        AsyncTask() = default;
+
         explicit AsyncTask(Task<T> created_task, thread::Pool &p)
           : task{std::move(created_task)}
           , pool{std::addressof(p)}
