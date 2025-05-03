@@ -34,9 +34,10 @@ namespace isl::thread
         mutable std::mutex threadsManipulationMutex;
         std::condition_variable hasNewTasks;
         std::list<Thread> threads;
+        bool allowExternalAwait;
 
     public:
-        explicit Pool(std::size_t count);
+        explicit Pool(std::size_t count, bool allow_external_await = true);
 
         Pool(const Pool &) = delete;
         Pool(Pool &&) noexcept = delete;
@@ -74,6 +75,8 @@ namespace isl::thread
         auto executeOneTask() -> bool;
 
     private:
+        auto internalAwait(const Job *job) -> void;
+
         auto submit(Job *job) -> void;
 
         static auto runJob(Job *job) -> bool;

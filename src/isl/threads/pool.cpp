@@ -4,7 +4,8 @@
 
 namespace isl::thread
 {
-    Pool::Pool(const std::size_t count)
+    Pool::Pool(const std::size_t count, const bool allow_external_await)
+      : allowExternalAwait(allow_external_await)
     {
         startThreads(count);
     }
@@ -61,6 +62,17 @@ namespace isl::thread
     }
 
     auto Pool::await(const Job *job) -> void
+    {
+        if (allowExternalAwait) {
+            internalAwait(job);
+        }
+
+        while (!job->isCompleted.test(std::memory_order_relaxed)) {
+            std::this_thread::yield();
+        }
+    }
+
+    auto Pool::internalAwait(const Job *job) -> void
     {
         while (!job->isCompleted.test(std::memory_order_relaxed)) {
             runJob(pickJob());

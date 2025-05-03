@@ -57,7 +57,6 @@ namespace isl
             return job;
         }
 
-    public:
         auto await() -> decltype(auto)
         {
             pool->await(job);
