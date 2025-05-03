@@ -11,6 +11,10 @@ add_executable(
         ${ISL_CATCH_OBJECTS}
 )
 
+if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang|GNU")
+    target_compile_options(isl-catch PRIVATE -march=native)
+endif ()
+
 target_include_directories(isl-catch
         PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
