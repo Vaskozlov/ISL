@@ -31,9 +31,11 @@ namespace isl
         using coro_handle = coro::coroutine_handle<promise_type>;
 
     private:
-        coro_handle handle;
+        coro_handle handle{nullptr};
 
     public:
+        Task() = default;
+
         explicit Task(coro_handle initial_handle)
           : handle{initial_handle}
         {}
@@ -41,10 +43,8 @@ namespace isl
         Task(const Task &) = delete;
 
         Task(Task &&other) noexcept
-          : handle{other.handle}
-        {
-            other.handle = nullptr;
-        }
+          : handle{std::exchange(other.handle, nullptr)}
+        {}
 
         ~Task()
         {
@@ -83,11 +83,13 @@ namespace isl
             return handle.done();
         }
 
-        auto await() const -> void
+        auto await() const -> decltype(auto)
         {
             while (!done()) {
                 resume();
             }
+
+            return get();
         }
 
         [[nodiscard]] auto await_resume() const noexcept -> decltype(auto)
