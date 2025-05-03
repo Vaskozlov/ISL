@@ -71,7 +71,7 @@ namespace isl::thread
 
         auto await(const Job *job) -> void;
 
-        auto executeOneTask() -> void;
+        auto executeOneTask() -> bool;
 
     private:
         auto submit(Job *job) -> void;

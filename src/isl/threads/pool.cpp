@@ -67,9 +67,9 @@ namespace isl::thread
         }
     }
 
-    auto Pool::executeOneTask() -> void
+    auto Pool::executeOneTask() -> bool
     {
-        runJob(pickJob());
+        return runJob(pickJob());
     }
 
     auto Pool::submit(Job *job) -> void
