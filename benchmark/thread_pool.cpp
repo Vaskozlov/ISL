@@ -5,7 +5,7 @@
 #include <random>
 #include <vector>
 
-static isl::thread::Pool ThreadPool(4);
+static isl::thread::Pool runtime(4);
 
 static auto classicFibonacci(isl::u64 n) -> isl::u64
 {
@@ -16,15 +16,15 @@ static auto classicFibonacci(isl::u64 n) -> isl::u64
     return classicFibonacci(n - 1) + classicFibonacci(n - 2);
 }
 
-static auto fibonacciWithThreadPool(isl::u64 n, isl::thread::Pool *pool) -> isl::Task<isl::u64>
+static auto asyncFibonacci(isl::u64 n) -> isl::Task<isl::u64>
 {
     if (n <= 1) {
         co_return n;
     }
 
-    if (n > 20) {
-        auto first = pool->async(fibonacciWithThreadPool(n - 1, pool));
-        auto second = pool->async(fibonacciWithThreadPool(n - 2, pool));
+    if (n > 24) {
+        auto first = runtime.async(asyncFibonacci(n - 1));
+        auto second = runtime.async(asyncFibonacci(n - 2));
 
         const auto lhs = co_await first;
         const auto rhs = co_await second;
@@ -69,7 +69,7 @@ static void fibonacciWithThreadPoolBenchmark(benchmark::State &state)
 
     for (auto _ : state) {
         for (const auto v : numbers) {
-            auto task = ThreadPool.async(fibonacciWithThreadPool(v, std::addressof(ThreadPool)));
+            auto task = runtime.async(asyncFibonacci(v));
             benchmark::DoNotOptimize(task.await());
         }
     }
@@ -78,3 +78,9 @@ static void fibonacciWithThreadPoolBenchmark(benchmark::State &state)
 BENCHMARK(fibonacciWithThreadPoolBenchmark)->Iterations(100);
 
 BENCHMARK_MAIN();
+
+// int main()
+// {
+//     asyncFibonacci(35).await();
+//     fmt::println("{}", counter);
+// }

@@ -31,7 +31,7 @@ namespace isl::thread
 
         lock_free::Stack tasksStack;
         mutable std::mutex newTasksMutex;
-        std::mutex threadsManipulationMutex;
+        mutable std::mutex threadsManipulationMutex;
         std::condition_variable hasNewTasks;
         std::list<Thread> threads;
 
