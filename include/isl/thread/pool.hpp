@@ -8,9 +8,9 @@
 
 namespace isl
 {
-    template<typename T>
+    template <typename T>
     class AsyncTask;
-}
+} // namespace isl
 
 namespace isl::thread
 {
@@ -22,7 +22,7 @@ namespace isl::thread
             std::thread thread;
             std::atomic<bool> runFlag;
 
-            template<typename... Ts>
+            template <typename... Ts>
             explicit Thread(const bool flag_value, Ts &&...args)
               : thread{std::forward<Ts>(args)...}
               , runFlag{flag_value}
@@ -30,7 +30,7 @@ namespace isl::thread
         };
 
         lock_free::Stack tasksStack;
-        std::mutex newTasksMutex;
+        mutable std::mutex newTasksMutex;
         std::mutex threadsManipulationMutex;
         std::condition_variable hasNewTasks;
         std::list<Thread> threads;
@@ -46,16 +46,16 @@ namespace isl::thread
 
         ~Pool();
 
-        auto wereRunning() -> std::size_t;
+        [[nodiscard]] auto wereRunning() const -> std::size_t;
 
-        template<typename T>
+        template <typename T>
         [[nodiscard]] auto async(Task<T> task) -> AsyncTask<T>
         {
             submit(task.get_job_ptr());
             return AsyncTask<T>{std::move(task), *this};
         }
 
-        template<typename T>
+        template <typename T>
         auto launch(Task<T> task) -> void
         {
             Job *job = task.release();
@@ -71,6 +71,8 @@ namespace isl::thread
 
         auto await(const Job *job) -> void;
 
+        auto executeOneTask() -> void;
+
     private:
         auto submit(Job *job) -> void;
 
@@ -82,7 +84,6 @@ namespace isl::thread
 
         auto waitForNotify() -> void;
     };
-}// namespace isl::thread
-
+} // namespace isl::thread
 
 #endif /* ISL_PROJECT_POOL_HPP */

@@ -67,13 +67,18 @@ namespace isl::thread
         }
     }
 
+    auto Pool::executeOneTask() -> void
+    {
+        runJob(pickJob());
+    }
+
     auto Pool::submit(Job *job) -> void
     {
         tasksStack.push(job);
         hasNewTasks.notify_one();
     }
 
-    auto Pool::wereRunning() -> std::size_t
+    auto Pool::wereRunning() const -> std::size_t
     {
         const auto lock = std::scoped_lock{threadsManipulationMutex};
 
