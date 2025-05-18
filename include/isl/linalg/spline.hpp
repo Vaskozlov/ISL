@@ -33,9 +33,9 @@ namespace isl
 
             for (std::size_t i = 1; i < n - 1; ++i) {
                 m_a[i] = x[i] - x[i - 1];
-                m_b[i] = 2 * (x[i + 1] - x[i - 1]);
+                m_b[i] = static_cast<T>(2) * (x[i + 1] - x[i - 1]);
                 m_c[i] = x[i + 1] - x[i];
-                m_d[i] = 3
+                m_d[i] = static_cast<T>(3)
                          * ((y[i + 1] - y[i]) / (x[i + 1] - x[i])
                             - (y[i] - y[i - 1]) / (x[i] - x[i - 1]));
             }
