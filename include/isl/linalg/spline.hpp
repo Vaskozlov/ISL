@@ -43,20 +43,22 @@ namespace isl
             auto c = linalg::solveThomas3(
                 std::move(m_a), std::move(m_b), std::move(m_c), std::move(m_d));
 
+            // TODO: there is no point in copying a
             auto a = std::vector<T>(y.begin(), y.end());
 
-            std::vector<CubicSplineCoefficients<T>> result;
-            result.reserve(n - 1);
+            std::vector<CubicSplineCoefficients<T>> result(n - 1);
 
             for (std::size_t i = 0; i < n - 1; ++i) {
                 const auto h = x[i + 1] - x[i];
 
-                const auto b = (a[i + 1] - a[i]) / h
-                               - h * (static_cast<T>(2) * c[i] + c[i + 1]) / static_cast<T>(3);
+                result[i].a = a[i];
 
-                const auto d = (c[i + 1] - c[i]) / (static_cast<T>(3) * h);
+                result[i].b = (a[i + 1] - a[i]) / h
+                              - h * (static_cast<T>(2) * c[i] + c[i + 1]) / static_cast<T>(3);
 
-                result.emplace_back(a[i], b, c[i], d);
+                result[i].c = c[i];
+
+                result[i].d = (c[i + 1] - c[i]) / (static_cast<T>(3) * h);
             }
 
             return result;

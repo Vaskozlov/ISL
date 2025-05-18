@@ -30,7 +30,8 @@ namespace isl
             x.back() = d.back() / b.back();
 
             for (ssize_t i = static_cast<ssize_t>(n) - 2; i >= 0; --i) {
-                x[i] = (d[i] - c[i] * x[i + 1]) / b[i];
+                const auto idx = static_cast<std::size_t>(i);
+                x[idx] = (d[idx] - c[idx] * x[idx + 1]) / b[idx];
             }
 
             return x;
