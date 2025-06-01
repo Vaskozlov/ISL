@@ -21,7 +21,7 @@ namespace isl
         auto createCubicSpline(const std::span<const T> x, const std::span<const T> y)
             -> std::vector<CubicSplineCoefficients<T>>
         {
-            assert(x.size() == y.size());
+            assert(x.size() == y.size() && x.size() >= 1);
 
             const auto n = x.size();
             std::vector<T> m_a(n);
@@ -33,8 +33,9 @@ namespace isl
 
             for (std::size_t i = 1; i < n - 1; ++i) {
                 m_a[i] = x[i] - x[i - 1];
-                m_b[i] = static_cast<T>(2) * (x[i + 1] - x[i - 1]);
+                m_b[i] = 2 * (x[i + 1] - x[i - 1]);
                 m_c[i] = x[i + 1] - x[i];
+
                 m_d[i] = static_cast<T>(3)
                          * ((y[i + 1] - y[i]) / (x[i + 1] - x[i])
                             - (y[i] - y[i - 1]) / (x[i] - x[i - 1]));
@@ -43,18 +44,15 @@ namespace isl
             auto c = linalg::solveThomas3(
                 std::move(m_a), std::move(m_b), std::move(m_c), std::move(m_d));
 
-            // TODO: there is no point in copying a
-            auto a = std::vector<T>(y.begin(), y.end());
-
             std::vector<CubicSplineCoefficients<T>> result(n - 1);
 
             for (std::size_t i = 0; i < n - 1; ++i) {
                 const auto h = x[i + 1] - x[i];
 
-                result[i].a = a[i];
+                result[i].a = y[i];
 
-                result[i].b = (a[i + 1] - a[i]) / h
-                              - h * (static_cast<T>(2) * c[i] + c[i + 1]) / static_cast<T>(3);
+                result[i].b = (y[i + 1] - y[i]) / h
+                              - h * (c[i + 1] + static_cast<T>(2) * c[i]) / static_cast<T>(3);
 
                 result[i].c = c[i];
 
@@ -62,6 +60,23 @@ namespace isl
             }
 
             return result;
+        }
+
+        template <std::floating_point T>
+        auto countSplineValueInPoint(
+            const std::span<const T> x,
+            const std::vector<CubicSplineCoefficients<T>> &spline_coefficients,
+            const T point) -> T
+        {
+            const auto it = std::ranges::lower_bound(x, point);
+            const auto index = static_cast<std::size_t>(std::clamp<std::ptrdiff_t>(
+                std::distance(x.begin(), it) - 1, 0, spline_coefficients.size() - 1));
+
+            const auto &coefficient = spline_coefficients[index];
+            const auto h = point - x[index];
+
+            return coefficient.a + coefficient.b * h + coefficient.c * h * h
+                   + coefficient.d * h * h * h;
         }
     } // namespace interpolation
 } // namespace isl
