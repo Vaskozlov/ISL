@@ -42,7 +42,7 @@ namespace isl
             }
 
             auto c = linalg::solveThomas3(
-                std::move(m_a), std::move(m_b), std::move(m_c), std::move(m_d));
+                m_a, std::move(m_b), m_c, std::move(m_d));
 
             std::vector<CubicSplineCoefficients<T>> result(n - 1);
 

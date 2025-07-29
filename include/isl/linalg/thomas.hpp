@@ -11,8 +11,9 @@ namespace isl
     {
 
         template <std::floating_point T>
-        std::vector<T>
-            solveThomas3(std::vector<T> a, std::vector<T> b, std::vector<T> c, std::vector<T> d)
+        auto solveThomas3(
+            const std::vector<T> &a, std::vector<T> b, const std::vector<T> &c, std::vector<T> d)
+            -> std::vector<T>
         {
             assert(a.size() == b.size());
             assert(a.size() == c.size());
