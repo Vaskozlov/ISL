@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20.0)
 
-project(isl-project VERSION 0.0.2.1 LANGUAGES CXX)
+project(isl-project VERSION 0.0.1.0 LANGUAGES CXX)
 
 include(CPack)
 include(GNUInstallDirs)
