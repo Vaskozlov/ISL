@@ -141,7 +141,7 @@ namespace isl
         return std::bit_cast<float>(static_cast<std::uint32_t>((s << 31) | (e << 23) | m));
     }
 
-    float16 fp32ToFp16(const float value)
+    inline float16 fp32ToFp16(const float value)
     {
         const std::int32_t i = std::bit_cast<std::int32_t>(value);
 
