@@ -33,13 +33,13 @@ endif ()
 target_link_libraries(
         isl
         PRIVATE
-        Threads::Threads
         fmt::fmt-header-only
 )
 
 target_link_libraries(
         isl
         PUBLIC
+        Threads::Threads
         unordered_dense::unordered_dense
 )
 
