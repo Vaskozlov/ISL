@@ -190,7 +190,7 @@ namespace isl
             hasCompleted.store(true, std::memory_order_release);
         }
 
-        auto get_value() const noexcept(false) ISL_LIFETIMEBOUND -> void
+        auto get_value() const noexcept(false) -> void
         {
             if (get_exception() != nullptr) {
                 std::rethrow_exception(get_exception());
