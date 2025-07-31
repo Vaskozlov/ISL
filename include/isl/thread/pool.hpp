@@ -34,7 +34,8 @@ namespace isl::thread
         mutable std::mutex threadsManipulationMutex;
         std::condition_variable hasNewTasks;
         std::list<Thread> threads;
-        bool allowExternalAwait;
+        std::set<std::thread::id> allowedExecuters;
+        bool allowExternalAwait = false;
 
     public:
         explicit Pool(std::size_t count, bool allow_external_await = true);

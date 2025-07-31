@@ -1,11 +1,13 @@
 #include <functional>
 #include <isl/thread/pool.hpp>
 #include <isl/thread/scope.hpp>
+#include <thread>
 
 namespace isl::thread
 {
     Pool::Pool(const std::size_t count, const bool allow_external_await)
-      : allowExternalAwait(allow_external_await)
+      : allowedExecuters{std::this_thread::get_id()}
+      , allowExternalAwait{allow_external_await}
     {
         startThreads(count);
     }
@@ -63,8 +65,16 @@ namespace isl::thread
 
     auto Pool::await(const Job *job) -> void
     {
-        if (allowExternalAwait) {
+        bool can_execute_tasks = allowExternalAwait;
+
+        if (!can_execute_tasks) {
+            const auto lock = std::scoped_lock{threadsManipulationMutex};
+            can_execute_tasks = allowedExecuters.contains(std::this_thread::get_id());
+        }
+
+        if (can_execute_tasks) {
             internalAwait(job);
+            return;
         }
 
         while (!job->isCompleted.test(std::memory_order_relaxed)) {
@@ -106,6 +116,8 @@ namespace isl::thread
 
             auto &[thread, run_flag] = threads.back();
             thread = std::thread{std::mem_fn(&Pool::worker), this, std::cref(run_flag)};
+
+            allowedExecuters.emplace(thread.get_id());
         }
     }
 
